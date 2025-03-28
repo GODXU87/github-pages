@@ -1,0 +1,57 @@
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+
+const BOARD_SIZES = [9, 13, 19];
+
+export default function GoGame() {
+  const [boardSize, setBoardSize] = useState(9);
+  const [board, setBoard] = useState(Array(boardSize).fill(null).map(() => Array(boardSize).fill(null)));
+  const [currentPlayer, setCurrentPlayer] = useState("black");
+
+  const handleCellClick = (row, col) => {
+    if (board[row][col]) return;
+    const newBoard = board.map((r, i) =>
+      r.map((cell, j) => (i === row && j === col ? currentPlayer : cell))
+    );
+    setBoard(newBoard);
+    setCurrentPlayer(currentPlayer === "black" ? "white" : "black");
+  };
+
+  const changeBoardSize = (size) => {
+    setBoardSize(size);
+    setBoard(Array(size).fill(null).map(() => Array(size).fill(null)));
+    setCurrentPlayer("black");
+  };
+
+  return (
+    <div className="p-4">
+      <h1 className="text-2xl font-bold mb-4">圍棋遊戲</h1>
+      <div className="mb-4 space-x-2">
+        {BOARD_SIZES.map((size) => (
+          <Button key={size} onClick={() => changeBoardSize(size)}>
+            {size}x{size}
+          </Button>
+        ))}
+      </div>
+      <div
+        className="grid gap-1"
+        style={{
+          gridTemplateColumns: `repeat(${boardSize}, 1fr)`,
+          maxWidth: "min(90vw, 90vh)",
+          aspectRatio: "1 / 1",
+        }}
+      >
+        {board.map((row, rowIndex) =>
+          row.map((cell, colIndex) => (
+            <div
+              key={`${rowIndex}-${colIndex}`}
+              onClick={() => handleCellClick(rowIndex, colIndex)}
+              className="w-full aspect-square border border-gray-400 flex items-center justify-center cursor-pointer"
+              style={{ backgroundColor: cell === "black" ? "black" : cell === "white" ? "white" : "#f5f5dc" }}
+            ></div>
+          ))
+        )}
+      </div>
+    </div>
+  );
+}
