@@ -508,3 +508,242 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.25;ba
   .start-copy{padding:28px 22px}
   .start-copy h1{font-size:38px}
 }
+
+
+/* =========================================================
+   V0.5 — NODE MAP / CLEAN COMMAND FLOW
+   ========================================================= */
+@media (min-width:901px){
+  .map-wrap{
+    background:
+      radial-gradient(circle at 46% 45%,rgba(121,108,77,.10),transparent 36%),
+      linear-gradient(180deg,#24261f 0%,#1a1d19 58%,#121411 100%);
+  }
+  .map-wrap:before{
+    opacity:.22;
+    background:
+      repeating-linear-gradient(12deg,rgba(215,202,166,.025) 0 1px,transparent 1px 13px),
+      repeating-linear-gradient(102deg,rgba(215,202,166,.015) 0 1px,transparent 1px 17px);
+  }
+  .land{
+    fill:#25271f;
+    stroke:#736b53;
+    stroke-width:1.8;
+  }
+  .territory{display:none!important}
+  .contours path{
+    fill:none;
+    stroke:#706b59;
+    stroke-width:1.2;
+    opacity:.22;
+    stroke-dasharray:2 9;
+  }
+  .pass-labels text{
+    fill:#8f846b;
+    font-family:"Noto Serif TC",serif;
+    font-size:8px;
+    letter-spacing:.12em;
+    opacity:.65;
+  }
+  .region-labels text{
+    font-size:25px;
+    fill:#b9ae91;
+    opacity:.19;
+    letter-spacing:.22em;
+  }
+  .river{
+    stroke:#597078;
+    opacity:.52;
+    filter:drop-shadow(0 0 3px rgba(68,94,102,.25));
+  }
+  .mountains path{
+    fill:#171a16;
+    stroke:#5f604f;
+    opacity:.92;
+  }
+  .road{
+    stroke:#b9a46d;
+    stroke-width:2.2;
+    stroke-dasharray:3 6;
+    opacity:.58;
+  }
+
+  .city .halo{
+    fill:#11130f;
+    stroke-width:2.7;
+    filter:drop-shadow(0 3px 4px rgba(0,0,0,.65));
+  }
+  .city:hover .halo{
+    stroke:#eedda8!important;
+    stroke-width:4;
+    filter:drop-shadow(0 0 8px rgba(222,192,118,.42));
+  }
+  .city.selected .halo{
+    stroke:#f0cf79!important;
+    stroke-width:5;
+    filter:drop-shadow(0 0 12px rgba(239,202,112,.58));
+  }
+  .city .core{
+    fill:#eadcb7;
+  }
+  .city .capital{
+    fill:#d7ad54;
+  }
+  .city text{
+    font-size:15px;
+    fill:#eee3cb;
+    stroke:#0d0f0c;
+    stroke-width:3.2px;
+    paint-order:stroke;
+  }
+  .city .meta{
+    font-size:9px;
+    fill:#b5ad9d;
+    stroke-width:2px;
+  }
+
+  .army .flag{
+    fill:#181914;
+    stroke:#d8c28b;
+    stroke-width:2;
+    rx:3;
+    filter:drop-shadow(0 3px 5px rgba(0,0,0,.7));
+  }
+  .army:hover .flag{
+    stroke:#f3df9f;
+  }
+  .army text{font-size:10px;font-weight:800}
+  .army .troop{font-size:7px}
+
+  .context-scroll{
+    background:
+      linear-gradient(180deg,rgba(255,255,255,.018),transparent 28%),
+      #11130f;
+  }
+  .context-empty{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    min-height:100%;
+    padding:18px 4px;
+  }
+  .context-empty .eyebrow{
+    font-size:9px;
+    color:#8f846d;
+    letter-spacing:.18em;
+  }
+  .context-empty h2{
+    font-size:26px;
+    margin:7px 0 8px;
+  }
+  .context-empty p{
+    color:#8e8779;
+    font-size:11px;
+    line-height:1.7;
+    margin:0 0 18px;
+  }
+  .guide-actions{
+    display:grid;
+    gap:8px;
+  }
+  .guide-actions button{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    min-height:54px;
+    padding:0 13px;
+    border:1px solid #514936;
+    background:linear-gradient(180deg,#20221c,#151611);
+    color:#d5c8aa;
+    text-align:left;
+    cursor:pointer;
+  }
+  .guide-actions button:hover{
+    border-color:#b1965d;
+    background:linear-gradient(180deg,#332c20,#1a1812);
+  }
+  .guide-actions b{font-size:12px}
+  .guide-actions span{font-size:8px;color:#827969}
+
+  .city-hero{
+    padding-bottom:12px;
+    border-bottom:1px solid #3d382c;
+    margin-bottom:12px;
+  }
+  .city-hero .city-kicker{
+    display:flex;gap:6px;flex-wrap:wrap;margin-top:7px;
+  }
+  .city-hero .city-kicker span{
+    font-size:8px;
+    border:1px solid #494231;
+    color:#9f947e;
+    padding:4px 6px;
+  }
+  .city-command-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    margin-top:13px;
+  }
+  .city-command-grid button{
+    min-height:64px;
+    border:1px solid #554b36;
+    background:linear-gradient(180deg,#25251e,#151611);
+    color:#e0d3b7;
+    text-align:left;
+    padding:11px 12px;
+    cursor:pointer;
+  }
+  .city-command-grid button:hover{
+    border-color:#bea365;
+    transform:translateY(-1px);
+  }
+  .city-command-grid .primary-command{
+    grid-column:1/-1;
+    background:linear-gradient(180deg,#3c2a20,#1e1713);
+    border-color:#8a5947;
+  }
+  .city-command-grid b{display:block;font-size:12px}
+  .city-command-grid small{display:block;font-size:8px;color:#81786a;margin-top:4px}
+
+  .enemy-command{
+    margin-top:13px;
+    padding:12px;
+    border:1px solid #5e4137;
+    background:linear-gradient(180deg,#241815,#15110f);
+  }
+  .enemy-command .route-line{
+    margin:8px 0 11px;
+    font-size:10px;
+    color:#a99b83;
+  }
+  .enemy-command button{
+    width:100%;
+    min-height:58px;
+    border:1px solid #9b6651;
+    background:#3b251e;
+    color:#ead5b7;
+    cursor:pointer;
+    font-weight:700;
+  }
+
+  .army-list{
+    display:grid;
+    gap:8px;
+    margin-top:10px;
+  }
+  .army-list button{
+    border:1px solid #413b2e;
+    background:#151713;
+    color:#d4c8ac;
+    padding:10px;
+    text-align:left;
+    cursor:pointer;
+  }
+  .army-list button:hover{
+    border-color:#a88e58;
+    background:#201d16;
+  }
+  .army-list b{font-size:11px}
+  .army-list small{display:block;margin-top:4px;font-size:8px;color:#80786b}
+}
