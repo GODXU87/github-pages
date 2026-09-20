@@ -60,3 +60,148 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.25;ba
 .start-card{position:relative;display:grid;grid-template-columns:300px 1fr;width:min(980px,94vw);height:min(610px,86vh);border:1px solid #7b6b47;background:#151713;box-shadow:0 45px 120px #000;overflow:hidden}.start-ruler{background-size:cover;background-position:center;filter:saturate(.7) contrast(1.12);position:relative}.start-ruler:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent 65%,#151713),linear-gradient(0deg,#151713 0,transparent 35%)}.start-content{padding:50px 45px;position:relative}.start-content h1{font-family:"Noto Serif TC",serif;font-size:52px;letter-spacing:.15em;margin:6px 0;color:#dec99a;text-shadow:0 4px 18px #000}.start-sub{font-family:Georgia,serif;font-size:9px;letter-spacing:.22em;color:#8d7d60}.start-content p{font-family:"Noto Serif TC",serif;color:#aaa18f;font-size:11px;line-height:2;margin:25px 0}.scenario-card{border:1px solid #544b37;background:#10120f;padding:13px}.scenario-card b{display:block;font-size:12px;color:#d4c5a4}.scenario-card small{font-size:7px;color:#777064}.faction-label{margin-top:18px}.faction-choice{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}.faction-choice button{border:1px solid #4a4334;background:#11130f;color:#aca28e;padding:9px 5px;cursor:pointer}.faction-choice button.active{border-color:#c3a660;background:#332c1f;color:#f2deb2}.faction-choice small{display:block;font-size:6px;margin-top:4px}.start-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:22px}
 @media(max-width:1250px){.topbar{grid-template-columns:270px 225px 1fr 160px}.workspace{grid-template-columns:100px 250px minmax(520px,1fr) 290px}.advisor-bar{grid-template-columns:135px 1fr 280px 200px}.game-title{font-size:32px}}
 @media(max-width:900px){body{overflow:auto}.game{height:auto;min-height:100dvh;grid-template-rows:auto auto auto}.topbar{grid-template-columns:1fr 1fr}.logo-block{padding:12px}.ruler-banner{min-height:100px}.global-resources{grid-column:1/-1}.time-block{position:fixed;right:8px;bottom:8px;z-index:50;background:#11130f;border:1px solid #6d5d3b;width:120px}.workspace{grid-template-columns:1fr;grid-template-rows:auto 58vh auto auto}.command-rail{display:block}.rail-faction{display:none}.main-nav{grid-template-columns:repeat(5,1fr);margin:0}.main-nav button{height:48px}.nav-glyph{display:none}.rail-bottom{display:none}.city-console{grid-row:3;max-height:none}.map-shell{grid-row:2}.world-panel{grid-row:4;min-height:400px}.advisor-bar{grid-template-columns:100px 1fr}.quick-actions,.turn-panel{display:none}.start-card{grid-template-columns:1fr;height:auto}.start-ruler{display:none}.start-content{padding:30px 24px}.start-content h1{font-size:37px}}
+
+
+/* =========================================================
+   V0.3 P0 — desktop readability / hierarchy / information UI
+   ========================================================= */
+@media (min-width: 901px){
+  .game{
+    grid-template-rows:124px minmax(0,1fr) 132px;
+    gap:5px;
+    padding:5px;
+  }
+  .topbar{
+    grid-template-columns:280px 245px minmax(560px,1fr) 170px;
+  }
+  .logo-block{padding:14px 18px}
+  .noirxu-mark{font-size:14px}
+  .game-title{font-size:36px}
+  .game-sub{font-size:9px;margin-top:6px}
+  .ruler-banner .ruler-portrait{width:116px;flex-basis:116px}
+  .ruler-name{font-size:24px}
+  .ruler-quote{font-size:12px;margin-top:7px}
+  .micro{font-size:9px}
+  .resource{padding:10px 8px}
+  .resource span{font-size:11px}
+  .resource b{font-size:20px}
+  .resource small{font-size:8px}
+  .resource:nth-child(5),.resource:nth-child(6){
+    background:rgba(195,163,91,.035);
+  }
+  .era{font-size:18px}
+  .year{font-size:9px}
+  .advance{width:106px;height:48px;margin-top:6px}
+  .advance span{font-size:19px}
+
+  .workspace{
+    grid-template-columns:96px 260px minmax(680px,1fr) 300px;
+    gap:5px;
+  }
+  .command-rail{padding:8px 6px}
+  .crest{width:46px;height:46px;font-size:23px}
+  .rail-faction b{font-size:11px}
+  .rail-faction small{font-size:8px}
+  .main-nav{gap:5px;margin-top:8px}
+  .main-nav button{height:58px}
+  .nav-glyph{font-size:20px}
+  .main-nav b{font-size:11px}
+  .rail-mini{font-size:9px;padding:7px 0}
+
+  .city-console{padding:15px 14px}
+  .city-console h2{font-size:31px;margin:6px 0 8px}
+  .side-title{font-size:9px}
+  .tag{font-size:9px;padding:4px 7px}
+  .muted{font-size:10px;line-height:1.65}
+  .stat-grid{gap:7px;margin:12px 0}
+  .stat{padding:10px}
+  .stat span{font-size:9px}
+  .stat b{font-size:16px}
+  .stat small{font-size:8px;margin-top:2px}
+  .section-title{font-size:10px;padding-bottom:7px;margin:14px 0 8px}
+  .barline{grid-template-columns:38px 1fr 28px;font-size:9px;margin:8px 0}
+  .track{height:6px}
+  .officer{padding:10px 0}
+  .officer b{font-size:11px}
+  .officer small{font-size:8px;margin-top:3px}
+  .nums{font-size:8px;line-height:1.6}
+  .action-grid{gap:7px}
+  .action-grid button{padding:10px 9px;min-height:54px}
+  .action-grid b{font-size:10px}
+  .action-grid small{font-size:8px;line-height:1.45;margin-top:3px}
+
+  .map-head{height:50px;padding:0 14px}
+  .map-head strong{font-size:14px}
+  .map-wrap{inset:50px 0 0}
+  .region-labels text{font-size:29px;opacity:.36}
+  .road{stroke-width:1.8;opacity:.60}
+  .river{stroke-width:8;opacity:.54}
+  .mountains path{stroke-width:1.6;opacity:.92}
+  .territory{opacity:.76;stroke-width:2.4}
+  .city text{font-size:14px;paint-order:stroke;stroke:#10110e;stroke-width:2.5px;stroke-linejoin:round}
+  .city .meta{font-size:9px;stroke-width:1.5px}
+  .army text{font-size:9px}
+  .army .troop{font-size:7px}
+  .map-legend{font-size:9px;padding:8px 10px;gap:12px}
+  .map-legend i{width:8px;height:8px}
+  .zoom-indicator{font-size:9px}
+
+  .world-panel{
+    grid-template-rows:46px minmax(0,1.08fr) minmax(170px,.72fr) 122px;
+  }
+  .intel-tabs button{font-size:11px;font-weight:700;letter-spacing:.04em}
+  .intel-section{padding:12px 12px}
+  .intel-title{font-size:13px;padding-bottom:9px}
+  .intel-title span{font-size:8px}
+  .intel-table{font-size:10px;margin-top:7px}
+  .intel-table th{font-size:9px;padding:7px 6px}
+  .intel-table td{font-size:10px;padding:8px 6px}
+  .event-item{grid-template-columns:34px 1fr;gap:7px;padding:8px 0;font-size:9px;line-height:1.45}
+  .event-item span{font-size:8px}
+  .event-item b{font-size:9px}
+  .mini-map-box{padding:11px 12px}
+  .mini-title{font-size:11px}
+  .objective-item{grid-template-columns:11px 1fr;font-size:9px;margin:8px 0}
+  .objective-item i{width:9px;height:9px}
+
+  .advisor-bar{
+    grid-template-columns:144px minmax(0,1fr) 300px 210px;
+  }
+  .advisor-copy{padding:16px 18px}
+  .advisor-name{font-size:21px}
+  .advisor-name small{font-size:9px}
+  .advisor-text{font-size:13px;line-height:1.75;margin-top:8px}
+  .quick-actions,.turn-panel{padding:15px 13px}
+  .quick-row button{font-size:9px;padding:8px 10px}
+  .pip{width:11px;height:11px}
+  .ticker{font-size:8px;line-height:1.4}
+
+  .diplomacy-list{display:grid;gap:7px;margin-top:10px}
+  .dip-card{
+    padding:10px 11px;
+    border:1px solid #3e392d;
+    background:linear-gradient(90deg,#151713,#11120f);
+  }
+  .dip-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .dip-name{font-family:"Noto Serif TC",serif;font-size:13px;color:#ddd0b2}
+  .dip-ruler{font-size:9px;color:#7f786b;margin-top:2px}
+  .dip-status{font-size:9px;padding:3px 6px;border:1px solid #4b4434;color:#a69b86}
+  .dip-status.hostile{border-color:#71443d;color:#c78178}
+  .dip-status.friendly{border-color:#52684f;color:#9fbd9b}
+  .dip-meter{height:5px;background:#252720;margin-top:8px;overflow:hidden}
+  .dip-meter i{display:block;height:100%;background:#8c7750}
+  .dip-note{display:flex;justify-content:space-between;margin-top:5px;font-size:8px;color:#726c61}
+
+  .officer-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px}
+  .officer-card{border:1px solid #3d382d;background:#11130f;padding:9px}
+  .officer-card .officer-top{display:flex;align-items:center;gap:8px}
+  .officer-seal{width:34px;height:34px;border:1px solid #6a5c40;display:grid;place-items:center;font-family:"Noto Serif TC",serif;font-size:15px;color:#dcc9a0;background:#1d1c16}
+  .officer-card b{font-size:11px}
+  .officer-card small{display:block;font-size:8px;color:#777064;margin-top:2px}
+  .officer-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;margin-top:7px}
+  .officer-stats span{font-size:8px;text-align:center;color:#9a9282;background:#191b17;padding:4px 2px}
+  .officer-stats strong{display:block;color:#ded3bb;font-size:10px}
+}
+
+/* reduce dead black space in empty information panels */
+.city-console > .muted:first-of-type{margin-top:8px}
