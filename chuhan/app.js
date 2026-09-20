@@ -126,13 +126,26 @@ function newGame(f='han'){
 }
 
 function render(){
- renderTop();renderSidebar();renderMap();renderInspector();renderBottom();
+ renderTop();
+ renderSidebar();
+ renderMap();
+ renderInspector();
+ renderIntel();
+ renderAdvisor();
+ renderBottom();
 }
 function renderTop(){
  const f=FACTIONS[state.player];
  $('topFaction').textContent=f.name+' · '+f.ruler;
  $('era').textContent='漢元年 · '+state.month+'月'+PERIODS[state.period];
  $('turn').textContent='公元前 206 年｜第 '+state.turn+' 旬';
+ const quote={
+  han:'大丈夫當以天下為心。',
+  chu:'力能扛鼎，天下莫敢當。',
+  qi:'齊地富庶，足以圖天下。',
+  jiu:'亂世唯強者能自立。'
+ }[state.player]||'天下未定，皆有可為。';
+ if($('topRulerQuote'))$('topRulerQuote').textContent=quote;
 }
 function renderSidebar(){
  const f=FACTIONS[state.player],z=factionTotals(state.player);
@@ -148,6 +161,56 @@ function renderSidebar(){
  $('obj2').classList.toggle('done',owned.some(c=>c.name==='洛陽'));
  $('obj3').classList.toggle('done',owned.some(c=>c.name==='彭城'));
 }
+
+function renderIntel(){
+ const rankBox=$('rankings'),eventBox=$('eventList');
+ if(rankBox){
+  const rows=Object.keys(FACTIONS).map(f=>{
+   const z=factionTotals(f);
+   return {f,p:factionPower(f),...z};
+  }).sort((a,b)=>b.p-a.p).slice(0,8);
+  rankBox.innerHTML=rows.map(r=>
+   '<tr class="'+(r.f===state.player?'player':'')+'"><td><span style="color:'+FACTIONS[r.f].color+'">■</span> '+FACTIONS[r.f].name+'</td><td>'+r.cities+'</td><td>'+Math.round(r.troops/1000)+'k</td><td>'+Math.round(r.p/1000)+'</td></tr>'
+  ).join('');
+ }
+ if(eventBox){
+  const entries=state.log.slice(0,8);
+  eventBox.innerHTML=entries.map((x,i)=>
+   '<div class="event-item"><span>'+(i<4?'今旬':'前旬')+'</span><b>'+x+'</b></div>'
+  ).join('');
+ }
+}
+
+function renderAdvisor(){
+ if(!$('advisorText'))return;
+ let name='張良',role='軍師',text='主公，天下形勢瞬息萬變，當先穩後方，再圖東進。';
+ if(state.active==='city'){
+  const c=city(state.selected)||city(FACTIONS[state.player].capital);
+  if(c.f===state.player){
+   if(c.food<18000)text=c.name+'糧草偏低，不宜再抽兵遠征，宜先開墾或運糧。';
+   else if(c.garrison<8000)text=c.name+'守備空虛，若敵軍趁勢來攻，恐難久守。';
+   else if(c.name==='南鄭'||c.name==='陳倉')text='主公，欲定三秦，當先由陳倉打開關中門戶，再乘勢東進。';
+   else text=c.name+'目前民力尚可，可依前線需要在內政與軍備之間取捨。';
+  }else{
+   text=c.name+'隸屬'+FACTIONS[c.f].name+'，守軍約'+fmt(c.garrison)+'。若要進攻，先確認相鄰據點兵力與補給。';
+  }
+ }else if(state.active==='army'){
+  const a=armiesOf(state.player)[0];
+  if(a){
+   const o=officer(a.cmd);
+   text=(o?o.name:'我軍')+'部目前'+(a.target?'正在前往'+city(a.target).name:'駐於'+city(a.city).name)+'，士氣 '+a.morale+'，軍糧約 '+a.supply+' 日。';
+  }
+ }else if(state.active==='officer'){
+  text='蕭何可安後方，韓信可統大軍，張良可觀天下。用人之道，勝於一城一地之得失。';
+ }else if(state.active==='diplo'){
+  text='齊、趙、九江皆可能左右楚漢消長。外交若用得其所，可少打一場仗。';
+ }else if(state.active==='log'){
+  text='從天下紀事觀察誰在擴軍、誰在失城，往往比只看眼前兵力更重要。';
+ }
+ $('advisorName').innerHTML=name+' <small>'+role+'</small>';
+ $('advisorText').textContent=text;
+}
+
 function renderBottom(){
  $('ap').innerHTML=[0,1,2].map(i=>'<i class="pip '+(i<state.ap?'on':'')+'"></i>').join('')+'<b style="font-size:10px;margin-left:6px">'+state.ap+' / 3</b>';
  $('ticker').textContent=state.log[0]||'天下無事';
