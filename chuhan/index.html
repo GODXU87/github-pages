@@ -122,17 +122,20 @@
 
     <aside class="chrome world-panel">
       <div class="intel-tabs">
-        <button class="active">勢力</button><button>武將</button><button>外交</button><button>情報</button>
+        <button class="active" data-intel="power">勢力</button>
+        <button data-intel="officer">武將</button>
+        <button data-intel="diplo">外交</button>
+        <button data-intel="info">情報</button>
       </div>
       <section class="intel-section">
-        <div class="intel-title">天下勢力</div>
-        <table class="intel-table">
+        <div class="intel-title" id="intelTitle">天下勢力</div>
+        <table class="intel-table" id="intelTable">
           <thead><tr><th>勢力</th><th>城</th><th>兵力</th><th>國力</th></tr></thead>
           <tbody id="rankings"></tbody>
         </table>
       </section>
       <section class="intel-section event-section">
-        <div class="intel-title">天下紀事 <span>EVENTS</span></div>
+        <div class="intel-title" id="eventTitle">天下紀事 <span>EVENTS</span></div>
         <div id="eventList" class="event-list"></div>
       </section>
       <section class="mini-map-box">
