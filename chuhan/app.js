@@ -60,7 +60,7 @@ const COLORS={han:'#81949a',chu:'#9a6058',yong:'#9b865e',qi:'#8e8667',zhao:'#6e7
 const PERIODS=['上旬','中旬','下旬'];
 
 let state={
- player:'han',turn:1,month:1,period:0,ap:3,selected:'nanzheng',active:'city',
+ player:'han',turn:1,month:1,period:0,ap:3,selected:null,active:'city',
  armies:[
   {id:'h-main',f:'han',cmd:'liubang',city:'nanzheng',target:null,progress:0,inf:8500,xbow:2500,cav:1800,morale:84,supply:38,status:'駐紮'},
   {id:'c-main',f:'chu',cmd:'xiangyu',city:'pengcheng',target:null,progress:0,inf:15000,xbow:4000,cav:6000,morale:96,supply:45,status:'駐紮'}
@@ -107,7 +107,7 @@ function newGame(f='han'){
  world=cloneBase();
  state={
   player:f,turn:1,month:1,period:0,ap:3,
-  selected:FACTIONS[f].capital,active:'city',
+  selected:null,active:'city',
   armies:[],
   log:['公元前206年，諸侯裂土，天下未定。'],
   events:[],tutorialDone:true
@@ -205,7 +205,13 @@ function renderAdvisor(){
  if(!$('advisorText'))return;
  let name='張良',role='軍師',text='主公，天下形勢瞬息萬變，當先穩後方，再圖東進。';
  if(state.active==='city'){
-  const c=city(state.selected)||city(FACTIONS[state.player].capital);
+  if(!state.selected||!city(state.selected)){
+    text='主公，先從天下圖選一座城。自己的城可直接治理與出征，敵城則可查看進攻路線。';
+    $('advisorName').innerHTML=name+' <small>'+role+'</small>';
+    $('advisorText').textContent=text;
+    return;
+  }
+  const c=city(state.selected);
   if(c.f===state.player){
    if(c.food<18000)text=c.name+'糧草偏低，不宜再抽兵遠征，宜先開墾或運糧。';
    else if(c.garrison<8000)text=c.name+'守備空虛，若敵軍趁勢來攻，恐難久守。';
@@ -215,7 +221,7 @@ function renderAdvisor(){
    text=c.name+'隸屬'+FACTIONS[c.f].name+'，守軍約'+fmt(c.garrison)+'。若要進攻，先確認相鄰據點兵力與補給。';
   }
  }else if(state.active==='army'){
-  const a=armiesOf(state.player)[0];
+  const a=armiesOf(state.player).find(x=>x.id===state.selected)||armiesOf(state.player)[0];
   if(a){
    const o=officer(a.cmd);
    text=(o?o.name:'我軍')+'部目前'+(a.target?'正在前往'+city(a.target).name:'駐於'+city(a.city).name)+'，士氣 '+a.morale+'，軍糧約 '+a.supply+' 日。';
@@ -255,58 +261,122 @@ function renderMap(){
 }
 function renderInspector(){
  const box=$('inspector');
- if(state.active==='city')return renderCity(box);
+ if(state.active==='city'){
+   if(!state.selected || !world.cities[state.selected]) return renderWelcome(box);
+   return renderCity(box);
+ }
  if(state.active==='officer')return renderOfficers(box);
  if(state.active==='army')return renderArmies(box);
  if(state.active==='diplo')return renderDiplo(box);
  return renderLog(box);
 }
-function renderCity(box){
- const c=city(state.selected)||city(FACTIONS[state.player].capital),owned=c.f===state.player;
- const os=world.officers.filter(o=>o.city===state.selected);
+
+function renderWelcome(box){
+ const cap=FACTIONS[state.player].capital;
+ const frontier=factionCities(state.player)
+   .map(([id,c])=>({id,c,enemy:c.nb.some(n=>city(n).f!==state.player)}))
+   .filter(x=>x.enemy)
+   .sort((a,b)=>b.c.garrison-a.c.garrison)
+   .slice(0,2);
  box.innerHTML=
-  '<div class="side-title">'+c.region+' · '+c.terrain+'</div>'+
-  '<h2>'+c.name+'</h2><div class="tagrow"><span class="tag">'+FACTIONS[c.f].name+'</span><span class="tag">'+(c.cap?'都城':'城池')+'</span><span class="tag">守軍 '+fmt(c.garrison)+'</span></div>'+
-  '<div class="stat-grid"><div class="stat"><span>人口</span><b>'+fmt(c.pop)+'</b><small>兵役與稅收基礎</small></div><div class="stat"><span>糧草</span><b>'+fmt(c.food)+'</b><small>軍團補給來源</small></div><div class="stat"><span>金</span><b>'+fmt(c.gold)+'</b><small>內政與軍備</small></div><div class="stat"><span>治安</span><b>'+c.order+'</b><small>低於 40 將影響收入</small></div></div>'+
-  '<div class="section-title">城勢</div>'+
-  '<div class="barline"><span>農業</span><div class="track"><i style="width:'+c.farm+'%"></i></div><b>'+c.farm+'</b></div>'+
-  '<div class="barline"><span>商業</span><div class="track"><i style="width:'+c.trade+'%"></i></div><b>'+c.trade+'</b></div>'+
-  '<div class="barline"><span>城防</span><div class="track"><i style="width:'+c.def+'%"></i></div><b>'+c.def+'</b></div>'+
-  '<div class="divider"></div><div class="section-title">駐城人物</div>'+
-  (os.length?os.map(o=>'<div class="officer"><div><b>'+o.name+' · '+o.role+'</b><small>'+o.trait+'</small></div><div class="nums">統 '+o.cmd+'　武 '+o.war+'<br>智 '+o.int+'　政 '+o.pol+'</div></div>').join(''):'<div class="muted">目前無人物駐留。</div>')+
-  '<div class="divider"></div>'+
-  (owned?
-   '<div class="section-title">本旬指令</div><div class="action-grid">'+
-   '<button data-act="farm"><b>開墾農田</b><small>農業 +3｜糧草增加</small></button>'+
-   '<button data-act="trade"><b>振興商業</b><small>商業 +3｜金增加</small></button>'+
-   '<button data-act="order"><b>安撫百姓</b><small>治安 +5｜民心穩定</small></button>'+
-   '<button data-act="fort"><b>修築城防</b><small>城防 +3｜消耗 800 金</small></button>'+
-   '<button id="recruit"><b>徵募新兵</b><small>步兵 +3,000｜消耗糧草</small></button>'+
-   '<button class="major attack" id="dispatch"><b>編成軍團</b><small>選主將、兵種與目標</small></button>'+
-   '</div>':
-   (()=>{
-    const sources=c.nb.filter(id=>city(id).f===state.player).sort((a,b)=>city(b).garrison-city(a).garrison);
-    const source=sources[0];
-    return '<div class="section-title">軍事情勢</div>'+
-      '<div class="muted">此城屬於 '+FACTIONS[c.f].name+'，守軍 '+fmt(c.garrison)+'。'+(source?'我方可從 '+city(source).name+' 直接發兵。':'目前沒有相鄰己方城池，尚無法直接進攻。')+'</div>'+
-      (source?'<div class="action-grid" style="margin-top:10px"><button class="attack" id="attackEnemy"><b>進攻 '+c.name+'</b><small>由 '+city(source).name+' 編成軍團</small></button></div>':'');
-   })()
-  );
- document.querySelectorAll('[data-act]').forEach(b=>b.onclick=()=>develop(b.dataset.act));
- if($('recruit'))$('recruit').onclick=recruit;
- if($('dispatch'))$('dispatch').onclick=()=>dispatchModal();
- if($('attackEnemy')){
-   $('attackEnemy').onclick=()=>{
-     const target=state.selected;
-     const ec=city(target);
-     const source=ec.nb.filter(id=>city(id).f===state.player).sort((a,b)=>city(b).garrison-city(a).garrison)[0];
-     if(!source)return toast('目前沒有相鄰己方城池');
-     state.selected=source;
-     render();
-     dispatchModal(target);
+   '<div class="context-empty">'+
+    '<div class="eyebrow">STRATEGIC COMMAND</div>'+
+    '<h2>先選一座城</h2>'+
+    '<p>直接點地圖上的城池即可查看情報與下令。自己的城能內政、徵兵與出征；敵城會直接顯示可用的進攻路線。</p>'+
+    '<div class="guide-actions">'+
+      '<button data-guide-city="'+cap+'"><b>'+city(cap).name+'</b><span>都城 · 查看政務</span></button>'+
+      frontier.map(x=>'<button data-guide-city="'+x.id+'"><b>'+x.c.name+'</b><span>前線 · 守軍 '+fmt(x.c.garrison)+'</span></button>').join('')+
+    '</div>'+
+   '</div>';
+ box.querySelectorAll('[data-guide-city]').forEach(b=>b.onclick=()=>{
+   state.selected=b.dataset.guideCity;state.active='city';render();
+ });
+}
+
+function renderCity(box){
+ const c=city(state.selected);
+ if(!c)return renderWelcome(box);
+ const owned=c.f===state.player;
+ const os=world.officers.filter(o=>o.city===state.selected);
+ const governor=os.sort((a,b)=>b.pol-a.pol)[0];
+
+ const header=
+  '<div class="city-hero">'+
+   '<div class="side-title">'+c.region+' · '+c.terrain+'</div>'+
+   '<h2>'+c.name+'</h2>'+
+   '<div class="city-kicker">'+
+    '<span>'+FACTIONS[c.f].name+'</span>'+
+    '<span>'+(c.cap?'都城':'城池')+'</span>'+
+    '<span>守軍 '+fmt(c.garrison)+'</span>'+
+   '</div>'+
+  '</div>';
+
+ const stats=
+  '<div class="stat-grid">'+
+   '<div class="stat"><span>人口</span><b>'+fmt(c.pop)+'</b><small>兵役基礎</small></div>'+
+   '<div class="stat"><span>糧草</span><b>'+fmt(c.food)+'</b><small>後勤儲備</small></div>'+
+   '<div class="stat"><span>金錢</span><b>'+fmt(c.gold)+'</b><small>府庫</small></div>'+
+   '<div class="stat"><span>治安</span><b>'+c.order+'</b><small>'+ (c.order>=70?'穩定':'需注意') +'</small></div>'+
+  '</div>';
+
+ if(owned){
+   box.innerHTML=header+stats+
+    '<div class="section-title">城勢</div>'+
+    '<div class="barline"><span>農業</span><div class="track"><i style="width:'+c.farm+'%"></i></div><b>'+c.farm+'</b></div>'+
+    '<div class="barline"><span>商業</span><div class="track"><i style="width:'+c.trade+'%"></i></div><b>'+c.trade+'</b></div>'+
+    '<div class="barline"><span>城防</span><div class="track"><i style="width:'+c.def+'%"></i></div><b>'+c.def+'</b></div>'+
+    '<div class="section-title">主官與人才</div>'+
+    '<div class="officer"><div><b>'+(governor?governor.name:'尚未任命')+'</b><small>'+(governor?governor.role+' · '+governor.trait:'此城目前沒有駐城人物')+'</small></div>'+(governor?'<div class="nums">政 '+governor.pol+'<br>智 '+governor.int+'</div>':'')+'</div>'+
+    '<div class="city-command-grid">'+
+      '<button id="developBtn"><b>內政</b><small>農業、商業、治安、城防</small></button>'+
+      '<button id="recruit"><b>徵兵</b><small>補充 3,000 步卒</small></button>'+
+      '<button id="appointBtn"><b>人才</b><small>查看與任用駐城人物</small></button>'+
+      '<button class="primary-command" id="dispatch"><b>出征</b><small>編成軍團，選擇相鄰目標</small></button>'+
+    '</div>';
+   $('developBtn').onclick=()=>openDevelopMenu(c);
+   $('recruit').onclick=recruit;
+   $('appointBtn').onclick=()=>{state.active='officer';render();};
+   $('dispatch').onclick=()=>dispatchModal();
+ }else{
+   const sources=c.nb
+    .filter(id=>city(id).f===state.player)
+    .sort((a,b)=>city(b).garrison-city(a).garrison);
+   const source=sources[0];
+   box.innerHTML=header+stats+
+    '<div class="section-title">敵情</div>'+
+    '<div class="officer"><div><b>'+(governor?governor.name:FACTIONS[c.f].ruler)+'</b><small>'+(governor?governor.role:'勢力君主')+'</small></div>'+(governor?'<div class="nums">統 '+governor.cmd+'<br>智 '+governor.int+'</div>':'')+'</div>'+
+    '<div class="enemy-command">'+
+      '<div class="muted">'+(source?'已找到可直接進攻的相鄰據點。':'我方目前沒有與此城相鄰的據點。')+'</div>'+
+      (source?'<div class="route-line">'+city(source).name+' → '+c.name+'　｜　我方守軍 '+fmt(city(source).garrison)+'</div>'+
+      '<button id="attackEnemy">從 '+city(source).name+' 出兵</button>':
+      '<div class="route-line">先奪取相鄰城池，打通進軍路線。</div>')+
+    '</div>';
+   if($('attackEnemy'))$('attackEnemy').onclick=()=>{
+      const target=state.selected;
+      state.selected=source;
+      render();
+      dispatchModal(target);
    };
  }
 }
+
+function openDevelopMenu(c){
+ modal(
+  '<h3>'+c.name+' · 內政</h3>'+
+  '<p>每項命令消耗 1 點本旬軍令。選一項執行後立即回到城池畫面。</p>'+
+  '<div class="city-command-grid">'+
+   '<button id="devFarm"><b>開墾農田</b><small>農業 +3｜糧草 +5,000</small></button>'+
+   '<button id="devTrade"><b>振興商業</b><small>商業 +3｜金 +1,500</small></button>'+
+   '<button id="devOrder"><b>安撫百姓</b><small>治安 +5</small></button>'+
+   '<button id="devFort"><b>修築城防</b><small>城防 +3｜金 -800</small></button>'+
+  '</div>'+
+  '<div class="modal-row"><button class="btn" onclick="closeModal()">取消</button></div>'
+ );
+ [['devFarm','farm'],['devTrade','trade'],['devOrder','order'],['devFort','fort']].forEach(([id,type])=>{
+   $(id).onclick=()=>{closeModal();develop(type);};
+ });
+}
+
 function renderOfficers(box){
  const list=factionOfficers(state.player).sort((a,b)=>b.cmd-a.cmd);
  box.innerHTML='<div class="side-title">OFFICER CORPS</div><h2>'+FACTIONS[state.player].name+' · 人才</h2><p class="muted">以人物特性配置內政與軍事。高統率適合領軍，高政治適合經營後方。</p>'+
@@ -317,12 +387,41 @@ function renderOfficers(box){
 }
 function renderArmies(box){
  const list=armiesOf(state.player);
- box.innerHTML='<div class="side-title">FIELD ARMIES</div><h2>'+FACTIONS[state.player].name+' · 軍團</h2><p class="muted">軍團行軍會消耗軍糧；兵種組成、主將統率、地形與士氣共同決定戰鬥效率。</p><div class="divider"></div>'+
- (list.length?list.map(a=>{
-  const o=officer(a.cmd),loc=city(a.city),tar=a.target?city(a.target):null;
-  return '<div class="army-card"><div class="head"><div><b>'+(o?o.name:'無名')+'軍</b><small>　'+(tar?loc.name+' → '+tar.name:loc.name+' · '+a.status)+'</small></div><small>士氣 '+a.morale+'｜糧 '+a.supply+'日</small></div><div class="comp"><span><strong>'+fmt(a.inf)+'</strong>步兵</span><span><strong>'+fmt(a.xbow)+'</strong>弩兵</span><span><strong>'+fmt(a.cav)+'</strong>騎兵</span></div></div>';
- }).join(''):'<div class="muted">目前沒有軍團。</div>');
+ const selected=list.find(a=>a.id===state.selected);
+ if(selected){
+   const o=officer(selected.cmd),loc=city(selected.city),tar=selected.target?city(selected.target):null;
+   box.innerHTML=
+    '<div class="side-title">FIELD ARMY</div>'+
+    '<h2>'+(o?o.name:'無名')+'軍</h2>'+
+    '<div class="tagrow"><span class="tag">'+selected.status+'</span><span class="tag">士氣 '+selected.morale+'</span><span class="tag">軍糧 '+selected.supply+' 日</span></div>'+
+    '<div class="stat-grid">'+
+      '<div class="stat"><span>步兵</span><b>'+fmt(selected.inf)+'</b></div>'+
+      '<div class="stat"><span>弩兵</span><b>'+fmt(selected.xbow)+'</b></div>'+
+      '<div class="stat"><span>騎兵</span><b>'+fmt(selected.cav)+'</b></div>'+
+      '<div class="stat"><span>總兵力</span><b>'+fmt(armyTroops(selected))+'</b></div>'+
+    '</div>'+
+    '<div class="section-title">行軍狀態</div>'+
+    '<div class="muted">'+loc.name+(tar?' → '+tar.name+'｜預計 '+Math.max(0,2-selected.progress)+' 旬抵達':'｜目前駐紮')+'</div>'+
+    '<div class="city-command-grid">'+
+      '<button id="armyBack"><b>返回軍團列表</b><small>查看其他軍團</small></button>'+
+      '<button id="armyCity"><b>查看所在城</b><small>'+loc.name+'</small></button>'+
+    '</div>';
+   $('armyBack').onclick=()=>{state.selected=null;renderArmies(box);};
+   $('armyCity').onclick=()=>{state.selected=selected.city;state.active='city';render();};
+   return;
+ }
+ box.innerHTML=
+  '<div class="side-title">FIELD ARMIES</div><h2>'+FACTIONS[state.player].name+' · 軍團</h2>'+
+  '<p class="muted">選擇一支軍團查看兵種、士氣、補給與行軍狀態。</p>'+
+  '<div class="army-list">'+
+  (list.length?list.map(a=>{
+    const o=officer(a.cmd),loc=city(a.city),tar=a.target?city(a.target):null;
+    return '<button data-army-open="'+a.id+'"><b>'+(o?o.name:'無名')+'軍 · '+fmt(armyTroops(a))+'</b><small>'+loc.name+(tar?' → '+tar.name:' · '+a.status)+'｜士氣 '+a.morale+'｜糧 '+a.supply+' 日</small></button>';
+  }).join(''):'<div class="muted">目前沒有軍團。請先點己方城池，再使用出征。</div>')+
+  '</div>';
+ box.querySelectorAll('[data-army-open]').forEach(b=>b.onclick=()=>{state.selected=b.dataset.armyOpen;renderArmies(box);});
 }
+
 function renderDiplo(box){
  const rel=REL[state.player]||{};
  box.innerHTML='<div class="side-title">DIPLOMACY</div><h2>列國關係</h2><p class="muted">關係值會影響交涉難度。敵對勢力可能進攻，中立勢力則有機會拉攏。</p><div class="diplomacy-list">'+
@@ -515,7 +614,12 @@ function openStart(){
 }
 function closeStart(){$('startScreen').classList.add('hidden')}
 function initUI(){
- document.querySelectorAll('[data-nav]').forEach(b=>b.onclick=()=>{state.active=b.dataset.nav;if(state.active==='city'&&!world.cities[state.selected])state.selected=FACTIONS[state.player].capital;render()});
+ document.querySelectorAll('[data-nav]').forEach(b=>b.onclick=()=>{
+   state.active=b.dataset.nav;
+   if(state.active==='city' && !world.cities[state.selected]) state.selected=null;
+   if(state.active!=='army' && state.selected && !world.cities[state.selected]) state.selected=null;
+   render();
+ });
  document.querySelectorAll('[data-intel]').forEach(b=>b.onclick=()=>{state.intelTab=b.dataset.intel;renderIntel();});
  $('endBtn').onclick=endTurn;$('rankBtn').onclick=rankModal;$('helpBtn').onclick=showHelp;$('saveBtn').onclick=save;
  $('zoomIn').onclick=()=>zoom(.1);$('zoomOut').onclick=()=>zoom(-.1);$('zoomReset').onclick=()=>{mapScale=1;mapX=0;mapY=0;applyMap()};
