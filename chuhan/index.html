@@ -11,194 +11,178 @@
 <body>
 <div class="game">
   <header class="chrome topbar">
-    <section class="logo-block">
-      <div class="noirxu-mark">NOIRXU</div>
-      <div class="game-title">楚漢爭霸</div>
-      <div class="game-sub">CHU–HAN · WAR FOR THE EMPIRE</div>
-    </section>
-
-    <section class="ruler-banner">
-      <div class="ruler-portrait liubang-portrait"></div>
-      <div class="ruler-copy">
-        <div class="micro">PLAYER RULER</div>
-        <div class="ruler-name" id="topFaction">漢 · 劉邦</div>
-        <div class="ruler-quote" id="topRulerQuote">大丈夫當以天下為心。</div>
-      </div>
-    </section>
-
-    <section class="global-resources">
-      <div class="resource"><span>金錢</span><b id="gold">0</b><small>府庫</small></div>
-      <div class="resource"><span>糧草</span><b id="food">0</b><small>軍糧</small></div>
-      <div class="resource"><span>兵力</span><b id="troops">0</b><small>全軍</small></div>
-      <div class="resource"><span>城池</span><b id="cities">0</b><small>領地</small></div>
-      <div class="resource"><span>漢勢</span><b id="hp">0%</b><small>天下大勢</small></div>
-      <div class="resource"><span>楚勢</span><b id="cp">0%</b><small>天下大勢</small></div>
-      <div class="hidden"><div class="track"><i id="hbar"></i></div><div class="track"><i id="cbar"></i></div></div>
-    </section>
-
-    <section class="time-block">
-      <div id="era" class="era">漢元年 · 1月上旬</div>
-      <div id="turn" class="year">公元前206年｜第1旬</div>
-      <button class="advance" id="endBtn"><span>進行</span><small>ADVANCE</small></button>
-    </section>
-  </header>
+  <section class="logo-block">
+    <div class="noirxu-mark">NOIRXU</div>
+    <div class="game-title">楚漢爭霸</div>
+    <div class="game-sub">CHU–HAN · WAR FOR THE EMPIRE</div>
+  </section>
+  <section class="ruler-banner">
+    <div class="ruler-portrait liubang-portrait"></div>
+    <div class="ruler-copy">
+      <div class="micro">PLAYER RULER</div>
+      <div class="ruler-name" id="topFaction">漢 · 劉邦</div>
+      <div class="ruler-quote" id="topRulerQuote">大丈夫當以天下為心。</div>
+    </div>
+  </section>
+  <section class="global-resources">
+    <div class="resource"><span>金錢</span><b id="gold">0</b></div>
+    <div class="resource"><span>糧草</span><b id="food">0</b></div>
+    <div class="resource"><span>兵力</span><b id="troops">0</b></div>
+    <div class="resource"><span>城池</span><b id="cities">0</b></div>
+    <div class="hidden"><b id="hp">0%</b><b id="cp">0%</b><div class="track"><i id="hbar"></i></div><div class="track"><i id="cbar"></i></div></div>
+  </section>
+  <section class="time-block">
+    <div id="era" class="era">漢元年 · 1月上旬</div>
+    <div id="turn" class="year">公元前206年｜第1旬</div>
+    <button class="advance" id="endBtn"><span>進行</span><small>NEXT TURN</small></button>
+  </section>
+</header>
 
   <main class="workspace">
-    <aside class="chrome command-rail">
-      <div class="rail-faction">
-        <div id="crest" class="crest han">漢</div>
-        <b id="ruler">漢 · 劉邦</b>
-        <small id="capital">都城：南鄭</small>
-      </div>
-      <nav class="main-nav">
-        <button class="active" data-nav="city"><span class="nav-glyph">政</span><b>政務</b></button>
-        <button data-nav="army"><span class="nav-glyph">軍</span><b>軍事</b></button>
-        <button data-nav="officer"><span class="nav-glyph">人</span><b>人才</b></button>
-        <button data-nav="diplo"><span class="nav-glyph">外</span><b>外交</b></button>
-        <button data-nav="log"><span class="nav-glyph">情</span><b>情報</b></button>
-      </nav>
-      <div class="rail-bottom">
-        <button class="rail-mini" id="saveBtn">儲存</button>
-        <button class="rail-mini" id="rankBtn">勢力</button>
-        <button class="rail-mini" id="helpBtn">系統</button>
-      </div>
-    </aside>
+  <aside class="chrome command-rail">
+    <div class="rail-faction">
+      <div id="crest" class="crest han">漢</div>
+      <b id="ruler">漢 · 劉邦</b>
+      <small id="capital">都城：南鄭</small>
+    </div>
+    <nav class="main-nav">
+      <button class="active" data-nav="city"><span class="nav-glyph">政</span><b>政務</b></button>
+      <button data-nav="army"><span class="nav-glyph">軍</span><b>軍事</b></button>
+      <button data-nav="officer"><span class="nav-glyph">人</span><b>人才</b></button>
+      <button data-nav="diplo"><span class="nav-glyph">外</span><b>外交</b></button>
+      <button data-nav="log"><span class="nav-glyph">情</span><b>情報</b></button>
+    </nav>
+    <div class="rail-bottom">
+      <button class="rail-mini" id="saveBtn">儲存</button>
+      <button class="rail-mini" id="rankBtn">勢力</button>
+      <button class="rail-mini" id="helpBtn">玩法</button>
+    </div>
+  </aside>
 
-    <aside class="chrome city-console" id="inspector"></aside>
-
-    <section class="chrome map-shell">
-      <div class="map-head">
-        <div>
-          <div class="micro">STRATEGIC MAP</div>
-          <strong>天下圖 · 關中至楚地</strong>
-        </div>
-        <div class="map-tools">
-          <button id="zoomOut">−</button>
-          <button id="zoomReset">◎</button>
-          <button id="zoomIn">＋</button>
-        </div>
+  <section class="chrome map-shell">
+    <div class="map-head">
+      <div>
+        <div class="micro">STRATEGIC MAP</div>
+        <strong>天下圖 · 點選城池即可下令</strong>
       </div>
-      <div class="map-wrap">
-        <div class="map-vignette"></div>
-        <svg id="world" viewBox="0 0 1000 650" aria-label="楚漢天下戰略地圖">
-          <defs>
-            <filter id="softShadow"><feDropShadow dx="0" dy="3" stdDeviation="5" flood-opacity=".55"/></filter>
-            <linearGradient id="landTone" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0" stop-color="#423b2d"/>
-              <stop offset=".52" stop-color="#2b3027"/>
-              <stop offset="1" stop-color="#273238"/>
-            </linearGradient>
-          </defs>
-          <g id="viewport">
-            <path class="land" d="M90 188C170 80 335 44 490 74C620 98 704 68 826 114C938 157 975 271 923 359C893 410 905 478 838 541C757 615 655 590 576 554C474 605 354 592 277 542C188 483 111 473 79 393C53 323 45 251 90 188Z"/>
-            <path class="territory han-territory" d="M120 520C145 425 230 345 342 335C395 365 430 425 405 500C340 562 230 585 120 520Z"/>
-            <path class="territory chu-territory" d="M520 355C630 300 770 330 900 410C900 505 815 575 690 565C600 525 550 455 520 355Z"/>
-            <path class="territory qi-territory" d="M695 155C770 135 865 170 910 245C870 310 800 330 720 295C685 250 680 205 695 155Z"/>
-            <path class="territory zhao-territory" d="M510 105C600 70 700 95 735 175C700 235 620 250 545 220C515 185 505 145 510 105Z"/>
-            <path class="territory qin-territory" d="M270 215C335 180 430 185 495 250C470 310 405 355 330 340C280 310 255 270 270 215Z"/>
-            <path class="river" d="M140 286C250 261 343 300 451 280C567 258 647 309 756 290C830 278 879 300 925 331"/>
-            <path class="river small" d="M461 126C473 183 505 240 529 300C544 337 558 386 589 451"/>
-            <g class="mountains">
-              <path d="M232 386L281 307L315 381Z"/><path d="M295 371L345 291L392 367Z"/><path d="M370 424L421 355L461 425Z"/>
-              <path d="M188 506L224 452L259 509Z"/><path d="M566 470L612 400L656 476Z"/><path d="M610 490L650 430L695 500Z"/>
-            </g>
-            <g class="region-labels">
-              <text x="752" y="82">燕</text><text x="638" y="150">趙</text><text x="816" y="214">齊</text>
-              <text x="488" y="177">河東</text><text x="342" y="255">關中</text><text x="555" y="308">河南</text>
-              <text x="808" y="438">楚</text><text x="222" y="396">漢中</text><text x="119" y="562">巴蜀</text><text x="545" y="575">荊楚</text>
-            </g>
-            <g id="roads"></g>
-            <g id="citiesLayer"></g>
-            <g id="armiesLayer"></g>
+      <div class="map-tools">
+        <button id="zoomOut" aria-label="縮小">−</button>
+        <button id="zoomReset" aria-label="重設">◎</button>
+        <button id="zoomIn" aria-label="放大">＋</button>
+      </div>
+    </div>
+    <div class="map-wrap">
+      <div class="map-vignette"></div>
+      <svg id="world" viewBox="0 0 1000 650" aria-label="楚漢天下戰略地圖">
+        <defs>
+          <filter id="softShadow"><feDropShadow dx="0" dy="3" stdDeviation="5" flood-opacity=".55"/></filter>
+          <linearGradient id="landTone" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#454232"/>
+            <stop offset=".52" stop-color="#2e342c"/>
+            <stop offset="1" stop-color="#273237"/>
+          </linearGradient>
+        </defs>
+        <g id="viewport">
+          <path class="land" d="M90 188C170 80 335 44 490 74C620 98 704 68 826 114C938 157 975 271 923 359C893 410 905 478 838 541C757 615 655 590 576 554C474 605 354 592 277 542C188 483 111 473 79 393C53 323 45 251 90 188Z"/>
+          <path class="territory han-territory" d="M120 520C145 425 230 345 342 335C395 365 430 425 405 500C340 562 230 585 120 520Z"/>
+          <path class="territory chu-territory" d="M520 355C630 300 770 330 900 410C900 505 815 575 690 565C600 525 550 455 520 355Z"/>
+          <path class="territory qi-territory" d="M695 155C770 135 865 170 910 245C870 310 800 330 720 295C685 250 680 205 695 155Z"/>
+          <path class="territory zhao-territory" d="M510 105C600 70 700 95 735 175C700 235 620 250 545 220C515 185 505 145 510 105Z"/>
+          <path class="territory qin-territory" d="M270 215C335 180 430 185 495 250C470 310 405 355 330 340C280 310 255 270 270 215Z"/>
+          <path class="river" d="M140 286C250 261 343 300 451 280C567 258 647 309 756 290C830 278 879 300 925 331"/>
+          <path class="river small" d="M461 126C473 183 505 240 529 300C544 337 558 386 589 451"/>
+          <g class="mountains">
+            <path d="M232 386L281 307L315 381Z"/><path d="M295 371L345 291L392 367Z"/><path d="M370 424L421 355L461 425Z"/>
+            <path d="M188 506L224 452L259 509Z"/><path d="M566 470L612 400L656 476Z"/><path d="M610 490L650 430L695 500Z"/>
           </g>
-        </svg>
-        <div class="map-legend">
-          <span><i style="background:#365f75"></i>漢</span><span><i style="background:#864238"></i>西楚</span>
-          <span><i style="background:#927638"></i>齊</span><span><i style="background:#695a6f"></i>趙</span>
-        </div>
-        <div id="zoomText" class="zoom-indicator">100%</div>
+          <g class="region-labels">
+            <text x="752" y="82">燕</text><text x="638" y="150">趙</text><text x="816" y="214">齊</text>
+            <text x="488" y="177">河東</text><text x="342" y="255">關中</text><text x="555" y="308">河南</text>
+            <text x="808" y="438">楚</text><text x="222" y="396">漢中</text><text x="119" y="562">巴蜀</text><text x="545" y="575">荊楚</text>
+          </g>
+          <g id="roads"></g>
+          <g id="citiesLayer"></g>
+          <g id="armiesLayer"></g>
+        </g>
+      </svg>
+      <div class="map-legend">
+        <span><i style="background:#365f75"></i>漢</span><span><i style="background:#864238"></i>西楚</span>
+        <span><i style="background:#927638"></i>齊</span><span><i style="background:#695a6f"></i>趙</span>
       </div>
-    </section>
+      <div id="zoomText" class="zoom-indicator">100%</div>
+    </div>
+  </section>
 
-    <aside class="chrome world-panel">
-      <div class="intel-tabs">
-        <button class="active" data-intel="power">勢力</button>
-        <button data-intel="officer">武將</button>
-        <button data-intel="diplo">外交</button>
-        <button data-intel="info">情報</button>
+  <aside class="chrome context-panel">
+    <div class="context-head">
+      <div>
+        <div class="micro">COMMAND PANEL</div>
+        <strong>命令與情報</strong>
       </div>
-      <section class="intel-section">
-        <div class="intel-title" id="intelTitle">天下勢力</div>
-        <table class="intel-table" id="intelTable">
-          <thead><tr><th>勢力</th><th>城</th><th>兵力</th><th>國力</th></tr></thead>
-          <tbody id="rankings"></tbody>
-        </table>
-      </section>
-      <section class="intel-section event-section">
-        <div class="intel-title" id="eventTitle">天下紀事 <span>EVENTS</span></div>
-        <div id="eventList" class="event-list"></div>
-      </section>
-      <section class="mini-map-box">
-        <div class="mini-title">戰略目標</div>
-        <div id="obj1" class="objective-item"><i></i><span>奪取三秦</span></div>
-        <div id="obj2" class="objective-item"><i></i><span>控制洛陽</span></div>
-        <div id="obj3" class="objective-item"><i></i><span>攻取彭城</span></div>
-      </section>
-    </aside>
-  </main>
+      <div class="context-hint">點城池或左側功能</div>
+    </div>
+    <div class="context-scroll" id="inspector"></div>
+    <div class="context-objectives">
+      <div id="obj1" class="objective-item"><i></i><span>奪取三秦</span></div>
+      <div id="obj2" class="objective-item"><i></i><span>控制洛陽</span></div>
+      <div id="obj3" class="objective-item"><i></i><span>攻取彭城</span></div>
+    </div>
+  </aside>
+</main>
 
-  <footer class="chrome advisor-bar">
-    <div class="advisor-portrait zhang-portrait"></div>
-    <div class="advisor-copy">
-      <div class="advisor-name" id="advisorName">張良 <small>軍師</small></div>
-      <div class="advisor-text" id="advisorText">主公，齊地田榮與楚國關係緊張，此乃離間之機，請早定策。</div>
+<footer class="chrome advisor-bar">
+  <div class="advisor-portrait zhang-portrait"></div>
+  <div class="advisor-copy">
+    <div class="advisor-name" id="advisorName">張良 <small>軍師建言</small></div>
+    <div class="advisor-text" id="advisorText">主公，欲取天下，當先定關中，再圖東進。</div>
+  </div>
+  <div class="quick-actions">
+    <div class="quick-row">
+      <button data-quick="nanzheng">南鄭</button>
+      <button data-quick="chenchang">陳倉</button>
+      <button data-quick="luoyang">洛陽</button>
+      <button data-quick="pengcheng">彭城</button>
     </div>
-    <div class="quick-actions">
-      <div class="micro">QUICK COMMAND</div>
-      <div class="quick-row">
-        <button data-quick="nanzheng">南鄭</button>
-        <button data-quick="chenchang">陳倉</button>
-        <button data-quick="luoyang">洛陽</button>
-        <button data-quick="pengcheng">彭城</button>
-      </div>
-    </div>
-    <div class="turn-panel">
-      <div class="micro">本旬軍令</div>
-      <div id="ap" class="ap-row"></div>
-      <div id="ticker" class="ticker">天下未定。</div>
-    </div>
-  </footer>
+  </div>
+  <div class="turn-panel">
+    <div class="micro">本旬軍令</div>
+    <div id="ap" class="ap-row"></div>
+    <div id="ticker" class="ticker">天下未定。</div>
+  </div>
+</footer>
 </div>
 
 <div class="modal-bg hidden" id="modalBg"><div class="modal" id="modal"></div></div>
 
 <div class="start-screen" id="startScreen">
-  <div class="start-ink"></div>
-  <div class="start-card">
-    <div class="start-ruler liubang-portrait"></div>
-    <div class="start-content">
+  <div class="start-card start-clean">
+    <div class="start-copy">
       <div class="noirxu-mark">NOIRXU</div>
       <h1>楚漢爭霸</h1>
       <div class="start-sub">CHU–HAN · WAR FOR THE EMPIRE</div>
-      <p>公元前206年，秦亡而天下未定。項羽分封諸侯，劉邦退居漢中。治理城池、任用人才、整軍東進，天下將由你的決策改寫。</p>
+      <p>公元前206年，秦亡而天下未定。治理城池、整軍東進、任用群才，從漢中開始爭奪天下。</p>
       <div class="scenario-card">
-        <b>鴻門之後</b><small>公元前206年 · 群雄割據 · 標準劇本</small>
+        <div><b>鴻門之後</b><small>公元前206年 · 群雄割據</small></div>
+        <span>標準劇本</span>
       </div>
       <div class="micro faction-label">選擇勢力</div>
       <div class="faction-choice">
-        <button class="active" data-fchoice="han">漢<small>劉邦｜人才與後勤</small></button>
-        <button data-fchoice="chu">西楚<small>項羽｜正面軍力</small></button>
-        <button data-fchoice="qi">齊<small>田榮｜經濟優勢</small></button>
-        <button data-fchoice="jiu">九江<small>英布｜機動進攻</small></button>
+        <button class="active" data-fchoice="han"><b>漢</b><small>劉邦｜人才與後勤</small></button>
+        <button data-fchoice="chu"><b>西楚</b><small>項羽｜正面軍力</small></button>
+        <button data-fchoice="qi"><b>齊</b><small>田榮｜經濟優勢</small></button>
+        <button data-fchoice="jiu"><b>九江</b><small>英布｜機動進攻</small></button>
       </div>
       <div class="start-actions">
         <button id="continueBtn" class="btn hidden">繼續遊戲</button>
         <button id="startGame" data-f="han" class="btn primary">開始爭霸</button>
       </div>
     </div>
+    <div class="start-portrait-panel">
+      <div class="start-ruler liubang-portrait"></div>
+      <div class="start-portrait-caption"><span>漢王</span><b>劉邦</b><small>知人善任 · 漢中起兵</small></div>
+    </div>
   </div>
 </div>
-
 <button id="newBtn" class="hidden">新遊戲</button>
 <script src="./app.js"></script>
 </body>
