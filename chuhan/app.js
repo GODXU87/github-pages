@@ -163,24 +163,44 @@ function renderSidebar(){
 }
 
 function renderIntel(){
- const rankBox=$('rankings'),eventBox=$('eventList');
- if(rankBox){
-  const rows=Object.keys(FACTIONS).map(f=>{
-   const z=factionTotals(f);
-   return {f,p:factionPower(f),...z};
-  }).sort((a,b)=>b.p-a.p).slice(0,8);
-  rankBox.innerHTML=rows.map(r=>
-   '<tr class="'+(r.f===state.player?'player':'')+'"><td><span style="color:'+FACTIONS[r.f].color+'">■</span> '+FACTIONS[r.f].name+'</td><td>'+r.cities+'</td><td>'+Math.round(r.troops/1000)+'k</td><td>'+Math.round(r.p/1000)+'</td></tr>'
-  ).join('');
- }
- if(eventBox){
-  const entries=state.log.slice(0,8);
-  eventBox.innerHTML=entries.map((x,i)=>
-   '<div class="event-item"><span>'+(i<4?'今旬':'前旬')+'</span><b>'+x+'</b></div>'
-  ).join('');
+ const table=$('intelTable'),title=$('intelTitle'),eventBox=$('eventList'),eventTitle=$('eventTitle');
+ if(!table||!eventBox)return;
+ const mode=state.intelTab||'power';
+ document.querySelectorAll('[data-intel]').forEach(b=>b.classList.toggle('active',b.dataset.intel===mode));
+
+ if(mode==='power'){
+  title.textContent='天下勢力';
+  table.innerHTML='<thead><tr><th>勢力</th><th>城</th><th>兵力</th><th>國力</th></tr></thead><tbody id="rankings"></tbody>';
+  const rows=Object.keys(FACTIONS).map(f=>{const z=factionTotals(f);return{f,p:factionPower(f),...z}}).sort((a,b)=>b.p-a.p).slice(0,6);
+  table.querySelector('tbody').innerHTML=rows.map(r=>'<tr class="'+(r.f===state.player?'player':'')+'"><td><span style="color:'+FACTIONS[r.f].color+'">■</span> '+FACTIONS[r.f].name+'</td><td>'+r.cities+'</td><td>'+Math.round(r.troops/1000)+'k</td><td>'+Math.round(r.p/1000)+'</td></tr>').join('');
+  eventTitle.innerHTML='天下紀事 <span>EVENTS</span>';
+  eventBox.innerHTML=state.log.slice(0,6).map((x,i)=>'<div class="event-item"><span>'+(i<3?'今旬':'前旬')+'</span><b>'+x+'</b></div>').join('');
+ } else if(mode==='officer'){
+  title.textContent='天下名將';
+  table.innerHTML='<thead><tr><th>人物</th><th>勢力</th><th>統</th><th>智</th></tr></thead><tbody></tbody>';
+  const os=[...world.officers].sort((a,b)=>(b.cmd+b.int)-(a.cmd+a.int)).slice(0,7);
+  table.querySelector('tbody').innerHTML=os.map(o=>'<tr><td>'+o.name+'</td><td>'+FACTIONS[o.f].name+'</td><td>'+o.cmd+'</td><td>'+o.int+'</td></tr>').join('');
+  eventTitle.innerHTML='人才情報 <span>OFFICERS</span>';
+  eventBox.innerHTML=os.slice(0,5).map(o=>'<div class="event-item"><span>'+o.role+'</span><b>'+o.name+' · '+o.trait+'</b></div>').join('');
+ } else if(mode==='diplo'){
+  title.textContent='列國外交';
+  table.innerHTML='<thead><tr><th>勢力</th><th>君主</th><th>關係</th><th>態度</th></tr></thead><tbody></tbody>';
+  const rel=REL[state.player]||{};
+  table.querySelector('tbody').innerHTML=Object.keys(FACTIONS).filter(f=>f!==state.player).map(f=>{
+    const v=rel[f]??0,label=v<=-70?'敵對':v<0?'警戒':v>=35?'友好':'中立';
+    return '<tr><td>'+FACTIONS[f].name+'</td><td>'+FACTIONS[f].ruler+'</td><td>'+(v>0?'+':'')+v+'</td><td>'+label+'</td></tr>';
+  }).join('');
+  eventTitle.innerHTML='外交判讀 <span>DIPLOMACY</span>';
+  eventBox.innerHTML='<div class="event-item"><span>楚</span><b>西楚為主要敵對勢力，關係已無緩和餘地。</b></div><div class="event-item"><span>九江</span><b>九江仍有拉攏空間，可觀察英布動向。</b></div><div class="event-item"><span>齊</span><b>齊楚關係不穩，可能成為牽制西楚的力量。</b></div>';
+ } else {
+  title.textContent='軍情摘要';
+  table.innerHTML='<thead><tr><th>項目</th><th>數值</th><th>狀態</th><th>判讀</th></tr></thead><tbody></tbody>';
+  const me=factionTotals(state.player);
+  table.querySelector('tbody').innerHTML='<tr><td>城池</td><td>'+me.cities+'</td><td>領地</td><td>'+(me.cities>=5?'擴張':'發展')+'</td></tr><tr><td>總兵</td><td>'+Math.round(me.troops/1000)+'k</td><td>軍力</td><td>'+(me.troops>70000?'充足':'需整備')+'</td></tr><tr><td>糧草</td><td>'+Math.round(me.food/1000)+'k</td><td>後勤</td><td>'+(me.food>120000?'穩定':'注意')+'</td></tr>';
+  eventTitle.innerHTML='近期軍情 <span>INTELLIGENCE</span>';
+  eventBox.innerHTML=state.log.slice(0,6).map((x,i)=>'<div class="event-item"><span>#'+(i+1)+'</span><b>'+x+'</b></div>').join('');
  }
 }
-
 function renderAdvisor(){
  if(!$('advisorText'))return;
  let name='張良',role='軍師',text='主公，天下形勢瞬息萬變，當先穩後方，再圖東進。';
@@ -222,7 +242,7 @@ function renderMap(){
   return '<line class="road" x1="'+c.x+'" y1="'+c.y+'" x2="'+d.x+'" y2="'+d.y+'"/>';
  })).join('');
  $('citiesLayer').innerHTML=Object.entries(cs).map(([id,c])=>{
-  const size=c.cap?15:11,cls='city '+c.f+(state.selected===id?' selected':'');
+  const size=c.cap?18:14,cls='city '+c.f+(state.selected===id?' selected':'');
   return '<g class="'+cls+'" data-city="'+id+'" transform="translate('+c.x+','+c.y+')"><circle class="halo" r="'+size+'"/><circle class="'+(c.cap?'core capital':'core')+'" r="4"/><text y="'+(-size-9)+'">'+c.name+'</text><text class="meta" y="'+(size+16)+'">'+FACTIONS[c.f].name+' · '+Math.round(c.garrison/1000)+'k</text></g>';
  }).join('');
  $('armiesLayer').innerHTML=state.armies.map(a=>{
@@ -272,8 +292,11 @@ function renderCity(box){
 }
 function renderOfficers(box){
  const list=factionOfficers(state.player).sort((a,b)=>b.cmd-a.cmd);
- box.innerHTML='<div class="side-title">OFFICER CORPS</div><h2>'+FACTIONS[state.player].name+' · 人才</h2><p class="muted">人物的統率、智略與政治會直接影響軍團、內政與事件判定。</p><div class="divider"></div>'+
- list.map(o=>'<div class="officer"><div><b>'+o.name+' · '+o.role+'</b><small>'+o.trait+'｜駐 '+city(o.city).name+'</small></div><div class="nums">統 '+o.cmd+' 武 '+o.war+'<br>智 '+o.int+' 政 '+o.pol+'</div></div>').join('');
+ box.innerHTML='<div class="side-title">OFFICER CORPS</div><h2>'+FACTIONS[state.player].name+' · 人才</h2><p class="muted">以人物特性配置內政與軍事。高統率適合領軍，高政治適合經營後方。</p>'+
+ '<div class="officer-grid">'+list.map(o=>
+   '<div class="officer-card"><div class="officer-top"><div class="officer-seal">'+o.name.slice(0,1)+'</div><div><b>'+o.name+' · '+o.role+'</b><small>'+o.trait+'｜'+city(o.city).name+'</small></div></div>'+
+   '<div class="officer-stats"><span><strong>'+o.cmd+'</strong>統</span><span><strong>'+o.war+'</strong>武</span><span><strong>'+o.int+'</strong>智</span><span><strong>'+o.pol+'</strong>政</span></div></div>'
+ ).join('')+'</div>';
 }
 function renderArmies(box){
  const list=armiesOf(state.player);
@@ -285,11 +308,14 @@ function renderArmies(box){
 }
 function renderDiplo(box){
  const rel=REL[state.player]||{};
- box.innerHTML='<div class="side-title">DIPLOMACY</div><h2>列國關係</h2><p class="muted">V0.2 先顯示關係與敵我態勢；後續將加入結盟、停戰、離間與策反。</p><div class="divider"></div>'+
+ box.innerHTML='<div class="side-title">DIPLOMACY</div><h2>列國關係</h2><p class="muted">關係值會影響交涉難度。敵對勢力可能進攻，中立勢力則有機會拉攏。</p><div class="diplomacy-list">'+
  Object.keys(FACTIONS).filter(f=>f!==state.player).map(f=>{
   const v=rel[f]??0,label=v<=-70?'敵對':v<0?'警戒':v>=35?'友好':'中立';
-  return '<div class="officer"><div><b>'+FACTIONS[f].name+'</b><small>'+FACTIONS[f].ruler+'</small></div><div class="nums">'+(v>0?'+':'')+v+'<br>'+label+'</div></div>';
- }).join('');
+  const cls=v<=-70?'hostile':v>=35?'friendly':'';
+  const pct=Math.max(5,Math.min(100,(v+100)/2));
+  return '<div class="dip-card"><div class="dip-head"><div><div class="dip-name">'+FACTIONS[f].name+'</div><div class="dip-ruler">'+FACTIONS[f].ruler+'</div></div><span class="dip-status '+cls+'">'+label+'</span></div>'+
+  '<div class="dip-meter"><i style="width:'+pct+'%"></i></div><div class="dip-note"><span>關係</span><b>'+(v>0?'+':'')+v+'</b></div></div>';
+ }).join('')+'</div>';
 }
 function renderLog(box){
  box.innerHTML='<div class="side-title">CHRONICLE</div><h2>天下紀事</h2><div class="divider"></div>'+
@@ -472,6 +498,7 @@ function openStart(){
 function closeStart(){$('startScreen').classList.add('hidden')}
 function initUI(){
  document.querySelectorAll('[data-nav]').forEach(b=>b.onclick=()=>{state.active=b.dataset.nav;if(state.active==='city'&&!world.cities[state.selected])state.selected=FACTIONS[state.player].capital;render()});
+ document.querySelectorAll('[data-intel]').forEach(b=>b.onclick=()=>{state.intelTab=b.dataset.intel;renderIntel();});
  $('endBtn').onclick=endTurn;$('rankBtn').onclick=rankModal;$('helpBtn').onclick=showHelp;$('saveBtn').onclick=save;
  $('zoomIn').onclick=()=>zoom(.1);$('zoomOut').onclick=()=>zoom(-.1);$('zoomReset').onclick=()=>{mapScale=1;mapX=0;mapY=0;applyMap()};
  document.querySelectorAll('[data-quick]').forEach(b=>b.onclick=()=>{state.selected=b.dataset.quick;state.active='city';render()});
