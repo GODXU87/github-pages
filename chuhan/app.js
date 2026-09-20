@@ -243,7 +243,7 @@ function renderMap(){
  })).join('');
  $('citiesLayer').innerHTML=Object.entries(cs).map(([id,c])=>{
   const size=c.cap?18:14,cls='city '+c.f+(state.selected===id?' selected':'');
-  return '<g class="'+cls+'" data-city="'+id+'" transform="translate('+c.x+','+c.y+')"><circle class="halo" r="'+size+'"/><circle class="'+(c.cap?'core capital':'core')+'" r="4"/><text y="'+(-size-9)+'">'+c.name+'</text><text class="meta" y="'+(size+16)+'">'+FACTIONS[c.f].name+' · '+Math.round(c.garrison/1000)+'k</text></g>';
+  return '<g class="'+cls+'" data-city="'+id+'" transform="translate('+c.x+','+c.y+')"><title>'+c.name+'｜'+FACTIONS[c.f].name+'｜守軍 '+fmt(c.garrison)+'｜'+c.terrain+'</title><circle class="halo" r="'+size+'"/><circle class="'+(c.cap?'core capital':'core')+'" r="4"/><text y="'+(-size-9)+'">'+c.name+'</text><text class="meta" y="'+(size+16)+'">'+FACTIONS[c.f].name+' · '+Math.round(c.garrison/1000)+'k</text></g>';
  }).join('');
  $('armiesLayer').innerHTML=state.armies.map(a=>{
   const from=city(a.city),to=a.target?city(a.target):from,p=a.target?Math.min(.82,.12+a.progress*.35):0;
@@ -284,11 +284,28 @@ function renderCity(box){
    '<button id="recruit"><b>徵募新兵</b><small>步兵 +3,000｜消耗糧草</small></button>'+
    '<button class="major attack" id="dispatch"><b>編成軍團</b><small>選主將、兵種與目標</small></button>'+
    '</div>':
-   '<div class="section-title">軍事情勢</div><div class="muted">此城屬於 '+FACTIONS[c.f].name+'。從相鄰己方據點派軍團才能進攻。</div>'
+   (()=>{
+    const sources=c.nb.filter(id=>city(id).f===state.player).sort((a,b)=>city(b).garrison-city(a).garrison);
+    const source=sources[0];
+    return '<div class="section-title">軍事情勢</div>'+
+      '<div class="muted">此城屬於 '+FACTIONS[c.f].name+'，守軍 '+fmt(c.garrison)+'。'+(source?'我方可從 '+city(source).name+' 直接發兵。':'目前沒有相鄰己方城池，尚無法直接進攻。')+'</div>'+
+      (source?'<div class="action-grid" style="margin-top:10px"><button class="attack" id="attackEnemy"><b>進攻 '+c.name+'</b><small>由 '+city(source).name+' 編成軍團</small></button></div>':'');
+   })()
   );
  document.querySelectorAll('[data-act]').forEach(b=>b.onclick=()=>develop(b.dataset.act));
  if($('recruit'))$('recruit').onclick=recruit;
- if($('dispatch'))$('dispatch').onclick=dispatchModal;
+ if($('dispatch'))$('dispatch').onclick=()=>dispatchModal();
+ if($('attackEnemy')){
+   $('attackEnemy').onclick=()=>{
+     const target=state.selected;
+     const ec=city(target);
+     const source=ec.nb.filter(id=>city(id).f===state.player).sort((a,b)=>city(b).garrison-city(a).garrison)[0];
+     if(!source)return toast('目前沒有相鄰己方城池');
+     state.selected=source;
+     render();
+     dispatchModal(target);
+   };
+ }
 }
 function renderOfficers(box){
  const list=factionOfficers(state.player).sort((a,b)=>b.cmd-a.cmd);
@@ -338,7 +355,7 @@ function recruit(){
  if(c.food<2500||c.pop<12000){state.ap++;return toast('人口或糧草不足')}
  c.garrison+=3000;c.pop-=4200;c.food-=2200;log(c.name+'徵募步卒 3,000。');render();
 }
-function dispatchModal(){
+function dispatchModal(preferredTarget=null){
  const c=city(state.selected);if(!c||c.f!==state.player)return;
  const os=factionOfficers(state.player).filter(o=>o.city===state.selected||o.city===FACTIONS[state.player].capital).sort((a,b)=>b.cmd-a.cmd);
  modal(
@@ -350,6 +367,7 @@ function dispatchModal(){
   '<div class="field"><label>騎兵</label><input id="mCav" type="number" min="0" step="500" value="'+Math.min(1500,Math.floor(c.garrison*.12))+'"></div>'+
   '<div class="modal-row"><button class="btn" onclick="closeModal()">取消</button><button class="btn primary" id="launch">下令出征</button></div>'
  );
+ if(preferredTarget&&$('mTarget'))$('mTarget').value=preferredTarget;
  $('launch').onclick=()=>{
   const inf=+$('mInf').value||0,xbow=+$('mXbow').value||0,cav=+$('mCav').value||0,total=inf+xbow+cav;
   if(total<2000)return toast('軍團兵力至少 2,000');
