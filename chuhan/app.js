@@ -285,11 +285,16 @@ function roadSvg(id,c,n,d){
  const x1=c.x+dx/dist*r1,y1=c.y+dy/dist*r1;
  const x2=d.x-dx/dist*r2,y2=d.y-dy/dist*r2;
  const important=(c.cap||d.cap||c.terrain==='關隘'||d.terrain==='關隘'||c.terrain==='要衝'||d.terrain==='要衝');
- return '<line class="road '+(important?'main-road':'')+'" x1="'+x1.toFixed(1)+'" y1="'+y1.toFixed(1)+'" x2="'+x2.toFixed(1)+'" y2="'+y2.toFixed(1)+'"/>';
+ const sel=world.cities[state.selected]?state.selected:null;
+ const selectedRoute=!!sel&&(id===sel||n===sel);
+ const hostile=selectedRoute&&c.f!==d.f;
+ return '<line class="road '+(important?'main-road ':'')+(selectedRoute?'selected-route ':'')+(hostile?'hostile-route ':'')+'" x1="'+x1.toFixed(1)+'" y1="'+y1.toFixed(1)+'" x2="'+x2.toFixed(1)+'" y2="'+y2.toFixed(1)+'"/>';
 }
 
 function renderMap(){
  const cs=world.cities,seen={};
+ const selectedCity=world.cities[state.selected]?state.selected:null;
+ $('world').classList.toggle('has-city-selection',!!selectedCity);
  $('roads').innerHTML=Object.entries(cs).flatMap(([id,c])=>c.nb.map(n=>{
   const k=[id,n].sort().join('-');if(seen[k])return'';seen[k]=1;
   return roadSvg(id,c,n,cs[n]);
@@ -310,12 +315,14 @@ function renderMap(){
    '</g>';
  }).join('');
 
- $('citiesLayer').innerHTML=Object.entries(cs).map(([id,c])=>
-  '<g class="city '+c.f+(state.selected===id?' selected':'')+'" data-city="'+id+'" transform="translate('+c.x+','+c.y+')">'+
+ $('citiesLayer').innerHTML=Object.entries(cs).map(([id,c])=>{
+  const isSelected=selectedCity===id;
+  const isNeighbor=selectedCity?city(selectedCity).nb.includes(id):false;
+  return '<g class="city '+c.f+(isSelected?' selected':'')+(isNeighbor?' neighbor':'')+'" data-city="'+id+'" transform="translate('+c.x+','+c.y+')">'+
    '<title>'+c.name+'｜'+FACTIONS[c.f].name+'｜守軍 '+fmt(c.garrison)+'｜'+c.terrain+'</title>'+
    cityCastleSvg(id,c)+
-  '</g>'
- ).join('');
+  '</g>';
+ }).join('');
 
  $('armiesLayer').innerHTML=state.armies.map(a=>{
   const from=city(a.city),to=a.target?city(a.target):from,p=a.target?Math.min(.82,.12+a.progress*.35):0;
@@ -331,8 +338,35 @@ function renderMap(){
    '</g>';
  }).join('');
 
- document.querySelectorAll('[data-city]').forEach(el=>el.onclick=()=>{state.selected=el.dataset.city;state.active='city';render()});
+ document.querySelectorAll('[data-city]').forEach(el=>{
+  el.onclick=()=>{state.selected=el.dataset.city;state.active='city';render()};
+  el.onpointerenter=e=>showMapTooltip(e,el.dataset.city);
+  el.onpointermove=e=>positionMapTooltip(e);
+  el.onpointerleave=hideMapTooltip;
+ });
  document.querySelectorAll('[data-army]').forEach(el=>el.onclick=(e)=>{e.stopPropagation();state.active='army';state.selected=el.dataset.army;render()});
+}
+
+function showMapTooltip(e,id){
+ const tip=$('mapTooltip'),c=city(id);
+ if(!tip||!c)return;
+ tip.innerHTML='<b>'+c.name+'</b><span>'+FACTIONS[c.f].name+' · '+c.region+' · '+c.terrain+'</span><small>守軍 '+fmt(c.garrison)+'　城防 '+c.def+'　治安 '+c.order+'</small>';
+ tip.classList.remove('hidden');
+ positionMapTooltip(e);
+}
+function positionMapTooltip(e){
+ const tip=$('mapTooltip'),wrap=document.querySelector('.map-wrap');
+ if(!tip||!wrap)return;
+ const r=wrap.getBoundingClientRect();
+ let x=e.clientX-r.left+14,y=e.clientY-r.top+14;
+ const w=tip.offsetWidth||180,h=tip.offsetHeight||70;
+ if(x+w>r.width-8)x=e.clientX-r.left-w-14;
+ if(y+h>r.height-8)y=e.clientY-r.top-h-14;
+ tip.style.left=Math.max(8,x)+'px';
+ tip.style.top=Math.max(8,y)+'px';
+}
+function hideMapTooltip(){
+ const tip=$('mapTooltip');if(tip)tip.classList.add('hidden');
 }
 
 function renderInspector(){
@@ -669,11 +703,31 @@ let mapScale=1,mapX=0,mapY=0,drag=false,sx=0,sy=0;
 function applyMap(){const g=$('viewport');g.setAttribute('transform','translate('+mapX+' '+mapY+') scale('+mapScale+')');$('zoomText').textContent=Math.round(mapScale*100)+'%'}
 function zoom(delta){mapScale=clamp(mapScale+delta,.75,1.65);applyMap()}
 function initMapPan(){
- const svg=$('world');
+ const svg=$('world');let moved=false,px=0,py=0;
  svg.addEventListener('wheel',e=>{e.preventDefault();zoom(e.deltaY>0?-.08:.08)},{passive:false});
- svg.addEventListener('pointerdown',e=>{if(e.target.closest&&e.target.closest('.city,.army'))return;drag=true;sx=e.clientX-mapX;sy=e.clientY-mapY;svg.setPointerCapture(e.pointerId)});
- svg.addEventListener('pointermove',e=>{if(!drag)return;mapX=e.clientX-sx;mapY=e.clientY-sy;applyMap()});
- svg.addEventListener('pointerup',()=>drag=false);
+ svg.addEventListener('pointerdown',e=>{
+  if(e.target.closest&&e.target.closest('.city,.army'))return;
+  drag=true;moved=false;px=e.clientX;py=e.clientY;sx=e.clientX-mapX;sy=e.clientY-mapY;svg.setPointerCapture(e.pointerId);
+ });
+ svg.addEventListener('pointermove',e=>{
+  if(!drag)return;
+  if(Math.hypot(e.clientX-px,e.clientY-py)>4)moved=true;
+  mapX=e.clientX-sx;mapY=e.clientY-sy;applyMap();
+ });
+ svg.addEventListener('pointerup',e=>{
+  if(drag&&!moved){
+    state.selected=null;
+    if(state.active==='army')state.active='city';
+    hideMapTooltip();
+    render();
+  }
+  drag=false;
+ });
+ document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+   state.selected=null;state.active='city';closeModal();hideMapTooltip();render();
+  }
+ });
 }
 function rankModal(){
  const rows=Object.keys(FACTIONS).map(f=>{const z=factionTotals(f);return{f,p:factionPower(f),...z}}).sort((a,b)=>b.p-a.p);
