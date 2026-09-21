@@ -1619,3 +1619,189 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.25;ba
     box-shadow:inset 0 0 28px rgba(4,5,4,.38);
   }
 }
+
+
+/* =========================================================
+   V0.11 — MILITARY COMMAND UX
+   Expedition / Garrison / Army / War-room
+   ========================================================= */
+.mil-head{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-bottom:10px}
+.mil-head h2{margin:2px 0 0!important}
+.mil-ap,.mil-help{font-size:8px;color:#9d927d;border:1px solid #443d2f;background:#12140f;padding:5px 7px;white-space:nowrap}
+.mil-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;padding:3px;background:#0d0f0d;border:1px solid #393429;margin-bottom:12px}
+.mil-tabs button{border:0;border-bottom:2px solid transparent;background:#151713;color:#81796a;padding:8px 4px;font-size:8px;cursor:pointer}
+.mil-tabs button:hover{color:#d8c9a8;background:#1b1c17}
+.mil-tabs button.active{color:#e8d8b5;border-bottom-color:#b7985b;background:linear-gradient(180deg,#262318,#171813);font-weight:700}
+
+.mil-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:14px}
+.mil-kpis>div,.war-summary>div{border:1px solid #3d382c;background:linear-gradient(180deg,#191b17,#11130f);padding:9px}
+.mil-kpis span,.war-summary span{display:block;color:#7f786c;font-size:7px}
+.mil-kpis b,.war-summary b{display:block;font-family:Georgia,"Noto Serif TC",serif;color:#e4d7bb;font-size:17px;margin-top:3px;font-weight:500}
+.war-summary small{display:block;color:#70695e;font-size:6.5px;margin-top:3px}
+
+.mil-primary-actions{display:grid;gap:7px;margin-bottom:14px}
+.mil-primary-actions button{display:grid;grid-template-columns:38px 1fr;align-items:center;gap:10px;text-align:left;border:1px solid #54482f;background:linear-gradient(135deg,#2a2418,#161813);color:#ddcfb0;padding:10px;cursor:pointer}
+.mil-primary-actions button:first-child{border-color:#8b7044;background:linear-gradient(135deg,#3b2e1c,#1b1812)}
+.mil-primary-actions button:hover{border-color:#b39456;transform:translateY(-1px)}
+.action-icon{width:34px;height:34px;display:grid;place-items:center;border:1px solid #8c774c;background:#171711;color:#d9c48d;font-family:"Noto Serif TC",serif;font-size:16px}
+.mil-primary-actions b{display:block;font-size:11px}
+.mil-primary-actions small{display:block;color:#81796c;font-size:7px;margin-top:3px}
+
+.frontline-list,.garrison-list,.army-card-list{display:grid;gap:7px}
+.frontline-list button,.garrison-card,.army-card-v2{width:100%;border:1px solid #3e392e;background:linear-gradient(180deg,#181a16,#11130f);color:#d6cab0;text-align:left;padding:9px;cursor:pointer}
+.frontline-list button:hover,.garrison-card:hover,.army-card-v2:hover{border-color:#846e45;background:linear-gradient(180deg,#201e17,#151610)}
+.frontline-list button{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.frontline-list b,.garrison-card b{font-size:10px}
+.frontline-list small,.garrison-card small{display:block;color:#746e63;font-size:7px;margin-top:3px}
+.front-strength{text-align:right}
+.front-strength strong{display:block;font-size:11px;color:#e1d4b7;margin-bottom:4px}
+
+.risk{display:inline-block;border:1px solid #514b3d;padding:3px 5px;font-size:6.5px;color:#a39a88;background:#171813}
+.risk.safe{color:#a9c4b2;border-color:#496552;background:#142018}
+.risk.mid{color:#d1c295;border-color:#766745;background:#242016}
+.risk.warn{color:#d7aa75;border-color:#7c5b39;background:#281c12}
+.risk.danger{color:#dc8c7b;border-color:#81483e;background:#2c1714}
+
+.garrison-top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.garrison-numbers{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:8px}
+.garrison-numbers span{font-size:6.5px;color:#777064;border-right:1px solid #332f27}
+.garrison-numbers span:last-child{border-right:0}
+.garrison-numbers strong{display:block;font-size:9px;color:#cfc3aa;margin-top:2px}
+.risk-track{height:3px;background:#24251f;margin-top:8px;overflow:hidden}
+.risk-track i{display:block;height:100%;background:#9b8352}
+.risk-track i.safe{background:#607c68}.risk-track i.warn{background:#a57944}.risk-track i.danger{background:#a55b4c}
+
+.army-card-head{display:grid;grid-template-columns:32px 1fr auto;align-items:center;gap:8px}
+.army-seal{width:30px;height:30px;border:1px solid #7d6942;background:#20231d;color:#d9c69b;display:grid;place-items:center;font-family:"Noto Serif TC",serif;font-size:14px}
+.army-seal.large{width:48px;height:48px;font-size:22px}
+.army-card-head b{display:block;font-size:10px}
+.army-card-head small{display:block;color:#756f63;font-size:7px;margin-top:3px}
+.army-card-head>strong{font-size:12px;color:#e0d3b6}
+.army-bars{display:grid;gap:5px;margin-top:9px}
+.army-bars>span,.supply-list>div{display:grid;grid-template-columns:28px 1fr 30px;gap:6px;align-items:center;font-size:6.5px;color:#81796b}
+.army-bars i,.supply-list i{height:4px;background:#282820;overflow:hidden}
+.army-bars em,.supply-list em{display:block;height:100%;background:#9b8451}
+.army-bars em.safe,.supply-list em.safe{background:#637b68}.army-bars em.warn,.supply-list em.warn{background:#a27b45}.army-bars em.danger,.supply-list em.danger{background:#a65c4e}
+.army-bars b,.supply-list b{text-align:right;color:#bdb29b;font-size:7px}
+.army-chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.army-chips span,.status-chip{border:1px solid #3c382e;background:#12140f;padding:3px 5px;font-size:6.5px;color:#8e8677}
+.status-chip{color:#ccb989!important;border-color:#655538!important}
+
+.war-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:14px}
+.war-advice{display:grid;gap:7px}
+.advice-row{border-left:3px solid #756849;background:#151713;padding:9px 10px}
+.advice-row>span{display:block;color:#7a7367;font-size:6.5px}
+.advice-row>b{display:block;font-family:"Noto Serif TC",serif;font-size:13px;color:#e0d3b7;margin-top:2px}
+.advice-row>small{display:block;font-size:7px;color:#81796c;margin-top:4px}
+.advice-row.danger-tone{border-left-color:#9a5548;background:#201513}
+.advice-row.good-tone{border-left-color:#718665;background:#141c15}
+.supply-list{display:grid;gap:7px}
+.mil-empty{padding:15px;border:1px dashed #443e31;color:#797267;font-size:8px;line-height:1.65;text-align:center}
+
+/* Garrison modal */
+.modal:has(.mil-modal-head){width:min(720px,94vw)}
+.mil-modal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.garrison-hero{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:16px 0}
+.garrison-hero>div,.garrison-compare>div{border:1px solid #403a2d;background:#131510;padding:11px}
+.garrison-hero span,.garrison-compare span{display:block;font-size:7px;color:#7f786b}
+.garrison-hero b,.garrison-compare b{display:block;font-size:18px;font-family:Georgia,"Noto Serif TC",serif;color:#e3d6ba;margin-top:3px}
+.garrison-compare small{display:block;font-size:6.5px;color:#746d61;margin-top:3px}
+.preset-row{display:flex;gap:5px;flex-wrap:wrap;margin:9px 0}
+.preset-row button{border:1px solid #4b4435;background:#171813;color:#9e9584;padding:6px 9px;font-size:7px;cursor:pointer}
+.preset-row button:hover{border-color:#a28750;color:#e1d1aa}
+.troop-adjust{border:1px solid #3d382c;background:#10120f;padding:12px;margin-top:10px}
+.adjust-title{display:flex;justify-content:space-between;align-items:center}
+.adjust-title span{font-size:8px;color:#8d8577}.adjust-title b{font-size:17px;color:#e5d8bb}
+.troop-adjust input[type=range]{width:100%;margin:12px 0 4px;accent-color:#a88e55}
+.adjust-scale{display:flex;justify-content:space-between;color:#686359;font-size:6px}
+.garrison-compare{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+
+/* Expedition wizard */
+.modal:has(.dispatch-modal){width:min(820px,96vw);padding:0;overflow:hidden}
+.dispatch-modal{min-height:520px;display:grid;grid-template-rows:auto auto minmax(0,1fr) auto}
+.dispatch-head{display:flex;justify-content:space-between;align-items:flex-start;padding:18px 20px 14px;border-bottom:1px solid #3d382c;background:linear-gradient(180deg,#1e201b,#161813)}
+.dispatch-head h3{font-size:24px}
+.modal-x{width:32px;height:32px;border:1px solid #413b2f;background:#12130f;color:#827b6c;font-size:18px;cursor:pointer}
+.modal-x:hover{color:#e2d1aa;border-color:#8d7647}
+.dispatch-steps{display:grid;grid-template-columns:repeat(4,1fr);background:#0e100e;border-bottom:1px solid #353127}
+.dispatch-steps>div{display:flex;align-items:center;justify-content:center;gap:6px;padding:9px;color:#686359;font-size:7px;border-right:1px solid #2d2b24}
+.dispatch-steps>div:last-child{border-right:0}
+.dispatch-steps i{width:18px;height:18px;border:1px solid #474136;display:grid;place-items:center;font-style:normal;font-size:7px}
+.dispatch-steps .active{color:#dfd0ad;background:#1c1b15}.dispatch-steps .active i{border-color:#ac9054;color:#ead4a0;background:#33291a}
+.dispatch-steps .done{color:#91866d}.dispatch-steps .done i{border-color:#65735f;color:#abc0a7;background:#182018}
+.dispatch-body{padding:16px 20px;overflow:auto}
+.dispatch-source{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;border:1px solid #4b4332;background:#171813;padding:10px 12px;margin-bottom:14px}
+.dispatch-source>span{font-size:7px;color:#7e7667}.dispatch-source>b{font-size:14px;color:#e0d1ae}.dispatch-source>small{font-size:7px;color:#8b8271}
+.dispatch-label{display:flex;justify-content:space-between;align-items:center;margin:6px 0 8px;font-size:8px;color:#9e937c}
+.dispatch-label>span{font-size:7px;color:#6f695f}
+.target-card-list,.commander-list{display:grid;gap:7px}
+.target-card-list button{position:relative;display:grid;grid-template-columns:1fr auto;align-items:center;text-align:left;border:1px solid #403a2e;background:#151713;color:#d4c8ac;padding:10px 58px 10px 11px;cursor:pointer}
+.target-card-list button:hover,.target-card-list button.active{border-color:#9d804c;background:#201d16}
+.target-card-list button.enemy{border-left:3px solid #82483f}
+.target-card-list button.friendly{border-left:3px solid #4c6670}
+.target-card-list b{font-size:11px}.target-card-list small{display:block;color:#756e62;font-size:7px;margin-top:3px}.target-card-list strong{font-size:10px;color:#cabc9f}
+.target-card-list em{position:absolute;right:10px;bottom:7px;font-size:6px;color:#8d7d61;font-style:normal}
+.commander-list{grid-template-columns:1fr 1fr}
+.commander-list button{display:grid;grid-template-columns:38px 1fr auto;align-items:center;gap:9px;text-align:left;border:1px solid #3e392e;background:#151713;color:#d4c8ac;padding:9px;cursor:pointer}
+.commander-list button:hover,.commander-list button.active{border-color:#9f824d;background:#211e16}
+.commander-seal{width:36px;height:36px;display:grid;place-items:center;border:1px solid #756441;background:#20211b;color:#d9c69c;font-family:"Noto Serif TC",serif;font-size:16px}
+.commander-list b{font-size:10px}.commander-list small{display:block;font-size:6.5px;color:#746d60;margin-top:3px}
+.commander-stats{display:flex;gap:5px}.commander-stats span{font-size:6px;color:#736c60}.commander-stats strong{display:block;color:#cdbf9f;font-size:9px;text-align:center}
+.troop-compose{display:grid;gap:7px;margin-top:10px}
+.troop-row{display:grid;grid-template-columns:1fr auto;align-items:center;border:1px solid #3c382d;background:#141612;padding:10px}
+.troop-row b{font-size:10px}.troop-row small{display:block;color:#716b60;font-size:6.5px;margin-top:3px}
+.stepper{display:grid;grid-template-columns:30px 74px 30px;align-items:center}
+.stepper button{height:28px;border:1px solid #4c4434;background:#1a1b16;color:#c2b496;cursor:pointer}
+.stepper strong{text-align:center;font-size:11px;color:#e0d2b4}
+.dispatch-total{display:grid;grid-template-columns:1fr auto;align-items:end;border-top:1px solid #403a2e;margin-top:12px;padding-top:10px}
+.dispatch-total span{font-size:7px;color:#81796b}.dispatch-total b{font-size:21px;color:#e6d8b7}.dispatch-total small{grid-column:1/-1;font-size:6.5px;color:#766e61;margin-top:3px}
+.dispatch-footer{display:grid;grid-template-columns:100px 1fr 120px;gap:10px;align-items:center;padding:12px 20px;border-top:1px solid #3b362b;background:#11130f}
+.dispatch-footer .btn{height:38px;cursor:pointer}
+.dispatch-mini{text-align:center;font-size:7px;color:#766f62}
+.forecast{display:flex;align-items:flex-end;justify-content:space-between;border:1px solid #4e4432;border-left:4px solid #806f48;background:#181813;padding:13px;margin-bottom:10px}
+.forecast>div span{display:block;font-size:7px;color:#7c7568}.forecast>div b{display:block;font-family:"Noto Serif TC",serif;font-size:25px;margin-top:2px}
+.forecast>strong{font-size:11px;color:#c8baa0}
+.forecast.good{border-left-color:#668269;background:#142019}.forecast.good>div b{color:#bcd0bc}
+.forecast.even{border-left-color:#9a8051}.forecast.even>div b{color:#dec68d}
+.forecast.bad{border-left-color:#9b5548;background:#211513}.forecast.bad>div b{color:#dc9283}
+.confirm-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.confirm-grid>div{border:1px solid #39352b;background:#12140f;padding:9px}
+.confirm-grid span{display:block;font-size:6.5px;color:#746d61}.confirm-grid b{display:block;font-size:12px;color:#d9ccb0;margin-top:3px}
+.forecast-reasons{display:flex;gap:5px;flex-wrap:wrap;margin-top:9px}
+.forecast-reasons span{font-size:6.5px;border:1px solid #474033;background:#171813;color:#988f7e;padding:4px 6px}
+.留守-note{margin-top:9px;padding:8px 10px;border-left:2px solid #665940;background:#12130f;font-size:7px;color:#837b6c}
+
+/* Army detail */
+.army-detail-hero{display:grid;grid-template-columns:50px 1fr;align-items:center;gap:10px;border:1px solid #453e2f;background:linear-gradient(135deg,#1d1c16,#12140f);padding:11px;margin-bottom:10px}
+.army-detail-hero span{display:block;font-size:7px;color:#7b7365}.army-detail-hero b{display:block;font-size:20px;color:#e2d4b7;margin:2px 0}.army-detail-hero small{font-size:7px;color:#867d6d}
+.troop-triplet{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.troop-triplet>div{border:1px solid #39352b;background:#12140f;padding:9px}.troop-triplet span{font-size:6.5px;color:#736c60}.troop-triplet b{display:block;font-size:13px;color:#d8cab0;margin-top:3px}
+.route-status{display:flex;justify-content:space-between;align-items:center;border:1px solid #39352b;background:#151713;padding:9px;color:#887f70;font-size:7px}.route-status b{color:#c7b99c}
+.mil-detail-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}
+.mil-detail-actions button{border:1px solid #423c30;background:#171813;color:#c7baa0;text-align:left;padding:9px;cursor:pointer}.mil-detail-actions button:hover{border-color:#8d7549}
+.mil-detail-actions b{display:block;font-size:9px}.mil-detail-actions small{display:block;color:#746d61;font-size:6.5px;margin-top:3px}
+.mil-detail-actions .danger-action{border-color:#6f443b;background:#211513;color:#d4a193}
+
+/* Battle report */
+.modal:has(.battle-report-v2){width:min(760px,94vw);padding:0;overflow:hidden}
+.battle-result{padding:20px;text-align:center;border-bottom:1px solid #3c372b;background:radial-gradient(circle at 50% 0,rgba(166,133,69,.16),transparent 56%),#171813}
+.battle-result h3{font-size:30px;margin:3px 0!important}.battle-result p{margin:5px auto 0;max-width:520px}
+.battle-report-v2.victory .battle-result h3{color:#dcc68e}.battle-report-v2.defeat .battle-result h3{color:#c17a6d}
+.battle-versus{display:grid;grid-template-columns:1fr 48px 1fr;align-items:stretch;padding:16px 20px 8px}
+.battle-side{border:1px solid #3e392e;background:#131510;padding:12px;text-align:center}
+.battle-side>span{font-size:7px;color:#777064}.battle-side>b{display:block;font-family:"Noto Serif TC",serif;font-size:14px;color:#d9cbb0;margin-top:3px}.battle-side>strong{display:block;font-size:25px;color:#ebe0ca;margin:6px 0 2px}.battle-side>small{font-size:7px;color:#81796c}
+.battle-side>i{display:block;height:5px;background:#292920;margin-top:10px}.battle-side>i>em{display:block;height:100%;background:#6d8170}.battle-side.enemy>i>em{background:#9b5c4f}
+.battle-vs{display:grid;place-items:center;color:#756b57;font-family:Georgia,serif;font-size:13px}
+.battle-note{display:grid;grid-template-columns:auto 1fr auto auto;gap:8px;align-items:center;margin:0 20px;padding:8px 10px;border:1px solid #373329;background:#10120f;font-size:7px}.battle-note span{color:#746d62}.battle-note b{color:#c9bda3}
+.battle-report-v2 .modal-row{padding:0 20px 18px}
+
+/* Slightly larger military click targets on the city panel */
+.city-command-grid #garrisonBtn{border-color:#55604d;background:linear-gradient(180deg,#1c231b,#141713)}
+.city-command-grid #dispatch{grid-column:1/-1}
+
+@media(max-width:900px){
+  .mil-tabs{position:sticky;top:0;z-index:3}
+  .commander-list{grid-template-columns:1fr}
+  .confirm-grid,.garrison-hero,.war-summary,.mil-kpis{grid-template-columns:1fr 1fr}
+  .dispatch-footer{grid-template-columns:82px 1fr 100px}
+  .battle-versus{grid-template-columns:1fr 36px 1fr;padding:12px}
+}
