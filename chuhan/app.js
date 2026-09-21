@@ -298,13 +298,23 @@ function cityCastleSvg(id,c){
     '<path class="city-gate" d="M-4 20 L-4 12 Q0 7 4 12 L4 20 Z"/>'+
    '</g>';
  }
- return '<g class="city-node '+kind+(isSelected?' selected-node':'')+'" style="--faction:'+col+'">'+
+ const threatened=state.armies.some(a=>a.target===id&&a.f!==c.f);
+ const factionChar=FACTIONS[c.f].name==='西楚'?'楚':FACTIONS[c.f].name.slice(0,1);
+ const outer=(kind==='capital'||kind==='major')
+   ?'<path class="outer-bailey" d="M-34 19 L-34 8 L-28 2 M34 19 L34 8 L28 2 M-34 19 L34 19"/>'
+   :'';
+ const defense='<g class="defense-pips">'+[0,1,2,3].map((_,i)=>'<circle cx="'+(-9+i*6)+'" cy="24" r="1.4" class="'+(c.def>=45+i*12?'on':'')+'"/>').join('')+'</g>';
+ const threat=threatened?'<g class="siege-alert"><circle r="'+(cityRadius(id,c)+8)+'"/><path d="M-8 -8 L8 8 M8 -8 L-8 8"/></g>':'';
+ return '<g class="city-node '+kind+(isSelected?' selected-node':'')+(threatened?' threatened':'')+'" style="--faction:'+col+'">'+
    '<circle class="city-hit" r="'+cityRadius(id,c)+'"/>'+
+   '<ellipse class="city-ground" cx="0" cy="18" rx="'+(kind==='capital'?38:kind==='major'?32:27)+'" ry="9"/>'+
    '<circle class="city-selection-ring" r="'+(cityRadius(id,c)+4)+'"/>'+
-   body+
-   '<g class="city-plaque"><rect x="-29" y="27" width="58" height="17" rx="3"/><text class="city-name" y="39">'+c.name+'</text></g>'+
-   '<text class="city-meta" y="54">'+FACTIONS[c.f].name+' · '+Math.round(c.garrison/1000)+'k</text>'+
-   '<text class="city-kind" y="-31">'+(kind==='capital'?'都城':kind==='major'?'重鎮':kind==='pass'?'關隘':'城池')+'</text>'+
+   threat+outer+body+
+   '<text class="flag-char" x="18" y="-18">'+factionChar+'</text>'+
+   defense+
+   '<g class="city-plaque"><rect x="-31" y="29" width="62" height="18" rx="3"/><text class="city-name" y="42">'+c.name+'</text></g>'+
+   '<text class="city-meta" y="58">'+FACTIONS[c.f].name+' · '+Math.round(c.garrison/1000)+'k</text>'+
+   '<text class="city-kind" y="-34">'+(kind==='capital'?'都城':kind==='major'?'重鎮':kind==='pass'?'關隘':'城池')+'</text>'+
   '</g>';
 }
 
@@ -324,6 +334,20 @@ function renderMap(){
   return roadSvg(id,c,n,cs[n]);
  })).join('');
 
+ $('marchLayer').innerHTML=state.armies.filter(a=>a.target).map(a=>{
+  const from=city(a.city),to=city(a.target);
+  const dx=to.x-from.x,dy=to.y-from.y,dist=Math.max(1,Math.hypot(dx,dy));
+  const s=cityRadius(a.city,from)+15,e=cityRadius(a.target,to)+15;
+  const x1=from.x+dx/dist*s,y1=from.y+dy/dist*s;
+  const x2=to.x-dx/dist*e,y2=to.y-dy/dist*e;
+  const col=FACTIONS[a.f]?.color||'#c9ad70';
+  return '<g class="march-route" style="--march:'+col+'">'+
+    '<line class="march-shadow" x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'"/>'+
+    '<line class="march-line" marker-end="url(#marchArrow)" x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'"/>'+
+    '<text class="march-label" x="'+((x1+x2)/2)+'" y="'+(((y1+y2)/2)-8)+'">'+Math.max(0,2-a.progress)+'旬</text>'+
+   '</g>';
+ }).join('');
+
  $('citiesLayer').innerHTML=Object.entries(cs).map(([id,c])=>
   '<g class="city '+c.f+(state.selected===id?' selected':'')+'" data-city="'+id+'" transform="translate('+c.x+','+c.y+')">'+
    '<title>'+c.name+'｜'+FACTIONS[c.f].name+'｜守軍 '+fmt(c.garrison)+'｜'+c.terrain+'</title>'+
@@ -341,6 +365,7 @@ function renderMap(){
     '<text class="army-name" x="1" y="-7">'+(o?o.name.slice(0,2):'軍')+'</text>'+
     '<rect class="army-count-bg" x="-18" y="9" width="38" height="14" rx="3"/>'+
     '<text class="army-count" x="1" y="19">'+Math.round(armyTroops(a)/1000)+'k</text>'+
+    '<circle class="army-status" cx="19" cy="-20" r="4"/>'+
    '</g>';
  }).join('');
 
