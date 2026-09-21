@@ -1398,3 +1398,200 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.25;ba
     border-color:rgba(178,153,94,.32);
   }
 }
+
+
+/* =========================================================
+   V0.9 — MAP FOCUS / LOWER UI NOISE / CLEARER COMMAND FLOW
+   ========================================================= */
+@media (min-width:901px){
+  .game{
+    grid-template-rows:86px minmax(0,1fr) 72px;
+    gap:4px;
+    padding:4px;
+  }
+  .topbar{
+    grid-template-columns:205px 205px minmax(420px,1fr) 148px;
+  }
+  .logo-block{padding:10px 14px}
+  .game-title{font-size:28px}
+  .game-sub{font-size:6.5px;margin-top:4px}
+  .ruler-banner .ruler-portrait{width:76px;flex-basis:76px}
+  .ruler-name{font-size:17px}
+  .ruler-quote{font-size:8px;margin-top:5px}
+  .resource{padding:6px}
+  .resource span{font-size:8px}
+  .resource b{font-size:16px}
+  .time-block{padding:6px}
+  .era{font-size:13px}
+  .advance{width:96px;height:38px;margin-top:2px}
+  .advance span{font-size:15px}
+
+  .workspace{
+    grid-template-columns:74px minmax(0,1fr) 306px;
+    gap:4px;
+  }
+  .command-rail{padding:6px 4px}
+  .crest{width:34px;height:34px;font-size:16px}
+  .rail-faction b{font-size:8px}
+  .rail-faction small{display:none}
+  .main-nav{gap:4px;margin-top:5px}
+  .main-nav button{height:50px}
+  .nav-glyph{font-size:16px}
+  .main-nav b{font-size:8px}
+  .rail-mini{font-size:7px;padding:6px 0}
+
+  .map-head{
+    height:42px;
+    padding:0 12px;
+    background:linear-gradient(180deg,rgba(19,21,18,.93),rgba(11,13,11,.88));
+    backdrop-filter:blur(8px);
+  }
+  .map-head strong{font-size:12px}
+  .map-wrap{inset:42px 0 0}
+  .map-tools button{width:30px;height:30px}
+  .painted-map{
+    filter:saturate(.88) contrast(1.07) brightness(.90);
+  }
+  .painted-map-shade{fill:rgba(7,9,8,.05)}
+
+  .map-legend{
+    opacity:.42;
+    transition:opacity .18s ease;
+  }
+  .map-legend:hover{opacity:1}
+
+  /* Default map state: labels are restrained so the artwork can breathe */
+  .map-city-marker{
+    transition:opacity .16s ease,filter .16s ease;
+  }
+  .map-city-label{
+    opacity:.72;
+    transition:opacity .16s ease;
+  }
+  .map-city-marker .city-meta{
+    opacity:0;
+    transition:opacity .16s ease;
+  }
+  .city:hover .map-city-label,
+  .city.selected .map-city-label,
+  .capital .map-city-label{
+    opacity:1;
+  }
+  .city:hover .city-meta,
+  .city.selected .city-meta{
+    opacity:1;
+  }
+
+  /* Once a city is selected, only its immediate strategic neighborhood stays loud */
+  #world.has-city-selection .city:not(.selected):not(.neighbor){
+    opacity:.36;
+  }
+  #world.has-city-selection .city.neighbor{
+    opacity:.86;
+  }
+  #world.has-city-selection .city.selected{
+    opacity:1;
+    filter:brightness(1.18);
+  }
+  #world.has-city-selection .road{
+    opacity:.05!important;
+  }
+  #world.has-city-selection .road.selected-route{
+    opacity:.82!important;
+    stroke-width:2.25!important;
+    stroke:#e1cb8d!important;
+    stroke-dasharray:none;
+    filter:drop-shadow(0 0 3px rgba(219,191,119,.26));
+  }
+  #world.has-city-selection .road.hostile-route{
+    stroke:#c47764!important;
+  }
+
+  .map-city-anchor{
+    transform-origin:center;
+  }
+  .city.neighbor .map-city-anchor{
+    stroke:#c7b27d;
+  }
+
+  .map-tooltip{
+    position:absolute;
+    z-index:12;
+    min-width:178px;
+    max-width:220px;
+    pointer-events:none;
+    padding:9px 10px;
+    border:1px solid rgba(190,164,103,.48);
+    background:rgba(9,11,9,.93);
+    box-shadow:0 12px 30px rgba(0,0,0,.42);
+    backdrop-filter:blur(10px);
+  }
+  .map-tooltip b{
+    display:block;
+    font-family:"Noto Serif TC",serif;
+    font-size:13px;
+    color:#e6d8b6;
+  }
+  .map-tooltip span{
+    display:block;
+    font-size:8px;
+    color:#9b927f;
+    margin-top:3px;
+  }
+  .map-tooltip small{
+    display:block;
+    font-size:8px;
+    color:#c2b79e;
+    margin-top:7px;
+    padding-top:6px;
+    border-top:1px solid #3e392e;
+  }
+
+  .context-panel{
+    grid-template-rows:44px minmax(0,1fr) auto;
+  }
+  .context-head{padding:0 12px}
+  .context-head strong{font-size:13px}
+  .context-hint{font-size:7px}
+  .context-scroll{padding:12px}
+  .context-scroll h2{font-size:26px}
+  .city-hero{
+    margin:-2px -2px 10px;
+    padding:4px 2px 12px;
+  }
+  .city-kicker span{
+    background:#171914;
+    border-color:#4b4434;
+  }
+  .stat-grid{
+    gap:6px!important;
+  }
+  .context-scroll .stat{
+    padding:9px;
+    background:linear-gradient(180deg,#181a16,#12140f);
+  }
+  .context-scroll .stat b{font-size:15px}
+  .context-scroll .barline{margin:7px 0}
+  .city-command-grid{gap:7px}
+  .city-command-grid button{
+    min-height:54px;
+    padding:9px 10px;
+  }
+  .city-command-grid .primary-command{
+    min-height:60px;
+    background:linear-gradient(180deg,#403022,#211913);
+    border-color:#957052;
+  }
+
+  .advisor-bar{
+    grid-template-columns:58px minmax(0,1fr) 230px 160px;
+  }
+  .advisor-copy{padding:8px 12px}
+  .advisor-name{font-size:13px}
+  .advisor-text{font-size:9px;margin-top:2px}
+  .quick-actions{padding:8px}
+  .quick-row{gap:4px}
+  .quick-row button{font-size:7px;padding:5px 6px}
+  .turn-panel{padding:8px}
+  .ticker{font-size:6.5px}
+}
