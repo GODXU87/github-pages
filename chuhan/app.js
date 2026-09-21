@@ -16,22 +16,22 @@ const FACTIONS={
 };
 
 const CITIES={
- chengdu:{name:'成都',region:'巴蜀',x:150,y:520,f:'han',pop:320000,farm:86,trade:69,order:88,def:62,food:68000,gold:6200,garrison:9000,cap:0,terrain:'盆地',nb:['nanzheng']},
- nanzheng:{name:'南鄭',region:'漢中',x:255,y:430,f:'han',pop:188000,farm:74,trade:50,order:83,def:70,food:52000,gold:7000,garrison:15000,cap:1,terrain:'山地',nb:['chengdu','chenchang','wuguan']},
- chenchang:{name:'陳倉',region:'關中',x:335,y:345,f:'han',pop:132000,farm:59,trade:46,order:78,def:75,food:29000,gold:3900,garrison:11000,cap:0,terrain:'山口',nb:['nanzheng','feiqiu','lixian']},
- wuguan:{name:'武關',region:'南陽',x:425,y:430,f:'han',pop:76000,farm:43,trade:33,order:74,def:86,food:21000,gold:2200,garrison:8500,cap:0,terrain:'關隘',nb:['nanzheng','lixian','wancheng']},
- feiqiu:{name:'廢丘',region:'關中',x:385,y:286,f:'yong',pop:160000,farm:66,trade:52,order:71,def:80,food:43000,gold:4800,garrison:18500,cap:1,terrain:'平原',nb:['chenchang','lixian','pingyang']},
- lixian:{name:'櫟陽',region:'關中',x:445,y:315,f:'yong',pop:151000,farm:68,trade:58,order:72,def:72,food:38000,gold:5300,garrison:14500,cap:0,terrain:'平原',nb:['chenchang','feiqiu','luoyang','wuguan']},
- pingyang:{name:'平陽',region:'河東',x:520,y:220,f:'wei',pop:174000,farm:70,trade:56,order:75,def:69,food:40000,gold:4900,garrison:15500,cap:1,terrain:'平原',nb:['feiqiu','luoyang','xiangguo']},
- luoyang:{name:'洛陽',region:'河南',x:535,y:335,f:'chu',pop:228000,farm:60,trade:88,order:64,def:83,food:39000,gold:9200,garrison:18500,cap:0,terrain:'都市',nb:['lixian','pingyang','wancheng','xingyang']},
- wancheng:{name:'宛城',region:'南陽',x:515,y:430,f:'chu',pop:201000,farm:73,trade:63,order:70,def:71,food:42000,gold:5600,garrison:16800,cap:0,terrain:'平原',nb:['wuguan','luoyang','xingyang','jiangling']},
- xingyang:{name:'滎陽',region:'河南',x:615,y:348,f:'chu',pop:181000,farm:66,trade:72,order:68,def:88,food:48000,gold:6000,garrison:20500,cap:0,terrain:'要衝',nb:['luoyang','wancheng','pengcheng','xiangguo']},
- pengcheng:{name:'彭城',region:'楚地',x:755,y:395,f:'chu',pop:356000,farm:78,trade:81,order:73,def:78,food:76000,gold:12600,garrison:33500,cap:1,terrain:'平原',nb:['xingyang','linzi','liuxian','jiangling']},
- jiangling:{name:'江陵',region:'荊楚',x:585,y:525,f:'chu',pop:214000,farm:85,trade:68,order:71,def:72,food:54000,gold:5900,garrison:17500,cap:0,terrain:'水網',nb:['wancheng','pengcheng','liuxian']},
- linzi:{name:'臨淄',region:'齊地',x:810,y:248,f:'qi',pop:304000,farm:82,trade:92,order:77,def:74,food:69000,gold:11000,garrison:27500,cap:1,terrain:'平原',nb:['pengcheng','xiangguo','ji']},
- xiangguo:{name:'襄國',region:'趙地',x:665,y:205,f:'zhao',pop:220000,farm:76,trade:57,order:68,def:76,food:48000,gold:6100,garrison:23000,cap:1,terrain:'平原',nb:['pingyang','xingyang','linzi','ji']},
- ji:{name:'薊',region:'燕地',x:755,y:110,f:'yan',pop:149000,farm:57,trade:50,order:72,def:72,food:33000,gold:4200,garrison:15000,cap:1,terrain:'丘陵',nb:['xiangguo','linzi']},
- liuxian:{name:'六縣',region:'九江',x:755,y:505,f:'jiu',pop:171000,farm:74,trade:53,order:69,def:64,food:44000,gold:4500,garrison:19500,cap:1,terrain:'水網',nb:['pengcheng','jiangling']}
+ chengdu:{name:'成都',region:'巴蜀',x:185,y:520,f:'han',pop:320000,farm:86,trade:69,order:88,def:62,food:68000,gold:6200,garrison:9000,cap:0,terrain:'盆地',nb:['nanzheng']},
+ nanzheng:{name:'南鄭',region:'漢中',x:265,y:345,f:'han',pop:188000,farm:74,trade:50,order:83,def:70,food:52000,gold:7000,garrison:15000,cap:1,terrain:'山地',nb:['chengdu','chenchang','wuguan']},
+ chenchang:{name:'陳倉',region:'關中',x:345,y:305,f:'han',pop:132000,farm:59,trade:46,order:78,def:75,food:29000,gold:3900,garrison:11000,cap:0,terrain:'山口',nb:['nanzheng','feiqiu','lixian']},
+ wuguan:{name:'武關',region:'南陽',x:470,y:405,f:'han',pop:76000,farm:43,trade:33,order:74,def:86,food:21000,gold:2200,garrison:8500,cap:0,terrain:'關隘',nb:['nanzheng','lixian','wancheng']},
+ feiqiu:{name:'廢丘',region:'關中',x:390,y:265,f:'yong',pop:160000,farm:66,trade:52,order:71,def:80,food:43000,gold:4800,garrison:18500,cap:1,terrain:'平原',nb:['chenchang','lixian','pingyang']},
+ lixian:{name:'櫟陽',region:'關中',x:445,y:292,f:'yong',pop:151000,farm:68,trade:58,order:72,def:72,food:38000,gold:5300,garrison:14500,cap:0,terrain:'平原',nb:['chenchang','feiqiu','luoyang','wuguan']},
+ pingyang:{name:'平陽',region:'河東',x:525,y:190,f:'wei',pop:174000,farm:70,trade:56,order:75,def:69,food:40000,gold:4900,garrison:15500,cap:1,terrain:'平原',nb:['feiqiu','luoyang','xiangguo']},
+ luoyang:{name:'洛陽',region:'河南',x:575,y:268,f:'chu',pop:228000,farm:60,trade:88,order:64,def:83,food:39000,gold:9200,garrison:18500,cap:0,terrain:'都市',nb:['lixian','pingyang','wancheng','xingyang']},
+ wancheng:{name:'宛城',region:'南陽',x:565,y:385,f:'chu',pop:201000,farm:73,trade:63,order:70,def:71,food:42000,gold:5600,garrison:16800,cap:0,terrain:'平原',nb:['wuguan','luoyang','xingyang','jiangling']},
+ xingyang:{name:'滎陽',region:'河南',x:640,y:305,f:'chu',pop:181000,farm:66,trade:72,order:68,def:88,food:48000,gold:6000,garrison:20500,cap:0,terrain:'要衝',nb:['luoyang','wancheng','pengcheng','xiangguo']},
+ pengcheng:{name:'彭城',region:'楚地',x:825,y:330,f:'chu',pop:356000,farm:78,trade:81,order:73,def:78,food:76000,gold:12600,garrison:33500,cap:1,terrain:'平原',nb:['xingyang','linzi','liuxian','jiangling']},
+ jiangling:{name:'江陵',region:'荊楚',x:645,y:495,f:'chu',pop:214000,farm:85,trade:68,order:71,def:72,food:54000,gold:5900,garrison:17500,cap:0,terrain:'水網',nb:['wancheng','pengcheng','liuxian']},
+ linzi:{name:'臨淄',region:'齊地',x:870,y:198,f:'qi',pop:304000,farm:82,trade:92,order:77,def:74,food:69000,gold:11000,garrison:27500,cap:1,terrain:'平原',nb:['pengcheng','xiangguo','ji']},
+ xiangguo:{name:'襄國',region:'趙地',x:615,y:135,f:'zhao',pop:220000,farm:76,trade:57,order:68,def:76,food:48000,gold:6100,garrison:23000,cap:1,terrain:'平原',nb:['pingyang','xingyang','linzi','ji']},
+ ji:{name:'薊',region:'燕地',x:760,y:72,f:'yan',pop:149000,farm:57,trade:50,order:72,def:72,food:33000,gold:4200,garrison:15000,cap:1,terrain:'丘陵',nb:['xiangguo','linzi']},
+ liuxian:{name:'六縣',region:'九江',x:705,y:455,f:'jiu',pop:171000,farm:74,trade:53,order:69,def:64,food:44000,gold:4500,garrison:19500,cap:1,terrain:'水網',nb:['pengcheng','jiangling']}
 };
 
 const OFFICERS=[
@@ -251,96 +251,37 @@ function cityKind(id,c){
 
 function cityRadius(id,c){
  const kind=cityKind(id,c);
- return kind==='capital'?40:kind==='major'?33:kind==='pass'?29:24;
+ return kind==='capital'?22:kind==='major'?19:kind==='pass'?17:15;
 }
 
 function cityCastleSvg(id,c){
  const kind=cityKind(id,c);
  const col=FACTIONS[c.f]?.color||'#9a907c';
- const isSelected=state.selected===id;
- const flag='<g class="city-flag"><line x1="12" y1="-23" x2="12" y2="-5"/><path d="M12 -23 L25 -19 L12 -15 Z"/></g>';
- let body='';
- if(kind==='capital'){
-  body=
-   '<g class="castle capital-castle">'+
-    '<path class="city-wall" d="M-27 7 L27 7 L27 21 L-27 21 Z"/>'+
-    '<path class="city-merlon" d="M-27 7 L-22 7 L-22 2 L-16 2 L-16 7 L-9 7 L-9 2 L-3 2 L-3 7 L4 7 L4 2 L10 2 L10 7 L17 7 L17 2 L23 2 L23 7 L27 7"/>'+
-    '<rect class="city-tower" x="-24" y="-8" width="12" height="15"/><path class="city-roof" d="M-27 -8 L-18 -17 L-9 -8 Z"/>'+
-    '<rect class="city-tower" x="-7" y="-15" width="14" height="22"/><path class="city-roof" d="M-11 -15 L0 -26 L11 -15 Z"/>'+
-    '<rect class="city-tower" x="12" y="-8" width="12" height="15"/><path class="city-roof" d="M9 -8 L18 -17 L27 -8 Z"/>'+
-    '<path class="city-gate" d="M-5 21 L-5 12 Q0 6 5 12 L5 21 Z"/>'+
-   '</g>'+flag;
- }else if(kind==='major'){
-  body=
-   '<g class="castle major-castle">'+
-    '<path class="city-wall" d="M-23 6 L23 6 L23 20 L-23 20 Z"/>'+
-    '<path class="city-merlon" d="M-23 6 L-17 6 L-17 2 L-11 2 L-11 6 L-4 6 L-4 2 L2 2 L2 6 L9 6 L9 2 L15 2 L15 6 L23 6"/>'+
-    '<rect class="city-tower" x="-20" y="-8" width="13" height="14"/><path class="city-roof" d="M-23 -8 L-13.5 -17 L-4 -8 Z"/>'+
-    '<rect class="city-tower" x="7" y="-8" width="13" height="14"/><path class="city-roof" d="M4 -8 L13.5 -17 L23 -8 Z"/>'+
-    '<path class="city-gate" d="M-5 20 L-5 11 Q0 5 5 11 L5 20 Z"/>'+
-   '</g>'+flag;
- }else if(kind==='pass'){
-  body=
-   '<g class="castle pass-castle">'+
-    '<path class="pass-wing" d="M-29 16 L-17 4 L-11 16 Z M11 16 L17 4 L29 16 Z"/>'+
-    '<rect class="city-wall" x="-16" y="-2" width="32" height="21"/>'+
-    '<path class="city-merlon" d="M-16 -2 L-10 -2 L-10 -7 L-4 -7 L-4 -2 L3 -2 L3 -7 L9 -7 L9 -2 L16 -2"/>'+
-    '<path class="city-roof" d="M-19 -2 L0 -17 L19 -2 Z"/>'+
-    '<path class="city-gate" d="M-5 19 L-5 9 Q0 3 5 9 L5 19 Z"/>'+
-   '</g>'+flag;
- }else{
-  body=
-   '<g class="castle town-castle">'+
-    '<rect class="city-wall" x="-19" y="4" width="38" height="16"/>'+
-    '<path class="city-merlon" d="M-19 4 L-13 4 L-13 0 L-7 0 L-7 4 L0 4 L0 0 L6 0 L6 4 L13 4 L13 0 L19 0"/>'+
-    '<rect class="city-tower" x="-7" y="-9" width="14" height="13"/>'+
-    '<path class="city-roof" d="M-11 -9 L0 -18 L11 -9 Z"/>'+
-    '<path class="city-gate" d="M-4 20 L-4 12 Q0 7 4 12 L4 20 Z"/>'+
-   '</g>';
- }
-
+ const selected=state.selected===id;
  const threatened=state.armies.some(a=>a.target===id&&a.f!==c.f);
  const owned=c.f===state.player;
-
- const factionChar=FACTIONS[c.f].name==='西楚'?'楚':FACTIONS[c.f].name.slice(0,1);
- const outer=(kind==='capital'||kind==='major')
-   ?'<path class="outer-bailey" d="M-34 19 L-34 8 L-28 2 M34 19 L34 8 L28 2 M-34 19 L34 19"/>'
+ const capMark=kind==='capital'?'<text class="map-cap-mark" x="0" y="-17">都</text>':'';
+ const threat=threatened
+   ?'<circle class="map-threat-ring" r="'+(cityRadius(id,c)+9)+'"/>'
    :'';
- const defense='<g class="defense-pips">'+[0,1,2,3].map((_,i)=>'<circle cx="'+(-9+i*6)+'" cy="24" r="1.4" class="'+(c.def>=45+i*12?'on':'')+'"/>').join('')+'</g>';
- const threat=threatened?'<g class="siege-alert"><circle r="'+(cityRadius(id,c)+8)+'"/><path d="M-8 -8 L8 8 M8 -8 L-8 8"/></g>':'';
- const moat=(kind==='capital'||kind==='major')
-   ?'<ellipse class="city-moat" cx="0" cy="17" rx="'+(kind==='capital'?43:36)+'" ry="'+(kind==='capital'?17:14)+'"/>'
-   :'';
- const settlement=(kind==='capital'||kind==='major')
-   ?'<g class="city-settlement">'+
-      '<path d="M-38 13 l5 -7 l5 7 z"/><rect x="-35" y="13" width="5" height="5"/>'+
-      '<path d="M31 11 l5 -7 l5 7 z"/><rect x="33" y="11" width="5" height="5"/>'+
-      '<path d="M-32 25 l4 -6 l4 6 z"/><rect x="-30" y="25" width="4" height="4"/>'+
-     '</g>'
-   :'';
- const statusBadge='<g class="city-status-badge '+(owned?'owned':'foreign')+'">'+
-   '<circle cx="-26" cy="-22" r="7"/>'+
-   '<text x="-26" y="-19">'+(owned?'我':'敵')+'</text>'+
-  '</g>';
- return '<g class="city-node '+kind+(isSelected?' selected-node':'')+(threatened?' threatened':'')+'" style="--faction:'+col+'">'+
-   '<circle class="city-hit" r="'+cityRadius(id,c)+'"/>'+
-   moat+
-   '<ellipse class="city-ground" cx="0" cy="18" rx="'+(kind==='capital'?45:kind==='major'?37:29)+'" ry="'+(kind==='capital'?11:9)+'"/>'+
-   settlement+
-   '<circle class="city-selection-ring" r="'+(cityRadius(id,c)+4)+'"/>'+
-   statusBadge+
-   threat+outer+body+
-   '<text class="flag-char" x="18" y="-18">'+factionChar+'</text>'+
-   defense+
-   '<g class="city-plaque"><rect x="-31" y="29" width="62" height="18" rx="3"/><text class="city-name" y="42">'+c.name+'</text></g>'+
-   '<text class="city-meta" y="58">'+FACTIONS[c.f].name+' · '+Math.round(c.garrison/1000)+'k</text>'+
-   '<text class="city-kind" y="-34">'+(kind==='capital'?'都城':kind==='major'?'重鎮':kind==='pass'?'關隘':'城池')+'</text>'+
+ return '<g class="map-city-marker '+kind+(selected?' selected-node':'')+(threatened?' threatened':'')+'" style="--faction:'+col+'">'+
+   '<circle class="city-hit" r="'+(cityRadius(id,c)+10)+'"/>'+
+   threat+
+   '<circle class="city-selection-ring" r="'+(cityRadius(id,c)+5)+'"/>'+
+   '<path class="map-city-anchor" d="M0 -7 L7 0 L0 7 L-7 0 Z"/>'+
+   '<circle class="map-city-core '+(owned?'owned':'foreign')+'" r="3.1"/>'+
+   capMark+
+   '<g class="map-city-label">'+
+     '<rect x="-27" y="12" width="54" height="17" rx="3"/>'+
+     '<text class="city-name" y="24">'+c.name+'</text>'+
+   '</g>'+
+   '<text class="city-meta" y="39">'+Math.round(c.garrison/1000)+'k · '+FACTIONS[c.f].name+'</text>'+
   '</g>';
 }
 
 function roadSvg(id,c,n,d){
  const dx=d.x-c.x,dy=d.y-c.y,dist=Math.max(1,Math.hypot(dx,dy));
- const r1=cityRadius(id,c)+8,r2=cityRadius(n,d)+8;
+ const r1=cityRadius(id,c)+5,r2=cityRadius(n,d)+5;
  const x1=c.x+dx/dist*r1,y1=c.y+dy/dist*r1;
  const x2=d.x-dx/dist*r2,y2=d.y-dy/dist*r2;
  const important=(c.cap||d.cap||c.terrain==='關隘'||d.terrain==='關隘'||c.terrain==='要衝'||d.terrain==='要衝');
