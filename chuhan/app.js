@@ -310,7 +310,7 @@ function renderMap(){
   return '<g class="march-route" style="--march:'+col+'">'+
     '<line class="march-shadow" x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'"/>'+
     '<line class="march-line" marker-end="url(#marchArrow)" x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'"/>'+
-    '<text class="march-label" x="'+((x1+x2)/2)+'" y="'+(((y1+y2)/2)-8)+'">'+Math.max(0,2-a.progress)+'旬</text>'+
+    '<text class="march-label" x="'+((x1+x2)/2)+'" y="'+(((y1+y2)/2)-8)+'">'+Math.max(0,(a.turns||2)-a.progress)+'旬</text>'+
     '<circle class="march-target" cx="'+x2+'" cy="'+y2+'" r="6"/>'+
    '</g>';
  }).join('');
@@ -720,7 +720,7 @@ function renderArmyDetailV2(box,selected){
    '<div class="army-detail-hero"><div class="army-seal large">'+(o?o.name.slice(0,1):'軍')+'</div><div><span>'+(tar?loc.name+' → '+tar.name:loc.name+' · 駐紮')+'</span><b>'+fmt(total)+'</b><small>士氣 '+selected.morale+' · 補給 '+selected.supply+' 日</small></div></div>'+
    '<div class="troop-triplet"><div><span>步兵</span><b>'+fmt(selected.inf)+'</b></div><div><span>弩兵</span><b>'+fmt(selected.xbow)+'</b></div><div><span>騎兵</span><b>'+fmt(selected.cav)+'</b></div></div>'+
    '<div class="section-title">行軍資訊</div>'+
-   '<div class="route-status"><span>'+(tar?'預計 '+Math.max(0,2-selected.progress)+' 旬抵達':'目前駐紮於 '+loc.name)+'</span><b>軍糧 '+selected.supply+' 日</b></div>'+
+   '<div class="route-status"><span>'+(tar?'預計 '+Math.max(0,(selected.turns||2)-selected.progress)+' 旬抵達':'目前駐紮於 '+loc.name)+'</span><b>軍糧 '+selected.supply+' 日</b></div>'+
    '<div class="mil-detail-actions">'+
      '<button id="armyBack"><b>軍團列表</b><small>返回所有部隊</small></button>'+
      (tar?'<button id="armyRetarget"><b>變更目標</b><small>重新選擇相鄰城池</small></button><button class="danger-action" id="armyCancel"><b>停止行軍</b><small>返回 '+loc.name+'</small></button>':'')+
@@ -1046,7 +1046,7 @@ function moveArmies(){
  state.armies.slice().forEach(a=>{
   if(!a.target)return;
   a.progress++;
-  if(a.progress>=2)battle(a);
+  if(a.progress>=(a.turns||2))battle(a);
  });
 }
 function aiTurn(){
