@@ -241,24 +241,113 @@ function renderBottom(){
  $('ap').innerHTML=[0,1,2].map(i=>'<i class="pip '+(i<state.ap?'on':'')+'"></i>').join('')+'<b style="font-size:10px;margin-left:6px">'+state.ap+' / 3</b>';
  $('ticker').textContent=state.log[0]||'天下無事';
 }
+
+function cityKind(id,c){
+ if(c.cap)return 'capital';
+ if(c.terrain==='關隘'||c.terrain==='山口')return 'pass';
+ if(c.terrain==='要衝'||c.pop>=200000||c.garrison>=20000||c.trade>=82)return 'major';
+ return 'city';
+}
+
+function cityRadius(id,c){
+ const kind=cityKind(id,c);
+ return kind==='capital'?33:kind==='major'?28:kind==='pass'?26:22;
+}
+
+function cityCastleSvg(id,c){
+ const kind=cityKind(id,c);
+ const col=FACTIONS[c.f]?.color||'#9a907c';
+ const isSelected=state.selected===id;
+ const flag='<g class="city-flag"><line x1="12" y1="-23" x2="12" y2="-5"/><path d="M12 -23 L25 -19 L12 -15 Z"/></g>';
+ let body='';
+ if(kind==='capital'){
+  body=
+   '<g class="castle capital-castle">'+
+    '<path class="city-wall" d="M-27 7 L27 7 L27 21 L-27 21 Z"/>'+
+    '<path class="city-merlon" d="M-27 7 L-22 7 L-22 2 L-16 2 L-16 7 L-9 7 L-9 2 L-3 2 L-3 7 L4 7 L4 2 L10 2 L10 7 L17 7 L17 2 L23 2 L23 7 L27 7"/>'+
+    '<rect class="city-tower" x="-24" y="-8" width="12" height="15"/><path class="city-roof" d="M-27 -8 L-18 -17 L-9 -8 Z"/>'+
+    '<rect class="city-tower" x="-7" y="-15" width="14" height="22"/><path class="city-roof" d="M-11 -15 L0 -26 L11 -15 Z"/>'+
+    '<rect class="city-tower" x="12" y="-8" width="12" height="15"/><path class="city-roof" d="M9 -8 L18 -17 L27 -8 Z"/>'+
+    '<path class="city-gate" d="M-5 21 L-5 12 Q0 6 5 12 L5 21 Z"/>'+
+   '</g>'+flag;
+ }else if(kind==='major'){
+  body=
+   '<g class="castle major-castle">'+
+    '<path class="city-wall" d="M-23 6 L23 6 L23 20 L-23 20 Z"/>'+
+    '<path class="city-merlon" d="M-23 6 L-17 6 L-17 2 L-11 2 L-11 6 L-4 6 L-4 2 L2 2 L2 6 L9 6 L9 2 L15 2 L15 6 L23 6"/>'+
+    '<rect class="city-tower" x="-20" y="-8" width="13" height="14"/><path class="city-roof" d="M-23 -8 L-13.5 -17 L-4 -8 Z"/>'+
+    '<rect class="city-tower" x="7" y="-8" width="13" height="14"/><path class="city-roof" d="M4 -8 L13.5 -17 L23 -8 Z"/>'+
+    '<path class="city-gate" d="M-5 20 L-5 11 Q0 5 5 11 L5 20 Z"/>'+
+   '</g>'+flag;
+ }else if(kind==='pass'){
+  body=
+   '<g class="castle pass-castle">'+
+    '<path class="pass-wing" d="M-29 16 L-17 4 L-11 16 Z M11 16 L17 4 L29 16 Z"/>'+
+    '<rect class="city-wall" x="-16" y="-2" width="32" height="21"/>'+
+    '<path class="city-merlon" d="M-16 -2 L-10 -2 L-10 -7 L-4 -7 L-4 -2 L3 -2 L3 -7 L9 -7 L9 -2 L16 -2"/>'+
+    '<path class="city-roof" d="M-19 -2 L0 -17 L19 -2 Z"/>'+
+    '<path class="city-gate" d="M-5 19 L-5 9 Q0 3 5 9 L5 19 Z"/>'+
+   '</g>'+flag;
+ }else{
+  body=
+   '<g class="castle town-castle">'+
+    '<rect class="city-wall" x="-19" y="4" width="38" height="16"/>'+
+    '<path class="city-merlon" d="M-19 4 L-13 4 L-13 0 L-7 0 L-7 4 L0 4 L0 0 L6 0 L6 4 L13 4 L13 0 L19 0"/>'+
+    '<rect class="city-tower" x="-7" y="-9" width="14" height="13"/>'+
+    '<path class="city-roof" d="M-11 -9 L0 -18 L11 -9 Z"/>'+
+    '<path class="city-gate" d="M-4 20 L-4 12 Q0 7 4 12 L4 20 Z"/>'+
+   '</g>';
+ }
+ return '<g class="city-node '+kind+(isSelected?' selected-node':'')+'" style="--faction:'+col+'">'+
+   '<circle class="city-hit" r="'+cityRadius(id,c)+'"/>'+
+   '<circle class="city-selection-ring" r="'+(cityRadius(id,c)+4)+'"/>'+
+   body+
+   '<g class="city-plaque"><rect x="-29" y="27" width="58" height="17" rx="3"/><text class="city-name" y="39">'+c.name+'</text></g>'+
+   '<text class="city-meta" y="54">'+FACTIONS[c.f].name+' · '+Math.round(c.garrison/1000)+'k</text>'+
+   '<text class="city-kind" y="-31">'+(kind==='capital'?'都城':kind==='major'?'重鎮':kind==='pass'?'關隘':'城池')+'</text>'+
+  '</g>';
+}
+
+function roadSvg(id,c,n,d){
+ const dx=d.x-c.x,dy=d.y-c.y,dist=Math.max(1,Math.hypot(dx,dy));
+ const r1=cityRadius(id,c)+8,r2=cityRadius(n,d)+8;
+ const x1=c.x+dx/dist*r1,y1=c.y+dy/dist*r1;
+ const x2=d.x-dx/dist*r2,y2=d.y-dy/dist*r2;
+ const important=(c.cap||d.cap||c.terrain==='關隘'||d.terrain==='關隘'||c.terrain==='要衝'||d.terrain==='要衝');
+ return '<line class="road '+(important?'main-road':'')+'" x1="'+x1.toFixed(1)+'" y1="'+y1.toFixed(1)+'" x2="'+x2.toFixed(1)+'" y2="'+y2.toFixed(1)+'"/>';
+}
+
 function renderMap(){
  const cs=world.cities,seen={};
  $('roads').innerHTML=Object.entries(cs).flatMap(([id,c])=>c.nb.map(n=>{
-  const k=[id,n].sort().join('-');if(seen[k])return'';seen[k]=1;const d=cs[n];
-  return '<line class="road" x1="'+c.x+'" y1="'+c.y+'" x2="'+d.x+'" y2="'+d.y+'"/>';
+  const k=[id,n].sort().join('-');if(seen[k])return'';seen[k]=1;
+  return roadSvg(id,c,n,cs[n]);
  })).join('');
- $('citiesLayer').innerHTML=Object.entries(cs).map(([id,c])=>{
-  const size=c.cap?18:14,cls='city '+c.f+(state.selected===id?' selected':'');
-  return '<g class="'+cls+'" data-city="'+id+'" transform="translate('+c.x+','+c.y+')"><title>'+c.name+'｜'+FACTIONS[c.f].name+'｜守軍 '+fmt(c.garrison)+'｜'+c.terrain+'</title><circle class="halo" r="'+size+'"/><circle class="'+(c.cap?'core capital':'core')+'" r="4"/><text y="'+(-size-9)+'">'+c.name+'</text><text class="meta" y="'+(size+16)+'">'+FACTIONS[c.f].name+' · '+Math.round(c.garrison/1000)+'k</text></g>';
- }).join('');
+
+ $('citiesLayer').innerHTML=Object.entries(cs).map(([id,c])=>
+  '<g class="city '+c.f+(state.selected===id?' selected':'')+'" data-city="'+id+'" transform="translate('+c.x+','+c.y+')">'+
+   '<title>'+c.name+'｜'+FACTIONS[c.f].name+'｜守軍 '+fmt(c.garrison)+'｜'+c.terrain+'</title>'+
+   cityCastleSvg(id,c)+
+  '</g>'
+ ).join('');
+
  $('armiesLayer').innerHTML=state.armies.map(a=>{
   const from=city(a.city),to=a.target?city(a.target):from,p=a.target?Math.min(.82,.12+a.progress*.35):0;
   const x=from.x+(to.x-from.x)*p,y=from.y+(to.y-from.y)*p,o=officer(a.cmd);
-  return '<g class="army '+a.f+'" data-army="'+a.id+'" transform="translate('+x+','+y+')"><rect class="flag" x="-20" y="-13" width="40" height="26" rx="6"/><text y="-1">'+(o?o.name.slice(0,2):'軍')+'</text><text class="troop" y="9">'+Math.round(armyTroops(a)/1000)+'k</text></g>';
+  const col=FACTIONS[a.f]?.color||'#c9ad70';
+  return '<g class="army '+a.f+'" data-army="'+a.id+'" transform="translate('+x+','+y+')">'+
+    '<line class="army-pole" x1="-13" y1="-25" x2="-13" y2="13"/>'+
+    '<path class="army-banner" style="--army-color:'+col+'" d="M-13 -24 L16 -18 L16 4 L-13 -2 Z"/>'+
+    '<text class="army-name" x="1" y="-7">'+(o?o.name.slice(0,2):'軍')+'</text>'+
+    '<rect class="army-count-bg" x="-18" y="9" width="38" height="14" rx="3"/>'+
+    '<text class="army-count" x="1" y="19">'+Math.round(armyTroops(a)/1000)+'k</text>'+
+   '</g>';
  }).join('');
+
  document.querySelectorAll('[data-city]').forEach(el=>el.onclick=()=>{state.selected=el.dataset.city;state.active='city';render()});
  document.querySelectorAll('[data-army]').forEach(el=>el.onclick=(e)=>{e.stopPropagation();state.active='army';state.selected=el.dataset.army;render()});
 }
+
 function renderInspector(){
  const box=$('inspector');
  if(state.active==='city'){
