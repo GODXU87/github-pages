@@ -1595,3 +1595,27 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.25;ba
   .turn-panel{padding:8px}
   .ticker{font-size:6.5px}
 }
+
+
+/* =========================================================
+   V0.10 — HQ MAP RENDERING
+   Preserve source detail; never pixelate or over-process.
+   ========================================================= */
+@media (min-width:901px){
+  .painted-map{
+    image-rendering:auto;
+    opacity:1;
+    filter:saturate(.94) contrast(1.035) brightness(.96);
+    transition:filter .18s ease,opacity .18s ease;
+    shape-rendering:geometricPrecision;
+  }
+  .painted-map.hq-ready{
+    filter:saturate(.96) contrast(1.025) brightness(.98);
+  }
+  .map-wrap.hq-ready .painted-map-shade{
+    fill:rgba(5,7,6,.025);
+  }
+  .map-vignette{
+    box-shadow:inset 0 0 28px rgba(4,5,4,.38);
+  }
+}
