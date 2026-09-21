@@ -441,11 +441,13 @@ function renderCity(box){
       '<button id="developBtn"><b>內政</b><small>農業、商業、治安、城防</small></button>'+
       '<button id="recruit"><b>徵兵</b><small>補充 3,000 步卒</small></button>'+
       '<button id="appointBtn"><b>人才</b><small>查看與任用駐城人物</small></button>'+
-      '<button class="primary-command" id="dispatch"><b>出征</b><small>編成軍團，選擇相鄰目標</small></button>'+
+      '<button id="garrisonBtn"><b>屯兵</b><small>安全守軍與機動預備</small></button>'+
+      '<button class="primary-command" id="dispatch"><b>出征</b><small>四步驟編成軍團</small></button>'+
     '</div>';
    $('developBtn').onclick=()=>openDevelopMenu(c);
    $('recruit').onclick=recruit;
    $('appointBtn').onclick=()=>{state.active='officer';render();};
+   $('garrisonBtn').onclick=()=>openGarrisonModal(state.selected);
    $('dispatch').onclick=()=>dispatchModal();
  }else{
    const sources=c.nb
@@ -495,41 +497,266 @@ function renderOfficers(box){
    '<div class="officer-stats"><span><strong>'+o.cmd+'</strong>統</span><span><strong>'+o.war+'</strong>武</span><span><strong>'+o.int+'</strong>智</span><span><strong>'+o.pol+'</strong>政</span></div></div>'
  ).join('')+'</div>';
 }
+
+let militaryTab='overview';
+
+function enemyNeighbors(id){
+ const c=city(id);return c?c.nb.filter(n=>city(n).f!==state.player):[];
+}
+function safeGarrison(id){
+ const c=city(id);if(!c)return 3000;
+ const pressure=enemyNeighbors(id).length;
+ const terrainBonus=(c.terrain==='關隘'||c.terrain==='山口')?1200:(c.terrain==='要衝'?1800:0);
+ return Math.round((4500+pressure*2800+(c.cap?2800:0)+terrainBonus)/500)*500;
+}
+function garrisonRisk(id,garrisonOverride=null){
+ const c=city(id);if(!c)return{label:'未知',cls:'mid',safe:0,ratio:0};
+ const safe=safeGarrison(id),g=garrisonOverride==null?c.garrison:garrisonOverride,ratio=g/Math.max(1,safe);
+ if(enemyNeighbors(id).length===0&&ratio>=.7)return{label:'後方安定',cls:'safe',safe,ratio};
+ if(ratio>=1.25)return{label:'守備充足',cls:'safe',safe,ratio};
+ if(ratio>=.9)return{label:'可守',cls:'mid',safe,ratio};
+ if(ratio>=.65)return{label:'偏弱',cls:'warn',safe,ratio};
+ return{label:'危險',cls:'danger',safe,ratio};
+}
+function militarySituation(){
+ const own=factionCities(state.player);
+ const armies=armiesOf(state.player);
+ const marching=armies.filter(a=>a.target);
+ const front=own.filter(([id])=>enemyNeighbors(id).length>0);
+ const frontTroops=front.reduce((s,[,c])=>s+c.garrison,0)+marching.reduce((s,a)=>s+armyTroops(a),0);
+ const rearTroops=own.filter(([id])=>!enemyNeighbors(id).length).reduce((s,[,c])=>s+c.garrison,0);
+ const danger=own.map(([id,c])=>({id,c,r:garrisonRisk(id)})).sort((a,b)=>a.r.ratio-b.r.ratio)[0];
+ const targets=front.flatMap(([id,c])=>c.nb.filter(n=>city(n).f!==state.player).map(n=>({
+   from:id,to:n,score:(c.garrison+Math.max(0,c.def-50)*40)/(city(n).garrison*Math.max(.65,terrainMod(city(n).terrain)))
+ }))).sort((a,b)=>b.score-a.score);
+ return{armies,marching,front,frontTroops,rearTroops,danger,best:targets[0]||null};
+}
+function battleForecast(sourceId,targetId,cmdId,inf,xbow,cav){
+ const s=city(sourceId),d=city(targetId),o=officer(cmdId)||{cmd:70};
+ const total=inf+xbow+cav;
+ const fake={inf,xbow,cav,morale:84};
+ const attack=compositionPower(fake,o,true);
+ const defO=world.officers.filter(x=>x.f===d.f&&x.city===targetId).sort((a,b)=>b.cmd-a.cmd)[0]||{cmd:66};
+ const defense=d.garrison*(.72+defO.cmd/210)*(1+d.def/180)*terrainMod(d.terrain);
+ const ratio=attack/Math.max(1,defense);
+ const cls=ratio>=1.3?'good':ratio>=.9?'even':'bad';
+ const label=ratio>=1.3?'有利':ratio>=.9?'膠著':'不利';
+ const reasons=[];
+ if(o.cmd>=85)reasons.push('主將統率優勢');
+ if(d.def>=75)reasons.push('敵城城防堅固');
+ if(terrainMod(d.terrain)<.9)reasons.push(d.terrain+'不利強攻');
+ if(total>d.garrison*1.25)reasons.push('兵力優勢');
+ if(total<d.garrison*.85)reasons.push('兵力不足');
+ if(cav/Math.max(1,total)>.25&&d.terrain==='平原')reasons.push('騎兵適合平原');
+ if(!reasons.length)reasons.push('雙方條件接近');
+ return{ratio,cls,label,reasons,attack,defense};
+}
+function setMilitaryTab(tab){
+ militaryTab=tab;
+ state.active='army';
+ state.selected=null;
+ render();
+}
+window.setMilitaryTab=setMilitaryTab;
+
+function militaryTabs(active){
+ return '<div class="mil-tabs">'+
+  [['overview','總覽'],['garrison','屯兵'],['armies','軍團'],['situation','戰況']].map(([id,label])=>
+   '<button class="'+(active===id?'active':'')+'" data-mtab="'+id+'">'+label+'</button>'
+  ).join('')+
+ '</div>';
+}
+function bindMilitaryTabs(box){
+ box.querySelectorAll('[data-mtab]').forEach(b=>b.onclick=()=>{militaryTab=b.dataset.mtab;state.selected=null;renderArmies(box);});
+}
+function renderMilitaryOverview(box){
+ const sit=militarySituation();
+ const cap=FACTIONS[state.player].capital;
+ const front=sit.front.slice().sort((a,b)=>enemyNeighbors(b[0]).length-enemyNeighbors(a[0]).length);
+ box.innerHTML=
+  '<div class="mil-head"><div><div class="side-title">MILITARY COMMAND</div><h2>軍事本部</h2></div><span class="mil-ap">軍令 '+state.ap+' / 3</span></div>'+
+  militaryTabs('overview')+
+  '<div class="mil-kpis">'+
+   '<div><span>現役軍團</span><b>'+sit.armies.length+'</b></div>'+
+   '<div><span>行軍中</span><b>'+sit.marching.length+'</b></div>'+
+   '<div><span>前線兵力</span><b>'+fmt(sit.frontTroops)+'</b></div>'+
+  '</div>'+
+  '<div class="section-title">快速軍令</div>'+
+  '<div class="mil-primary-actions">'+
+   '<button id="milDispatch"><span class="action-icon">征</span><div><b>編成出征</b><small>從己方城池選軍、選將、選目標</small></div></button>'+
+   '<button id="milGarrison"><span class="action-icon">屯</span><div><b>調整屯兵</b><small>檢查安全守軍與機動預備兵</small></div></button>'+
+  '</div>'+
+  '<div class="section-title">前線城池</div>'+
+  '<div class="frontline-list">'+
+   (front.length?front.map(([id,c])=>{
+     const r=garrisonRisk(id);
+     return '<button data-front-city="'+id+'"><div><b>'+c.name+'</b><small>'+enemyNeighbors(id).length+' 個敵鄰 · 城防 '+c.def+'</small></div><div class="front-strength"><strong>'+fmt(c.garrison)+'</strong><span class="risk '+r.cls+'">'+r.label+'</span></div></button>';
+   }).join(''):'<div class="mil-empty">目前沒有直接接敵的前線城池。</div>')+
+  '</div>';
+ bindMilitaryTabs(box);
+ $('milDispatch').onclick=()=>openDispatchFromMilitary();
+ $('milGarrison').onclick=()=>{militaryTab='garrison';renderArmies(box);};
+ box.querySelectorAll('[data-front-city]').forEach(b=>b.onclick=()=>{state.selected=b.dataset.frontCity;state.active='city';render();});
+}
+function renderGarrisonPanel(box){
+ const cities=factionCities(state.player).slice().sort((a,b)=>enemyNeighbors(b[0]).length-enemyNeighbors(a[0]).length||b[1].garrison-a[1].garrison);
+ box.innerHTML=
+  '<div class="mil-head"><div><div class="side-title">GARRISON</div><h2>屯兵配置</h2></div><span class="mil-help">安全線會依接敵數與地形變動</span></div>'+
+  militaryTabs('garrison')+
+  '<div class="garrison-list">'+cities.map(([id,c])=>{
+    c.reserve=c.reserve||0;
+    const r=garrisonRisk(id),en=enemyNeighbors(id).length;
+    return '<button class="garrison-card" data-garrison-city="'+id+'">'+
+      '<div class="garrison-top"><div><b>'+c.name+'</b><small>'+c.region+' · '+c.terrain+(en?' · 接敵 '+en:' · 後方')+'</small></div><span class="risk '+r.cls+'">'+r.label+'</span></div>'+
+      '<div class="garrison-numbers"><span>守軍 <strong>'+fmt(c.garrison)+'</strong></span><span>安全線 <strong>'+fmt(r.safe)+'</strong></span><span>預備 <strong>'+fmt(c.reserve)+'</strong></span></div>'+
+      '<div class="risk-track"><i class="'+r.cls+'" style="width:'+Math.min(100,Math.round(r.ratio*75))+'%"></i></div>'+
+    '</button>';
+  }).join('')+'</div>';
+ bindMilitaryTabs(box);
+ box.querySelectorAll('[data-garrison-city]').forEach(b=>b.onclick=()=>openGarrisonModal(b.dataset.garrisonCity));
+}
+function renderArmyCards(box){
+ const list=armiesOf(state.player);
+ box.innerHTML=
+  '<div class="mil-head"><div><div class="side-title">FIELD ARMIES</div><h2>軍團</h2></div><span class="mil-help">'+list.length+' 支部隊</span></div>'+
+  militaryTabs('armies')+
+  '<div class="army-card-list">'+
+  (list.length?list.map(a=>{
+    const o=officer(a.cmd),loc=city(a.city),tar=a.target?city(a.target):null;
+    const total=armyTroops(a),supplyCls=a.supply<10?'danger':a.supply<18?'warn':'safe';
+    return '<button class="army-card-v2" data-army-open="'+a.id+'">'+
+      '<div class="army-card-head"><div class="army-seal">'+(o?o.name.slice(0,1):'軍')+'</div><div><b>'+(o?o.name:'無名')+'軍</b><small>'+loc.name+(tar?' → '+tar.name:' · '+a.status)+'</small></div><strong>'+fmt(total)+'</strong></div>'+
+      '<div class="army-bars"><span>士氣 <i><em style="width:'+a.morale+'%"></em></i><b>'+a.morale+'</b></span><span>補給 <i><em class="'+supplyCls+'" style="width:'+Math.min(100,a.supply*2.6)+'%"></em></i><b>'+a.supply+'日</b></span></div>'+
+      '<div class="army-chips"><span>步 '+fmt(a.inf)+'</span><span>弩 '+fmt(a.xbow)+'</span><span>騎 '+fmt(a.cav)+'</span><span class="status-chip">'+a.status+'</span></div>'+
+    '</button>';
+  }).join(''):'<div class="mil-empty">目前沒有野戰軍團。從「總覽 → 編成出征」建立第一支軍團。</div>')+
+  '</div>';
+ bindMilitaryTabs(box);
+ box.querySelectorAll('[data-army-open]').forEach(b=>b.onclick=()=>{state.selected=b.dataset.armyOpen;renderArmies(box);});
+}
+function renderSituationPanel(box){
+ const sit=militarySituation();
+ const d=sit.danger,b=sit.best;
+ box.innerHTML=
+  '<div class="mil-head"><div><div class="side-title">WAR ROOM</div><h2>戰況判讀</h2></div><span class="mil-help">依目前兵力與接敵狀態</span></div>'+
+  militaryTabs('situation')+
+  '<div class="war-summary">'+
+    '<div><span>前線總兵力</span><b>'+fmt(sit.frontTroops)+'</b><small>'+sit.front.length+' 座前線城</small></div>'+
+    '<div><span>後方守軍</span><b>'+fmt(sit.rearTroops)+'</b><small>未直接接敵</small></div>'+
+    '<div><span>行軍部隊</span><b>'+sit.marching.length+'</b><small>正在移動</small></div>'+
+  '</div>'+
+  '<div class="section-title">軍師判讀</div>'+
+  '<div class="war-advice">'+
+    (d?'<div class="advice-row danger-tone"><span>最需注意</span><b>'+d.c.name+'</b><small>守軍 '+fmt(d.c.garrison)+'／安全線 '+fmt(d.r.safe)+' · '+d.r.label+'</small></div>':'')+
+    (b?'<div class="advice-row good-tone"><span>可觀察目標</span><b>'+city(b.to).name+'</b><small>'+city(b.from).name+' 可直接進軍 · 相對態勢 '+(b.score>=1.25?'較佳':b.score>=.9?'接近':'偏弱')+'</small></div>':'<div class="mil-empty">目前沒有可直接進攻的相鄰敵城。</div>')+
+  '</div>'+
+  '<div class="section-title">補給狀態</div>'+
+  '<div class="supply-list">'+sit.armies.map(a=>{
+    const o=officer(a.cmd);return '<div><span>'+(o?o.name:'軍團')+'</span><i><em class="'+(a.supply<10?'danger':a.supply<18?'warn':'safe')+'" style="width:'+Math.min(100,a.supply*2.6)+'%"></em></i><b>'+a.supply+'日</b></div>';
+  }).join('')+'</div>';
+ bindMilitaryTabs(box);
+}
+
+function openDispatchFromMilitary(){
+ const candidates=factionCities(state.player).filter(([id,c])=>c.nb.some(n=>city(n).f!==state.player)&&c.garrison>=2500).sort((a,b)=>b[1].garrison-a[1].garrison);
+ const source=candidates[0]||factionCities(state.player).sort((a,b)=>b[1].garrison-a[1].garrison)[0];
+ if(!source)return toast('目前沒有可出征的城池');
+ state.selected=source[0];
+ dispatchModal();
+}
+
+function openGarrisonModal(id){
+ const c=city(id);if(!c||c.f!==state.player)return;
+ c.reserve=c.reserve||0;
+ const total=c.garrison+c.reserve;
+ let desired=c.garrison;
+ const safe=safeGarrison(id);
+ const clampDesired=v=>Math.max(1500,Math.min(total,Math.round(v/500)*500));
+ const renderModal=()=>{
+   const r=garrisonRisk(id,desired),reserve=total-desired;
+   modal(
+    '<div class="mil-modal-head"><div><div class="side-title">GARRISON ORDER</div><h3>'+c.name+' · 屯兵配置</h3></div><span class="risk '+r.cls+'">'+r.label+'</span></div>'+
+    '<div class="garrison-hero">'+
+      '<div><span>現有守軍</span><b>'+fmt(c.garrison)+'</b></div>'+
+      '<div><span>安全守軍</span><b>'+fmt(safe)+'</b></div>'+
+      '<div><span>可調兵力</span><b>'+fmt(total)+'</b></div>'+
+    '</div>'+
+    '<div class="preset-row">'+
+      '<button data-gpreset="rear">後方最低</button><button data-gpreset="standard">標準守備</button><button data-gpreset="front">前線重兵</button>'+
+    '</div>'+
+    '<div class="troop-adjust">'+
+      '<div class="adjust-title"><span>城內守軍</span><b id="gDesired">'+fmt(desired)+'</b></div>'+
+      '<input id="gRange" type="range" min="1500" max="'+Math.max(1500,total)+'" step="500" value="'+desired+'">'+
+      '<div class="adjust-scale"><span>1,500</span><span>'+fmt(total)+'</span></div>'+
+    '</div>'+
+    '<div class="garrison-compare">'+
+      '<div><span>調整後守軍</span><b>'+fmt(desired)+'</b><small>'+r.label+'</small></div>'+
+      '<div><span>機動預備</span><b>'+fmt(reserve)+'</b><small>可留待後續調整</small></div>'+
+    '</div>'+
+    '<div class="modal-row"><button class="btn" onclick="closeModal()">取消</button><button class="btn primary" id="applyGarrison">套用配置</button></div>'
+   );
+   $('gRange').oninput=e=>{desired=clampDesired(+e.target.value);renderModal();};
+   document.querySelectorAll('[data-gpreset]').forEach(b=>b.onclick=()=>{
+      const t=b.dataset.gpreset;
+      desired=clampDesired(t==='rear'?safe*.65:t==='front'?safe*1.35:safe);
+      renderModal();
+   });
+   $('applyGarrison').onclick=()=>{
+      if(desired===c.garrison){closeModal();return;}
+      if(!spend())return;
+      c.garrison=desired;c.reserve=total-desired;
+      log(c.name+'重新配置屯兵，守軍 '+fmt(c.garrison)+'，機動預備 '+fmt(c.reserve)+'。');
+      closeModal();state.active='army';militaryTab='garrison';render();
+   };
+ };
+ renderModal();
+}
+
+function renderArmyDetailV2(box,selected){
+ const o=officer(selected.cmd),loc=city(selected.city),tar=selected.target?city(selected.target):null,total=armyTroops(selected);
+ box.innerHTML=
+   '<div class="mil-head"><div><div class="side-title">FIELD ARMY</div><h2>'+(o?o.name:'無名')+'軍</h2></div><span class="status-chip">'+selected.status+'</span></div>'+
+   militaryTabs('armies')+
+   '<div class="army-detail-hero"><div class="army-seal large">'+(o?o.name.slice(0,1):'軍')+'</div><div><span>'+(tar?loc.name+' → '+tar.name:loc.name+' · 駐紮')+'</span><b>'+fmt(total)+'</b><small>士氣 '+selected.morale+' · 補給 '+selected.supply+' 日</small></div></div>'+
+   '<div class="troop-triplet"><div><span>步兵</span><b>'+fmt(selected.inf)+'</b></div><div><span>弩兵</span><b>'+fmt(selected.xbow)+'</b></div><div><span>騎兵</span><b>'+fmt(selected.cav)+'</b></div></div>'+
+   '<div class="section-title">行軍資訊</div>'+
+   '<div class="route-status"><span>'+(tar?'預計 '+Math.max(0,2-selected.progress)+' 旬抵達':'目前駐紮於 '+loc.name)+'</span><b>軍糧 '+selected.supply+' 日</b></div>'+
+   '<div class="mil-detail-actions">'+
+     '<button id="armyBack"><b>軍團列表</b><small>返回所有部隊</small></button>'+
+     (tar?'<button id="armyRetarget"><b>變更目標</b><small>重新選擇相鄰城池</small></button><button class="danger-action" id="armyCancel"><b>停止行軍</b><small>返回 '+loc.name+'</small></button>':'')+
+     '<button id="armyDisband"><b>回城整編</b><small>兵力併回 '+loc.name+'</small></button>'+
+   '</div>';
+ bindMilitaryTabs(box);
+ $('armyBack').onclick=()=>{state.selected=null;renderArmies(box);};
+ if($('armyCancel'))$('armyCancel').onclick=()=>{selected.target=null;selected.progress=0;selected.status='整備';log((o?o.name:'軍團')+'停止行軍，返回 '+loc.name+' 整備。');state.selected=null;render();};
+ if($('armyRetarget'))$('armyRetarget').onclick=()=>openRetargetModal(selected);
+ $('armyDisband').onclick=()=>{
+   loc.garrison+=armyTroops(selected);
+   state.armies=state.armies.filter(a=>a.id!==selected.id);
+   log((o?o.name:'軍團')+'回 '+loc.name+' 整編，兵力併入守軍。');
+   state.selected=null;render();
+ };
+}
+function openRetargetModal(a){
+ const loc=city(a.city),opts=loc.nb;
+ modal('<h3>變更進軍目標</h3><p>'+loc.name+'周邊可選擇以下據點。變更命令後，行軍進度重新計算。</p><div class="target-card-list">'+
+ opts.map(id=>{const t=city(id);return '<button data-retarget="'+id+'"><div><b>'+t.name+'</b><small>'+FACTIONS[t.f].name+' · '+t.terrain+'</small></div><strong>守軍 '+fmt(t.garrison)+'</strong></button>';}).join('')+
+ '</div><div class="modal-row"><button class="btn" onclick="closeModal()">取消</button></div>');
+ document.querySelectorAll('[data-retarget]').forEach(b=>b.onclick=()=>{
+   if(!spend())return;
+   a.target=b.dataset.retarget;a.progress=0;a.status='行軍';
+   log((officer(a.cmd)?.name||'軍團')+'改令前往 '+city(a.target).name+'。');
+   closeModal();render();
+ });
+}
 function renderArmies(box){
  const list=armiesOf(state.player);
  const selected=list.find(a=>a.id===state.selected);
- if(selected){
-   const o=officer(selected.cmd),loc=city(selected.city),tar=selected.target?city(selected.target):null;
-   box.innerHTML=
-    '<div class="side-title">FIELD ARMY</div>'+
-    '<h2>'+(o?o.name:'無名')+'軍</h2>'+
-    '<div class="tagrow"><span class="tag">'+selected.status+'</span><span class="tag">士氣 '+selected.morale+'</span><span class="tag">軍糧 '+selected.supply+' 日</span></div>'+
-    '<div class="stat-grid">'+
-      '<div class="stat"><span>步兵</span><b>'+fmt(selected.inf)+'</b></div>'+
-      '<div class="stat"><span>弩兵</span><b>'+fmt(selected.xbow)+'</b></div>'+
-      '<div class="stat"><span>騎兵</span><b>'+fmt(selected.cav)+'</b></div>'+
-      '<div class="stat"><span>總兵力</span><b>'+fmt(armyTroops(selected))+'</b></div>'+
-    '</div>'+
-    '<div class="section-title">行軍狀態</div>'+
-    '<div class="muted">'+loc.name+(tar?' → '+tar.name+'｜預計 '+Math.max(0,2-selected.progress)+' 旬抵達':'｜目前駐紮')+'</div>'+
-    '<div class="city-command-grid">'+
-      '<button id="armyBack"><b>返回軍團列表</b><small>查看其他軍團</small></button>'+
-      '<button id="armyCity"><b>查看所在城</b><small>'+loc.name+'</small></button>'+
-    '</div>';
-   $('armyBack').onclick=()=>{state.selected=null;renderArmies(box);};
-   $('armyCity').onclick=()=>{state.selected=selected.city;state.active='city';render();};
-   return;
- }
- box.innerHTML=
-  '<div class="side-title">FIELD ARMIES</div><h2>'+FACTIONS[state.player].name+' · 軍團</h2>'+
-  '<p class="muted">選擇一支軍團查看兵種、士氣、補給與行軍狀態。</p>'+
-  '<div class="army-list">'+
-  (list.length?list.map(a=>{
-    const o=officer(a.cmd),loc=city(a.city),tar=a.target?city(a.target):null;
-    return '<button data-army-open="'+a.id+'"><b>'+(o?o.name:'無名')+'軍 · '+fmt(armyTroops(a))+'</b><small>'+loc.name+(tar?' → '+tar.name:' · '+a.status)+'｜士氣 '+a.morale+'｜糧 '+a.supply+' 日</small></button>';
-  }).join(''):'<div class="muted">目前沒有軍團。請先點己方城池，再使用出征。</div>')+
-  '</div>';
- box.querySelectorAll('[data-army-open]').forEach(b=>b.onclick=()=>{state.selected=b.dataset.armyOpen;renderArmies(box);});
+ if(selected)return renderArmyDetailV2(box,selected);
+ if(militaryTab==='garrison')return renderGarrisonPanel(box);
+ if(militaryTab==='armies')return renderArmyCards(box);
+ if(militaryTab==='situation')return renderSituationPanel(box);
+ return renderMilitaryOverview(box);
 }
 
 function renderDiplo(box){
@@ -565,29 +792,93 @@ function recruit(){
  c.garrison+=3000;c.pop-=4200;c.food-=2200;log(c.name+'徵募步卒 3,000。');render();
 }
 function dispatchModal(preferredTarget=null){
- const c=city(state.selected);if(!c||c.f!==state.player)return;
- const os=factionOfficers(state.player).filter(o=>o.city===state.selected||o.city===FACTIONS[state.player].capital).sort((a,b)=>b.cmd-a.cmd);
- modal(
-  '<h3>'+c.name+' · 編成軍團</h3><p>軍團至少 2,000 人。行軍需要兩旬抵達相鄰城池，途中持續消耗軍糧。</p>'+
-  '<div class="field"><label>主將</label><select id="mCmd">'+os.map(o=>'<option value="'+o.id+'">'+o.name+'｜統率 '+o.cmd+'｜'+o.trait+'</option>').join('')+'</select></div>'+
-  '<div class="field"><label>目標城池</label><select id="mTarget">'+c.nb.map(id=>'<option value="'+id+'">'+city(id).name+'｜'+FACTIONS[city(id).f].name+'｜守軍 '+fmt(city(id).garrison)+'</option>').join('')+'</select></div>'+
-  '<div class="field"><label>步兵</label><input id="mInf" type="number" min="1000" step="500" value="'+Math.min(6000,c.garrison)+'"></div>'+
-  '<div class="field"><label>弩兵</label><input id="mXbow" type="number" min="0" step="500" value="'+Math.min(1500,Math.floor(c.garrison*.18))+'"></div>'+
-  '<div class="field"><label>騎兵</label><input id="mCav" type="number" min="0" step="500" value="'+Math.min(1500,Math.floor(c.garrison*.12))+'"></div>'+
-  '<div class="modal-row"><button class="btn" onclick="closeModal()">取消</button><button class="btn primary" id="launch">下令出征</button></div>'
- );
- if(preferredTarget&&$('mTarget'))$('mTarget').value=preferredTarget;
- $('launch').onclick=()=>{
-  const inf=+$('mInf').value||0,xbow=+$('mXbow').value||0,cav=+$('mCav').value||0,total=inf+xbow+cav;
-  if(total<2000)return toast('軍團兵力至少 2,000');
-  if(total>c.garrison)return toast('超過城內可用兵力');
-  if(!spend())return;
-  c.garrison-=total;
-  const a={id:'u'+Date.now(),f:state.player,cmd:$('mCmd').value,city:state.selected,target:$('mTarget').value,progress:0,inf,xbow,cav,morale:84,supply:35,status:'行軍'};
-  state.armies.push(a);log(officer(a.cmd).name+'率 '+fmt(total)+' 人自 '+c.name+' 出征 '+city(a.target).name+'。');
-  closeModal();state.active='army';render();
+ const sourceId=state.selected,c=city(sourceId);if(!c||c.f!==state.player)return;
+ const os=factionOfficers(state.player).filter(o=>o.city===sourceId||o.city===FACTIONS[state.player].capital).sort((a,b)=>b.cmd-a.cmd);
+ const targets=c.nb.slice();
+ if(!os.length||!targets.length)return toast('目前無法編成出征軍團');
+ const draft={
+   step:1,source:sourceId,target:(preferredTarget&&targets.includes(preferredTarget))?preferredTarget:targets[0],
+   cmd:os[0].id,inf:Math.min(6000,c.garrison),xbow:Math.min(1500,Math.floor(c.garrison*.18)),cav:Math.min(1500,Math.floor(c.garrison*.12))
  };
+ const normalize=()=>{
+   draft.inf=Math.max(0,Math.round(draft.inf/500)*500);
+   draft.xbow=Math.max(0,Math.round(draft.xbow/500)*500);
+   draft.cav=Math.max(0,Math.round(draft.cav/500)*500);
+   let total=draft.inf+draft.xbow+draft.cav;
+   if(total>c.garrison){
+     const scale=c.garrison/Math.max(1,total);
+     draft.inf=Math.floor(draft.inf*scale/500)*500;
+     draft.xbow=Math.floor(draft.xbow*scale/500)*500;
+     draft.cav=Math.floor(draft.cav*scale/500)*500;
+   }
+ };
+ const preset=type=>{
+   const max=Math.floor(c.garrison/500)*500;
+   let total=Math.max(2000,Math.min(max,type==='max'?max:Math.round(max*(type==='assault'?.72:type==='mobile'?.58:.62)/500)*500));
+   if(type==='assault'){draft.inf=Math.round(total*.62/500)*500;draft.xbow=Math.round(total*.28/500)*500;draft.cav=Math.max(0,total-draft.inf-draft.xbow);}
+   else if(type==='mobile'){draft.inf=Math.round(total*.42/500)*500;draft.xbow=Math.round(total*.18/500)*500;draft.cav=Math.max(0,total-draft.inf-draft.xbow);}
+   else{draft.inf=Math.round(total*.58/500)*500;draft.xbow=Math.round(total*.22/500)*500;draft.cav=Math.max(0,total-draft.inf-draft.xbow);}
+   normalize();
+ };
+ const renderStep=()=>{
+   const t=city(draft.target),o=officer(draft.cmd),total=draft.inf+draft.xbow+draft.cav;
+   const steps=['目標','主將','兵力','確認'];
+   let body='';
+   if(draft.step===1){
+     body='<div class="dispatch-source"><span>出發</span><b>'+c.name+'</b><small>守軍 '+fmt(c.garrison)+' · 糧草 '+fmt(c.food)+'</small></div>'+
+      '<div class="dispatch-label">選擇相鄰目標</div><div class="target-card-list">'+targets.map(id=>{
+       const x=city(id),enemy=x.f!==state.player;
+       return '<button class="'+(draft.target===id?'active ':'')+(enemy?'enemy':'friendly')+'" data-dtarget="'+id+'"><div><b>'+x.name+'</b><small>'+FACTIONS[x.f].name+' · '+x.terrain+'</small></div><strong>'+fmt(x.garrison)+'</strong><em>'+(enemy?'敵軍':'友軍')+'</em></button>';
+      }).join('')+'</div>';
+   }else if(draft.step===2){
+     body='<div class="dispatch-label">選擇主將</div><div class="commander-list">'+os.map(x=>
+      '<button class="'+(draft.cmd===x.id?'active':'')+'" data-dcmd="'+x.id+'"><div class="commander-seal">'+x.name.slice(0,1)+'</div><div><b>'+x.name+'</b><small>'+x.role+' · '+x.trait+'</small></div><div class="commander-stats"><span>統 <strong>'+x.cmd+'</strong></span><span>武 <strong>'+x.war+'</strong></span><span>智 <strong>'+x.int+'</strong></span></div></button>'
+     ).join('')+'</div>';
+   }else if(draft.step===3){
+     body='<div class="dispatch-label">配置兵力 <span>城內可用 '+fmt(c.garrison)+'</span></div>'+
+      '<div class="preset-row"><button data-preset="balanced">均衡</button><button data-preset="assault">強攻</button><button data-preset="mobile">機動</button><button data-preset="max">最大</button></div>'+
+      '<div class="troop-compose">'+
+       [['inf','步兵','正面主力'],['xbow','弩兵','遠程壓制'],['cav','騎兵','機動突擊']].map(([key,label,note])=>
+        '<div class="troop-row"><div><b>'+label+'</b><small>'+note+'</small></div><div class="stepper"><button data-minus="'+key+'">−</button><strong>'+fmt(draft[key])+'</strong><button data-plus="'+key+'">＋</button></div></div>'
+       ).join('')+
+      '</div><div class="dispatch-total"><span>出征總兵力</span><b>'+fmt(total)+'</b><small>城內將留守 '+fmt(Math.max(0,c.garrison-total))+'</small></div>';
+   }else{
+     const fc=battleForecast(sourceId,draft.target,draft.cmd,draft.inf,draft.xbow,draft.cav);
+     body='<div class="forecast '+fc.cls+'"><div><span>戰況評估</span><b>'+fc.label+'</b></div><strong>'+c.name+' → '+t.name+'</strong></div>'+
+      '<div class="confirm-grid"><div><span>主將</span><b>'+o.name+'</b></div><div><span>總兵力</span><b>'+fmt(total)+'</b></div><div><span>行軍</span><b>2 旬</b></div><div><span>軍糧</span><b>35 日</b></div><div><span>目標守軍</span><b>'+fmt(t.garrison)+'</b></div><div><span>地形</span><b>'+t.terrain+'</b></div></div>'+
+      '<div class="forecast-reasons">'+fc.reasons.map(x=>'<span>'+x+'</span>').join('')+'</div>'+
+      '<div class="留守-note">出征後 '+c.name+' 留守 '+fmt(Math.max(0,c.garrison-total))+'。安全守軍建議 '+fmt(safeGarrison(sourceId))+'。</div>';
+   }
+   modal(
+    '<div class="dispatch-modal">'+
+     '<div class="dispatch-head"><div><div class="side-title">EXPEDITION ORDER</div><h3>'+c.name+' · 出征</h3></div><button class="modal-x" onclick="closeModal()">×</button></div>'+
+     '<div class="dispatch-steps">'+steps.map((x,i)=>'<div class="'+(draft.step===i+1?'active':draft.step>i+1?'done':'')+'"><i>'+(draft.step>i+1?'✓':i+1)+'</i><span>'+x+'</span></div>').join('')+'</div>'+
+     '<div class="dispatch-body">'+body+'</div>'+
+     '<div class="dispatch-footer"><button class="btn" id="dPrev">'+(draft.step===1?'取消':'上一步')+'</button><div class="dispatch-mini">'+city(draft.target).name+' · '+(officer(draft.cmd)?.name||'未選將')+'</div><button class="btn primary" id="dNext">'+(draft.step===4?'確認出征':'下一步')+'</button></div>'+
+    '</div>'
+   );
+   $('dPrev').onclick=()=>{if(draft.step===1)closeModal();else{draft.step--;renderStep();}};
+   $('dNext').onclick=()=>{
+      normalize();const sum=draft.inf+draft.xbow+draft.cav;
+      if(draft.step===3&&sum<2000)return toast('軍團兵力至少 2,000');
+      if(draft.step<4){draft.step++;return renderStep();}
+      if(sum<2000)return toast('軍團兵力至少 2,000');
+      if(sum>c.garrison)return toast('超過城內可用兵力');
+      if(!spend())return;
+      c.garrison-=sum;
+      const a={id:'u'+Date.now(),f:state.player,cmd:draft.cmd,city:sourceId,target:draft.target,progress:0,inf:draft.inf,xbow:draft.xbow,cav:draft.cav,morale:84,supply:35,status:'行軍'};
+      state.armies.push(a);log(officer(a.cmd).name+'率 '+fmt(sum)+' 人自 '+c.name+' 出征 '+city(a.target).name+'。');
+      closeModal();militaryTab='armies';state.active='army';state.selected=a.id;render();
+   };
+   document.querySelectorAll('[data-dtarget]').forEach(b=>b.onclick=()=>{draft.target=b.dataset.dtarget;renderStep();});
+   document.querySelectorAll('[data-dcmd]').forEach(b=>b.onclick=()=>{draft.cmd=b.dataset.dcmd;renderStep();});
+   document.querySelectorAll('[data-preset]').forEach(b=>b.onclick=()=>{preset(b.dataset.preset);renderStep();});
+   document.querySelectorAll('[data-minus]').forEach(b=>b.onclick=()=>{draft[b.dataset.minus]=Math.max(0,draft[b.dataset.minus]-500);renderStep();});
+   document.querySelectorAll('[data-plus]').forEach(b=>b.onclick=()=>{draft[b.dataset.plus]+=500;normalize();renderStep();});
+ };
+ renderStep();
 }
+
 function terrainMod(t){
  return {山地:.90,山口:.82,關隘:.72,水網:.88,平原:1.03,都市:.92,要衝:.86,丘陵:.92,盆地:.96}[t]||1;
 }
@@ -628,10 +919,23 @@ function applyArmyLoss(a,n){
  a.inf-=inf;a.xbow-=xbow;a.cav-=cav;
 }
 function showBattleReport(attO,defO,d,a0,d0,la,ld,win,captured){
- modal('<h3>戰報 · '+d.name+'</h3><p>'+(captured?'城池陷落，勢力版圖已改變。':win?'攻軍取得優勢，但守軍仍控制城池。':'守軍成功擊退進攻。')+'</p>'+
- '<div class="report"><div class="side"><small>'+attO.name+'</small><div class="big">'+fmt(a0)+'</div><span class="loss">-'+fmt(la)+'</span></div><div class="vs">VS</div><div class="side"><small>'+defO.name+'</small><div class="big">'+fmt(d0)+'</div><span class="loss">-'+fmt(ld)+'</span></div></div>'+
- '<div class="modal-row"><button class="btn primary" onclick="closeModal()">確認</button></div>');
+ const remainA=Math.max(0,a0-la),remainD=Math.max(0,d0-ld);
+ const title=captured?'攻城成功':win?'攻勢得利':'進攻受挫';
+ const cls=captured||win?'victory':'defeat';
+ modal(
+  '<div class="battle-report-v2 '+cls+'">'+
+   '<div class="battle-result"><div class="side-title">BATTLE REPORT</div><h3>'+title+'</h3><p>'+d.name+(captured?' 已被攻取。':win?' 守軍受創，但城池仍未陷落。':' 守軍守住據點，我軍退回整備。')+'</p></div>'+
+   '<div class="battle-versus">'+
+    '<div class="battle-side ours"><span>攻方</span><b>'+attO.name+'</b><strong>'+fmt(remainA)+'</strong><small>出戰 '+fmt(a0)+' · 損失 '+fmt(la)+'</small><i><em style="width:'+Math.max(0,Math.round(remainA/Math.max(1,a0)*100))+'%"></em></i></div>'+
+    '<div class="battle-vs">VS</div>'+
+    '<div class="battle-side enemy"><span>守方</span><b>'+defO.name+'</b><strong>'+fmt(remainD)+'</strong><small>守軍 '+fmt(d0)+' · 損失 '+fmt(ld)+'</small><i><em style="width:'+Math.max(0,Math.round(remainD/Math.max(1,d0)*100))+'%"></em></i></div>'+
+   '</div>'+
+   '<div class="battle-note"><span>戰場</span><b>'+d.name+' · '+d.terrain+'</b><span>城防</span><b>'+d.def+'</b></div>'+
+   '<div class="modal-row"><button class="btn primary" onclick="closeModal()">返回天下圖</button></div>'+
+  '</div>'
+ );
 }
+
 function economyTick(){
  Object.values(world.cities).forEach(c=>{
   const orderMod=.6+c.order/250;
