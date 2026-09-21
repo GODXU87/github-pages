@@ -1805,3 +1805,16 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.25;ba
   .dispatch-footer{grid-template-columns:82px 1fr 100px}
   .battle-versus{grid-template-columns:1fr 36px 1fr;padding:12px}
 }
+
+
+/* V0.10 — HQ map raster integrity */
+@media (min-width:901px){
+  .painted-map{
+    opacity:1 !important;
+    filter:none !important;
+    image-rendering:auto;
+  }
+  .painted-map-shade{
+    fill:rgba(7,9,8,.025) !important;
+  }
+}
