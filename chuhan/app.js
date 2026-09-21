@@ -1142,11 +1142,33 @@ function openStart(){
 }
 function closeStart(){$('startScreen').classList.add('hidden')}
 
-function loadHighQualityMap(){
+async function loadHighQualityMap(){
  const mapEl=$('paintedMap');
  if(!mapEl)return;
- mapEl.classList.add('hq-ready');
- document.querySelector('.map-wrap')?.classList.add('hq-ready');
+ try{
+  const urls=Array.from({length:9},(_,i)=>'./assets/map-hq.part'+String(i+1).padStart(2,'0')+'.txt');
+  const parts=await Promise.all(urls.map(async url=>{
+   const res=await fetch(url,{cache:'force-cache'});
+   if(!res.ok)throw new Error('HQ map chunk '+url+' '+res.status);
+   return (await res.text()).trim();
+  }));
+  const b64=parts.join('');
+  const binary=atob(b64);
+  const bytes=new Uint8Array(binary.length);
+  for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);
+  const blob=new Blob([bytes],{type:'image/webp'});
+  const url=URL.createObjectURL(blob);
+  const probe=new Image();
+  probe.onload=()=>{
+   mapEl.setAttribute('href',url);
+   mapEl.setAttributeNS('http://www.w3.org/1999/xlink','href',url);
+   mapEl.classList.add('hq-ready');
+   document.querySelector('.map-wrap')?.classList.add('hq-ready');
+  };
+  probe.src=url;
+ }catch(err){
+  console.error('[NOIRXU 楚漢爭霸] map load failed',err);
+ }
 }
 
 function initUI(){
@@ -1158,6 +1180,7 @@ function initUI(){
  });
  document.querySelectorAll('[data-intel]').forEach(b=>b.onclick=()=>{state.intelTab=b.dataset.intel;renderIntel();});
  $('endBtn').onclick=endTurn;$('rankBtn').onclick=rankModal;$('helpBtn').onclick=showHelp;$('saveBtn').onclick=save;
+ $('expeditionBtn').onclick=()=>openDispatchFromMilitary();
  $('zoomIn').onclick=()=>zoom(.1);$('zoomOut').onclick=()=>zoom(-.1);$('zoomReset').onclick=()=>{mapScale=1;mapX=0;mapY=0;applyMap()};
  document.querySelectorAll('[data-quick]').forEach(b=>b.onclick=()=>{state.selected=b.dataset.quick;state.active='city';render()});
  $('modalBg').onclick=e=>{if(e.target===$('modalBg'))closeModal()};
