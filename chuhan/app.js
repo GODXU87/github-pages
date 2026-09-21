@@ -251,7 +251,7 @@ function cityKind(id,c){
 
 function cityRadius(id,c){
  const kind=cityKind(id,c);
- return kind==='capital'?33:kind==='major'?28:kind==='pass'?26:22;
+ return kind==='capital'?40:kind==='major'?33:kind==='pass'?29:24;
 }
 
 function cityCastleSvg(id,c){
@@ -298,17 +298,37 @@ function cityCastleSvg(id,c){
     '<path class="city-gate" d="M-4 20 L-4 12 Q0 7 4 12 L4 20 Z"/>'+
    '</g>';
  }
+
  const threatened=state.armies.some(a=>a.target===id&&a.f!==c.f);
+ const owned=c.f===state.player;
+
  const factionChar=FACTIONS[c.f].name==='西楚'?'楚':FACTIONS[c.f].name.slice(0,1);
  const outer=(kind==='capital'||kind==='major')
    ?'<path class="outer-bailey" d="M-34 19 L-34 8 L-28 2 M34 19 L34 8 L28 2 M-34 19 L34 19"/>'
    :'';
  const defense='<g class="defense-pips">'+[0,1,2,3].map((_,i)=>'<circle cx="'+(-9+i*6)+'" cy="24" r="1.4" class="'+(c.def>=45+i*12?'on':'')+'"/>').join('')+'</g>';
  const threat=threatened?'<g class="siege-alert"><circle r="'+(cityRadius(id,c)+8)+'"/><path d="M-8 -8 L8 8 M8 -8 L-8 8"/></g>':'';
+ const moat=(kind==='capital'||kind==='major')
+   ?'<ellipse class="city-moat" cx="0" cy="17" rx="'+(kind==='capital'?43:36)+'" ry="'+(kind==='capital'?17:14)+'"/>'
+   :'';
+ const settlement=(kind==='capital'||kind==='major')
+   ?'<g class="city-settlement">'+
+      '<path d="M-38 13 l5 -7 l5 7 z"/><rect x="-35" y="13" width="5" height="5"/>'+
+      '<path d="M31 11 l5 -7 l5 7 z"/><rect x="33" y="11" width="5" height="5"/>'+
+      '<path d="M-32 25 l4 -6 l4 6 z"/><rect x="-30" y="25" width="4" height="4"/>'+
+     '</g>'
+   :'';
+ const statusBadge='<g class="city-status-badge '+(owned?'owned':'foreign')+'">'+
+   '<circle cx="-26" cy="-22" r="7"/>'+
+   '<text x="-26" y="-19">'+(owned?'我':'敵')+'</text>'+
+  '</g>';
  return '<g class="city-node '+kind+(isSelected?' selected-node':'')+(threatened?' threatened':'')+'" style="--faction:'+col+'">'+
    '<circle class="city-hit" r="'+cityRadius(id,c)+'"/>'+
-   '<ellipse class="city-ground" cx="0" cy="18" rx="'+(kind==='capital'?38:kind==='major'?32:27)+'" ry="9"/>'+
+   moat+
+   '<ellipse class="city-ground" cx="0" cy="18" rx="'+(kind==='capital'?45:kind==='major'?37:29)+'" ry="'+(kind==='capital'?11:9)+'"/>'+
+   settlement+
    '<circle class="city-selection-ring" r="'+(cityRadius(id,c)+4)+'"/>'+
+   statusBadge+
    threat+outer+body+
    '<text class="flag-char" x="18" y="-18">'+factionChar+'</text>'+
    defense+
@@ -345,6 +365,7 @@ function renderMap(){
     '<line class="march-shadow" x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'"/>'+
     '<line class="march-line" marker-end="url(#marchArrow)" x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'"/>'+
     '<text class="march-label" x="'+((x1+x2)/2)+'" y="'+(((y1+y2)/2)-8)+'">'+Math.max(0,2-a.progress)+'旬</text>'+
+    '<circle class="march-target" cx="'+x2+'" cy="'+y2+'" r="6"/>'+
    '</g>';
  }).join('');
 
@@ -357,9 +378,9 @@ function renderMap(){
 
  $('armiesLayer').innerHTML=state.armies.map(a=>{
   const from=city(a.city),to=a.target?city(a.target):from,p=a.target?Math.min(.82,.12+a.progress*.35):0;
-  const x=from.x+(to.x-from.x)*p,y=from.y+(to.y-from.y)*p,o=officer(a.cmd);
+  const x=from.x+(to.x-from.x)*p,y=from.y+(to.y-from.y)*p,o=officer(a.cmd),moving=!!a.target;
   const col=FACTIONS[a.f]?.color||'#c9ad70';
-  return '<g class="army '+a.f+'" data-army="'+a.id+'" transform="translate('+x+','+y+')">'+
+  return '<g class="army '+a.f+(moving?' moving':' stationed')+'" data-army="'+a.id+'" transform="translate('+x+','+y+')">'+
     '<line class="army-pole" x1="-13" y1="-25" x2="-13" y2="13"/>'+
     '<path class="army-banner" style="--army-color:'+col+'" d="M-13 -24 L16 -18 L16 4 L-13 -2 Z"/>'+
     '<text class="army-name" x="1" y="-7">'+(o?o.name.slice(0,2):'軍')+'</text>'+
