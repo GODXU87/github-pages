@@ -747,3 +747,187 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.25;ba
   .army-list b{font-size:11px}
   .army-list small{display:block;margin-top:4px;font-size:8px;color:#80786b}
 }
+
+
+/* =========================================================
+   V0.6 — CITY FORTIFICATION MAP
+   ========================================================= */
+@media (min-width:901px){
+  .road{
+    stroke:#9f916f;
+    stroke-width:1.65;
+    stroke-dasharray:4 7;
+    opacity:.50;
+    stroke-linecap:round;
+  }
+  .road.main-road{
+    stroke:#c9b172;
+    stroke-width:2.5;
+    stroke-dasharray:none;
+    opacity:.64;
+    filter:drop-shadow(0 0 2px rgba(205,177,105,.18));
+  }
+
+  .city{
+    cursor:pointer;
+  }
+  .city-hit{
+    fill:transparent;
+    stroke:none;
+    pointer-events:all;
+  }
+  .city-selection-ring{
+    fill:none;
+    stroke:#efcf7b;
+    stroke-width:1.5;
+    opacity:0;
+    stroke-dasharray:3 4;
+    vector-effect:non-scaling-stroke;
+  }
+  .city:hover .city-selection-ring{
+    opacity:.48;
+  }
+  .city.selected .city-selection-ring,
+  .selected-node .city-selection-ring{
+    opacity:1;
+    stroke-width:2.4;
+    filter:drop-shadow(0 0 6px rgba(239,207,123,.68));
+  }
+
+  .castle{
+    filter:drop-shadow(0 4px 5px rgba(0,0,0,.72));
+    transition:filter .16s ease,transform .16s ease;
+  }
+  .city:hover .castle{
+    filter:drop-shadow(0 0 8px color-mix(in srgb,var(--faction) 65%,#e8d6a5 35%));
+  }
+  .city-wall,
+  .city-tower{
+    fill:#1b1b16;
+    stroke:var(--faction);
+    stroke-width:2.1;
+    vector-effect:non-scaling-stroke;
+  }
+  .city-roof{
+    fill:#2b271f;
+    stroke:#b8a77d;
+    stroke-width:1.35;
+    vector-effect:non-scaling-stroke;
+  }
+  .city-merlon{
+    fill:none;
+    stroke:#c5b487;
+    stroke-width:1.8;
+    vector-effect:non-scaling-stroke;
+  }
+  .city-gate{
+    fill:#080908;
+    stroke:#756b52;
+    stroke-width:1;
+  }
+  .pass-wing{
+    fill:#171914;
+    stroke:#77715f;
+    stroke-width:1.2;
+  }
+
+  .city-flag line{
+    stroke:#b9aa83;
+    stroke-width:1.2;
+    vector-effect:non-scaling-stroke;
+  }
+  .city-flag path{
+    fill:var(--faction);
+    stroke:#d7c69c;
+    stroke-width:.8;
+    filter:drop-shadow(0 2px 2px rgba(0,0,0,.6));
+  }
+
+  .city-plaque rect{
+    fill:rgba(13,14,12,.92);
+    stroke:#4c4535;
+    stroke-width:1;
+  }
+  .city:hover .city-plaque rect,
+  .city.selected .city-plaque rect{
+    stroke:#bba266;
+    fill:rgba(25,24,18,.96);
+  }
+  .city-name{
+    fill:#eee2c8;
+    text-anchor:middle;
+    font-family:"Noto Serif TC",serif;
+    font-size:11px;
+    font-weight:800;
+    stroke:none;
+  }
+  .city-meta{
+    fill:#aaa291;
+    text-anchor:middle;
+    font-size:7.5px;
+    stroke:none;
+  }
+  .city-kind{
+    fill:#817967;
+    text-anchor:middle;
+    font-size:6.5px;
+    letter-spacing:.12em;
+    stroke:none;
+  }
+  .capital .city-kind{
+    fill:#d2b76f;
+  }
+  .capital .city-wall,
+  .capital .city-tower{
+    stroke-width:2.4;
+  }
+  .major .city-kind{
+    fill:#bbaa7f;
+  }
+  .pass .city-kind{
+    fill:#9d957e;
+  }
+
+  .army{
+    cursor:pointer;
+    filter:drop-shadow(0 4px 5px rgba(0,0,0,.75));
+  }
+  .army-pole{
+    stroke:#b9aa83;
+    stroke-width:1.2;
+    vector-effect:non-scaling-stroke;
+  }
+  .army-banner{
+    fill:var(--army-color);
+    stroke:#e3d3a9;
+    stroke-width:1.1;
+  }
+  .army-name{
+    fill:#fff1cf;
+    text-anchor:middle;
+    font-family:"Noto Serif TC",serif;
+    font-size:7px;
+    font-weight:800;
+  }
+  .army-count-bg{
+    fill:rgba(10,11,9,.92);
+    stroke:#494231;
+    stroke-width:.8;
+  }
+  .army-count{
+    fill:#c9c1b1;
+    text-anchor:middle;
+    font-size:6.5px;
+  }
+
+  /* city nodes should visually dominate over region labels */
+  .region-labels text{
+    opacity:.14;
+  }
+  .pass-labels text{
+    opacity:.48;
+  }
+  .contours path{
+    opacity:.16;
+  }
+}
