@@ -76,6 +76,12 @@
       <svg id="world" viewBox="0 0 1000 650" aria-label="楚漢天下戰略地圖">
         <defs>
           <filter id="softShadow"><feDropShadow dx="0" dy="3" stdDeviation="5" flood-opacity=".55"/></filter>
+<marker id="marchArrow" markerWidth="7" markerHeight="7" refX="5.4" refY="3.5" orient="auto">
+  <path d="M0,0 L7,3.5 L0,7 Z" fill="#d7bd78"/>
+</marker>
+<pattern id="plainHatch" width="18" height="18" patternUnits="userSpaceOnUse" patternTransform="rotate(12)">
+  <path d="M0 18 L18 0" stroke="#b4a77f" stroke-width=".7" opacity=".08"/>
+</pattern>
           <linearGradient id="landTone" x1="0" y1="0" x2="1" y2="1">
             <stop offset="0" stop-color="#454232"/>
             <stop offset=".52" stop-color="#2e342c"/>
@@ -86,6 +92,12 @@
           <path class="land" d="M90 188C170 80 335 44 490 74C620 98 704 68 826 114C938 157 975 271 923 359C893 410 905 478 838 541C757 615 655 590 576 554C474 605 354 592 277 542C188 483 111 473 79 393C53 323 45 251 90 188Z"/>
           <path class="river" d="M140 286C250 261 343 300 451 280C567 258 647 309 756 290C830 278 879 300 925 331"/>
           <path class="river small" d="M461 126C473 183 505 240 529 300C544 337 558 386 589 451"/>
+<path class="plain-texture" d="M112 195C255 94 422 95 566 125C681 149 804 128 890 196C917 236 908 288 883 318C755 282 662 307 556 294C439 278 344 295 241 276C188 257 146 231 112 195Z"/>
+<g class="forest-clusters">
+  <g transform="translate(190 420)"><path d="M0 13L7 0L14 13Z"/><path d="M11 14L18 1L25 14Z"/><path d="M23 13L30 0L37 13Z"/></g>
+  <g transform="translate(540 458)"><path d="M0 13L7 0L14 13Z"/><path d="M11 14L18 1L25 14Z"/><path d="M23 13L30 0L37 13Z"/></g>
+  <g transform="translate(700 272)"><path d="M0 13L7 0L14 13Z"/><path d="M11 14L18 1L25 14Z"/><path d="M23 13L30 0L37 13Z"/></g>
+</g>
           <g class="mountains">
             <path d="M232 386L281 307L315 381Z"/><path d="M295 371L345 291L392 367Z"/><path d="M370 424L421 355L461 425Z"/>
             <path d="M188 506L224 452L259 509Z"/><path d="M566 470L612 400L656 476Z"/><path d="M610 490L650 430L695 500Z"/>
@@ -108,6 +120,7 @@
   <text x="612" y="324">滎陽道</text>
 </g>
 <g id="roads"></g>
+          <g id="marchLayer"></g>
           <g id="citiesLayer"></g>
           <g id="armiesLayer"></g>
         </g>
