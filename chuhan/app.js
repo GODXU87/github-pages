@@ -743,6 +743,43 @@ function openStart(){
  const has=!!localStorage.getItem('noirxu_chuhan_v02');$('continueBtn').classList.toggle('hidden',!has);
 }
 function closeStart(){$('startScreen').classList.add('hidden')}
+
+let hqMapObjectUrl=null;
+async function loadHighQualityMap(){
+ const mapEl=$('paintedMap');
+ if(!mapEl)return;
+ try{
+  const urls=Array.from({length:9},(_,i)=>'./assets/map-hq.part'+String(i+1).padStart(2,'0')+'.txt');
+  const parts=await Promise.all(urls.map(async url=>{
+   const res=await fetch(url,{cache:'force-cache'});
+   if(!res.ok)throw new Error('HQ map chunk '+url+' '+res.status);
+   return (await res.text()).trim();
+  }));
+  const b64=parts.join('');
+  if(b64.length!==128028)throw new Error('HQ map payload length '+b64.length);
+  const binary=atob(b64);
+  const bytes=new Uint8Array(binary.length);
+  for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);
+  const blob=new Blob([bytes],{type:'image/webp'});
+  if(blob.size!==96020)throw new Error('HQ map blob size '+blob.size);
+  const url=URL.createObjectURL(blob);
+  const probe=new Image();
+  probe.onload=()=>{
+   if(probe.naturalWidth!==1000||probe.naturalHeight!==650){URL.revokeObjectURL(url);return;}
+   if(hqMapObjectUrl)URL.revokeObjectURL(hqMapObjectUrl);
+   hqMapObjectUrl=url;
+   mapEl.setAttribute('href',url);
+   mapEl.setAttributeNS('http://www.w3.org/1999/xlink','href',url);
+   mapEl.classList.add('hq-ready');
+   document.querySelector('.map-wrap')?.classList.add('hq-ready');
+  };
+  probe.onerror=()=>URL.revokeObjectURL(url);
+  probe.src=url;
+ }catch(err){
+  console.error('[NOIRXU 楚漢爭霸] HQ map load failed',err);
+ }
+}
+
 function initUI(){
  document.querySelectorAll('[data-nav]').forEach(b=>b.onclick=()=>{
    state.active=b.dataset.nav;
@@ -761,4 +798,4 @@ function initUI(){
  $('newBtn').onclick=()=>{closeModal();openStart()};
  initMapPan();
 }
-document.addEventListener('DOMContentLoaded',()=>{initUI();render();openStart()});
+document.addEventListener('DOMContentLoaded',()=>{initUI();render();openStart();loadHighQualityMap()});
