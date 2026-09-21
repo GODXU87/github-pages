@@ -982,7 +982,14 @@ function compositionPower(a,o,attack=true){
  const mix=1+Math.min(.12,(a.cav/Math.max(1,base))*.22)+(a.xbow/Math.max(1,base))*.08;
  return base*(.72+o.cmd/190)*(a.morale/100)*mix;
 }
+let activeBattle=null;
+
 function battle(a){
+ if(a.f===state.player)return startBattleScene(a);
+ return autoResolveBattle(a);
+}
+
+function autoResolveBattle(a){
  const d=city(a.target),attO=officer(a.cmd)||{name:'將領',cmd:70},defO=world.officers.filter(o=>o.f===d.f&&o.city===a.target).sort((x,y)=>y.cmd-x.cmd)[0]||{name:'守將',cmd:66};
  const att=compositionPower(a,attO,true)*(0.9+rnd(0,20)/100);
  const defBase=d.garrison*(.72+defO.cmd/210)*(1+d.def/180)*terrainMod(d.terrain)*(0.9+rnd(0,20)/100);
@@ -993,7 +1000,7 @@ function battle(a){
  else{lossA=Math.round(beforeA*(.25+Math.random()*.22));lossD=Math.round(beforeD*(.10+Math.random()*.16))}
  applyArmyLoss(a,lossA);d.garrison=Math.max(0,d.garrison-lossD);
  const captured=win&&d.garrison<2200&&armyTroops(a)>1200;
- let old=d.f;
+ const old=d.f;
  if(captured){
   d.f=a.f;
   const leave=Math.max(1200,Math.round(armyTroops(a)*.22));
@@ -1004,9 +1011,201 @@ function battle(a){
   a.target=null;a.progress=0;a.status='整備';a.morale=clamp(a.morale-(win?4:12),25,100);
   log(attO.name+'攻 '+d.name+(win?'得利，但未破城。':'失利，退軍整備。'));
  }
- showBattleReport(attO,defO,d,beforeA,beforeD,lossA,lossD,win,captured);
+ if(d.f===state.player)showBattleReport(attO,defO,d,beforeA,beforeD,lossA,lossD,win,captured);
  if(armyTroops(a)<800)state.armies=state.armies.filter(x=>x!==a);
 }
+
+function startBattleScene(a){
+ const d=city(a.target);
+ if(!d)return;
+ const attO=officer(a.cmd)||{name:'將領',cmd:70,war:70,int:70};
+ const defO=world.officers.filter(o=>o.f===d.f&&o.city===a.target).sort((x,y)=>y.cmd-x.cmd)[0]||{name:'守將',cmd:66,war:65,int:60};
+ activeBattle={
+   army:a,city:d,attO,defO,
+   round:1,maxRounds:3,
+   startA:armyTroops(a),startD:d.garrison,startDef:d.def,
+   defMorale:82,
+   feed:['兩軍於 '+d.name+' 城下布陣。','守軍閉門固守，城上弓弩已就位。'],
+   ended:false,last:null
+ };
+ a.status='交戰';
+ renderBattleScene();
+}
+
+function battleTacticMeta(id,b){
+ const d=b.city,a=b.army,total=Math.max(1,armyTroops(a));
+ const xbow=a.xbow/total,cav=a.cav/total;
+ const strategist=a.strategist?officer(a.strategist):null;
+ if(id==='assault')return{name:'全軍強攻',atk:1.20,own:1.16,enemy:1.10,fort:8,defMorale:-4,supply:2,note:'步卒逼近城門，正面強攻。'};
+ if(id==='volley')return{name:'弩陣壓制',atk:1.02+xbow*.35,own:.76,enemy:1.05,fort:2,defMorale:-5,supply:1,note:'弩手齊射，壓制城頭守軍。'};
+ if(id==='cavalry'){
+   const terrainGood=d.terrain==='平原'||d.terrain==='盆地';
+   return{name:'騎兵突擊',atk:terrainGood?1.24:.88,own:terrainGood?.94:1.16,enemy:terrainGood?1.14:.90,fort:1,defMorale:terrainGood?-7:-1,supply:2,note:terrainGood?'騎軍自側翼高速衝擊。':'地形限制騎軍展開。'};
+ }
+ if(id==='fire'){
+   const chance=Math.min(.82,.34+(strategist?.int||b.attO.int||60)/180);
+   const success=Math.random()<chance;
+   return{name:'火攻計策',atk:success?1.25:.91,own:success?.82:1.02,enemy:success?1.28:.92,fort:success?11:1,defMorale:success?-13:0,supply:3,note:success?'火勢乘風而起，城防陷入混亂。':'火計未成，守軍已有防備。',special:success?'火攻成功':'火攻失敗'};
+ }
+ return{name:'圍城消耗',atk:.92,own:.64,enemy:.82,fort:10,defMorale:-8,supply:3,note:'封鎖城門，消磨守軍與城防。'};
+}
+
+function battleTactic(id){
+ const b=activeBattle;
+ if(!b||b.ended)return;
+ const a=b.army,d=b.city,meta=battleTacticMeta(id,b);
+ const beforeA=armyTroops(a),beforeD=d.garrison;
+ if(beforeA<=0||beforeD<=0)return;
+
+ const attPower=compositionPower(a,b.attO,true)*meta.atk*(.93+Math.random()*.14);
+ const defPower=beforeD*(.72+b.defO.cmd/210)*(1+d.def/180)*terrainMod(d.terrain)*(b.defMorale/82)*(.93+Math.random()*.14);
+ const ratio=clamp(attPower/Math.max(1,defPower),.45,2.2);
+
+ let lossD=Math.round(beforeD*(.065+.075*ratio)*meta.enemy);
+ let lossA=Math.round(beforeA*(.05+.065*(1/ratio))*meta.own);
+ lossD=Math.min(beforeD,Math.max(120,lossD));
+ lossA=Math.min(beforeA,Math.max(100,lossA));
+
+ applyArmyLoss(a,lossA);
+ d.garrison=Math.max(0,d.garrison-lossD);
+ d.def=clamp(d.def-meta.fort,0,100);
+ a.supply=Math.max(0,a.supply-meta.supply);
+ a.morale=clamp(a.morale+(ratio>=1?3:-5),18,100);
+ b.defMorale=clamp(b.defMorale+meta.defMorale+(ratio<1?2:-3),15,100);
+ b.last={name:meta.name,lossA,lossD,ratio,special:meta.special||null};
+ b.feed.unshift(meta.note+' 我軍損失 '+fmt(lossA)+'，敵軍損失 '+fmt(lossD)+'。');
+ if(meta.special)b.feed.unshift(meta.special+'。');
+
+ const capture=(d.garrison<=Math.max(900,b.startD*.14)&&d.def<=42&&armyTroops(a)>=1000)||b.defMorale<=22;
+ const defeated=armyTroops(a)<800||a.morale<=20;
+
+ if(capture)return finishInteractiveBattle(true,true);
+ if(defeated)return finishInteractiveBattle(false,false);
+
+ if(b.round>=b.maxRounds){
+   const attRemain=armyTroops(a)/Math.max(1,b.startA);
+   const defRemain=d.garrison/Math.max(1,b.startD);
+   const tacticalWin=(attRemain+a.morale/160)>(defRemain+b.defMorale/160+d.def/260);
+   return finishInteractiveBattle(tacticalWin,false);
+ }
+ b.round++;
+ renderBattleScene();
+}
+
+function retreatInteractiveBattle(){
+ const b=activeBattle;if(!b)return;
+ const a=b.army,d=b.city;
+ a.target=null;a.progress=0;a.status='整備';a.morale=clamp(a.morale-6,20,100);
+ log((b.attO.name||'我軍')+'自 '+d.name+' 城下撤軍。');
+ activeBattle=null;
+ closeModal();
+ render();
+}
+
+function finishInteractiveBattle(win,captured){
+ const b=activeBattle;if(!b)return;
+ const a=b.army,d=b.city,old=d.f;
+ b.ended=true;
+ if(captured){
+   d.f=a.f;
+   const leave=Math.max(1200,Math.round(armyTroops(a)*.20));
+   d.garrison=leave;
+   applyArmyLoss(a,leave);
+   a.city=a.target;a.target=null;a.progress=0;a.status='駐紮';a.morale=clamp(a.morale+6,25,100);
+   log(FACTIONS[a.f].name+'軍攻取 '+d.name+'，'+FACTIONS[old].name+'失城。');
+ }else{
+   a.target=null;a.progress=0;a.status='整備';a.morale=clamp(a.morale-(win?2:10),20,100);
+   log(b.attO.name+'攻 '+d.name+(win?'取得戰術優勢，但未能破城。':'進攻失利，退軍整備。'));
+ }
+ if(armyTroops(a)<800)state.armies=state.armies.filter(x=>x!==a);
+ renderBattleResultScene(win,captured);
+}
+
+function battleUnitRows(side,count=4){
+ return Array.from({length:count},(_,r)=>
+   '<div class="battle-unit-row row-'+r+'">'+Array.from({length:7},(_,i)=>'<i style="--i:'+i+'"></i>').join('')+'</div>'
+ ).join('');
+}
+
+function renderBattleScene(){
+ const b=activeBattle;if(!b)return;
+ const a=b.army,d=b.city,att=armyTroops(a),def=d.garrison;
+ const attPct=Math.max(0,Math.round(att/Math.max(1,b.startA)*100));
+ const defPct=Math.max(0,Math.round(def/Math.max(1,b.startD)*100));
+ const fortPct=Math.max(0,d.def);
+ const strategist=a.strategist?officer(a.strategist):null;
+ modal(
+  '<div class="battle-screen">'+
+   '<header class="battle-topbar">'+
+    '<div><div class="side-title">BATTLEFIELD · SIEGE</div><h3>'+d.name+'攻城戰</h3><p>'+d.region+' · '+d.terrain+' · 第 '+b.round+' / '+b.maxRounds+' 階段</p></div>'+
+    '<div class="battle-phase-badge">交戰中</div>'+
+   '</header>'+
+   '<section class="battle-stage">'+
+    '<div class="battle-atmosphere"></div>'+
+    '<div class="battle-side-hud attacker">'+
+      '<div class="battle-seal">'+b.attO.name.slice(0,1)+'</div><div><span>攻方主將</span><b>'+b.attO.name+'</b><small>'+(officer(a.deputy)?.name?'副將 '+officer(a.deputy).name:'')+(strategist?' · 軍師 '+strategist.name:'')+'</small></div>'+
+      '<strong>'+fmt(att)+'</strong>'+
+      '<div class="battle-meter"><i style="width:'+attPct+'%"></i></div><em>士氣 '+a.morale+' · 軍糧 '+a.supply+'日</em>'+
+    '</div>'+
+    '<div class="battle-side-hud defender">'+
+      '<div class="battle-seal enemy">'+b.defO.name.slice(0,1)+'</div><div><span>守方主將</span><b>'+b.defO.name+'</b><small>'+FACTIONS[d.f].name+' · 城防 '+d.def+'</small></div>'+
+      '<strong>'+fmt(def)+'</strong>'+
+      '<div class="battle-meter enemy"><i style="width:'+defPct+'%"></i></div><em>士氣 '+b.defMorale+' · 城防 '+d.def+'</em>'+
+    '</div>'+
+    '<div class="battle-field-art">'+
+      '<div class="battle-mountains"></div>'+
+      '<div class="battle-smoke s1"></div><div class="battle-smoke s2"></div>'+
+      '<div class="battle-attacker-army">'+battleUnitRows('attacker',4)+'</div>'+
+      '<div class="battle-arrows">'+Array.from({length:12},(_,i)=>'<i style="--n:'+i+'"></i>').join('')+'</div>'+
+      '<div class="battle-city-wall"><div class="tower left"></div><div class="wall"><span></span><span></span><span></span><span></span><div class="gate"></div></div><div class="tower right"></div><div class="city-banner">'+FACTIONS[d.f].name.slice(0,1)+'</div></div>'+
+      '<div class="battle-defenders">'+battleUnitRows('defender',2)+'</div>'+
+      '<div class="fort-bar"><span>城防</span><i><em style="width:'+fortPct+'%"></em></i><b>'+d.def+'</b></div>'+
+    '</div>'+
+   '</section>'+
+   '<section class="battle-lower">'+
+    '<div class="battle-feed"><div class="section-title">戰況</div>'+b.feed.slice(0,4).map(x=>'<p>'+x+'</p>').join('')+'</div>'+
+    '<div class="battle-orders"><div class="section-title">軍令</div>'+
+      '<div class="battle-order-grid">'+
+       '<button data-battle-tactic="assault"><b>全軍強攻</b><small>高壓攻城 · 傷亡較高</small></button>'+
+       '<button data-battle-tactic="volley"><b>弩陣壓制</b><small>降低己方傷亡</small></button>'+
+       '<button data-battle-tactic="cavalry"><b>騎兵突擊</b><small>平原效果最佳</small></button>'+
+       '<button data-battle-tactic="fire"><b>火攻計策</b><small>'+(strategist?'軍師 '+strategist.name:'依主將智略')+'</small></button>'+
+       '<button data-battle-tactic="siege"><b>圍城消耗</b><small>削城防與敵軍士氣</small></button>'+
+       '<button class="retreat" id="battleRetreat"><b>撤軍</b><small>保存剩餘兵力</small></button>'+
+      '</div>'+
+    '</div>'+
+   '</section>'+
+  '</div>'
+ );
+ document.querySelectorAll('[data-battle-tactic]').forEach(btn=>btn.onclick=()=>battleTactic(btn.dataset.battleTactic));
+ $('battleRetreat').onclick=retreatInteractiveBattle;
+}
+
+function renderBattleResultScene(win,captured){
+ const b=activeBattle;if(!b)return;
+ const a=b.army,d=b.city;
+ const title=captured?'城破 · '+d.name:win?'攻勢佔優':'進攻受挫';
+ const cls=captured||win?'victory':'defeat';
+ modal(
+  '<div class="battle-screen battle-finish '+cls+'">'+
+   '<div class="battle-finish-bg"></div>'+
+   '<div class="battle-finish-card">'+
+    '<div class="side-title">BATTLE RESULT</div>'+
+    '<h3>'+title+'</h3>'+
+    '<p>'+(captured?'我軍突破城門，'+d.name+' 易幟。':win?'我軍在城下取得優勢，但未能於本次作戰中攻破城池。':'守軍穩住陣線，我軍退回整備。')+'</p>'+
+    '<div class="battle-result-stats">'+
+     '<div><span>我軍剩餘</span><b>'+fmt(armyTroops(a))+'</b></div>'+
+     '<div><span>敵軍剩餘</span><b>'+fmt(d.garrison)+'</b></div>'+
+     '<div><span>城防</span><b>'+d.def+'</b></div>'+
+     '<div><span>我軍士氣</span><b>'+a.morale+'</b></div>'+
+    '</div>'+
+    '<button class="btn primary" id="battleReturn">返回天下圖</button>'+
+   '</div>'+
+  '</div>'
+ );
+ $('battleReturn').onclick=()=>{activeBattle=null;closeModal();render();};
+}
+
 function applyArmyLoss(a,n){
  const total=armyTroops(a);if(total<=0)return;
  const inf=Math.min(a.inf,Math.round(n*a.inf/total)),xbow=Math.min(a.xbow,Math.round(n*a.xbow/total)),cav=Math.min(a.cav,Math.max(0,n-inf-xbow));
@@ -1043,11 +1242,16 @@ function economyTick(){
  });
 }
 function moveArmies(){
+ let playerBattle=false;
  state.armies.slice().forEach(a=>{
-  if(!a.target)return;
+  if(!a.target||playerBattle)return;
   a.progress++;
-  if(a.progress>=(a.turns||2))battle(a);
+  if(a.progress>=(a.turns||2)){
+    if(a.f===state.player)playerBattle=true;
+    battle(a);
+  }
  });
+ return playerBattle;
 }
 function aiTurn(){
  Object.keys(FACTIONS).filter(f=>f!==state.player).forEach(f=>{
@@ -1086,7 +1290,10 @@ function randomEvent(){
 }
 function endTurn(){
  state.turn++;state.ap=3;state.period=(state.period+1)%3;if(state.period===0)state.month++;
- economyTick();moveArmies();aiTurn();randomEvent();render();
+ economyTick();
+ const playerBattle=moveArmies();
+ if(!playerBattle){aiTurn();randomEvent();}
+ render();
  if(state.turn%3===0)toast('新的一月開始，請重新檢視前線補給與城內兵力。');
 }
 function log(s){state.log.unshift(s);state.log=state.log.slice(0,40)}
