@@ -2885,3 +2885,253 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.25;ba
   .battle-round-track{display:none}
   .battle-order-grid-v2{grid-template-columns:1fr 1fr}
 }
+
+
+/* =========================================================
+   V0.14 — DEEPER BATTLEFIELD PRESENTATION
+   ========================================================= */
+.battle-screen-v2{
+  grid-template-rows:82px minmax(0,1fr) 208px;
+}
+.battle-stage-v2{
+  overflow:hidden;
+  isolation:isolate;
+}
+.battle-stage-v2:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:0;
+  background:
+    radial-gradient(circle at 50% 88%,rgba(128,91,44,.18),transparent 24%),
+    linear-gradient(180deg,rgba(22,28,24,.05),rgba(8,10,8,.18));
+}
+.battle-depth{
+  position:absolute;
+  pointer-events:none;
+  z-index:1;
+}
+.depth-far{
+  inset:4% -6% 38%;
+  opacity:.46;
+  filter:blur(1px);
+  background:
+    linear-gradient(155deg,transparent 0 11%,#1d241f 11% 19%,transparent 19% 25%,#273129 25% 35%,transparent 35% 42%,#1b211c 42% 55%,transparent 55% 63%,#29322b 63% 76%,transparent 76%);
+}
+.depth-mid{
+  left:-4%;right:-4%;bottom:24%;height:31%;
+  opacity:.38;
+  background:
+    repeating-linear-gradient(168deg,rgba(33,39,33,.9) 0 28px,rgba(22,27,23,.9) 28px 48px,transparent 48px 74px);
+  clip-path:polygon(0 64%,12% 42%,23% 57%,34% 35%,46% 59%,60% 40%,71% 56%,84% 31%,100% 54%,100% 100%,0 100%);
+}
+.depth-near{
+  left:-5%;right:-5%;bottom:-3%;height:28%;
+  z-index:2;
+  opacity:.72;
+  background:
+    linear-gradient(180deg,rgba(60,58,44,.08),rgba(18,20,17,.85)),
+    repeating-linear-gradient(12deg,rgba(151,130,88,.04) 0 2px,transparent 2px 16px);
+  clip-path:polygon(0 18%,17% 10%,36% 20%,53% 8%,71% 16%,84% 6%,100% 14%,100% 100%,0 100%);
+}
+.battle-banner-strip{
+  position:absolute;
+  left:50%;
+  top:80px;
+  transform:translateX(-50%);
+  z-index:14;
+  display:grid;
+  grid-template-columns:1fr 34px 1fr;
+  gap:8px;
+  align-items:center;
+  min-width:260px;
+  padding:6px 8px;
+  border:1px solid rgba(167,140,83,.36);
+  background:rgba(8,10,8,.72);
+  backdrop-filter:blur(8px);
+  box-shadow:0 8px 24px rgba(0,0,0,.26);
+}
+.battle-banner-strip span{
+  text-align:center;
+  font-family:"Noto Serif TC",serif;
+  font-size:8px;
+  color:#a59b87;
+  letter-spacing:.1em;
+}
+.battle-banner-strip b{
+  width:30px;height:30px;
+  display:grid;place-items:center;
+  border:1px solid #8a6a3d;
+  background:#2a2014;
+  color:#dfc27b;
+  font-family:"Noto Serif TC",serif;
+  font-size:15px;
+}
+.battle-scene-caption{
+  position:absolute;
+  left:50%;
+  bottom:16px;
+  transform:translateX(-50%);
+  z-index:11;
+  min-width:220px;
+  padding:8px 12px;
+  text-align:center;
+  border:1px solid rgba(138,118,79,.34);
+  background:rgba(8,10,8,.76);
+  backdrop-filter:blur(8px);
+}
+.battle-scene-caption small,
+.battle-scene-caption span{
+  display:block;
+  font-size:6.5px;
+  color:#7f7667;
+}
+.battle-scene-caption b{
+  display:block;
+  margin:2px 0;
+  font-family:"Noto Serif TC",serif;
+  font-size:14px;
+  color:#dbc9a4;
+  letter-spacing:.08em;
+}
+
+/* Tactic-specific battlefield reactions */
+.battle-stage-v2.tactic-assault .battle-field-art-v2{
+  animation:battlePush .34s ease-out;
+}
+.battle-stage-v2.tactic-assault .battle-city-wall{
+  filter:brightness(1.12) drop-shadow(0 0 18px rgba(176,88,49,.20));
+}
+.battle-stage-v2.tactic-volley .battle-arrows i{
+  animation-duration:.72s;
+  opacity:1;
+}
+.battle-stage-v2.tactic-cavalry .battle-attacker-army{
+  animation:cavalryRush .7s ease-out;
+}
+.battle-stage-v2.tactic-fire:after{
+  content:"";
+  position:absolute;
+  right:15%;
+  bottom:19%;
+  width:24%;
+  height:32%;
+  z-index:8;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at 50% 86%,rgba(255,174,71,.72),rgba(186,69,35,.36) 28%,transparent 62%),
+    radial-gradient(circle at 35% 70%,rgba(255,190,82,.48),transparent 42%);
+  filter:blur(7px);
+  animation:firePulse 1.3s ease-in-out infinite alternate;
+}
+.battle-stage-v2.tactic-siege .battle-city-wall{
+  box-shadow:0 0 0 2px rgba(150,124,73,.12),0 18px 35px rgba(0,0,0,.48);
+}
+@keyframes battlePush{
+  0%{transform:translateX(-5px)}
+  40%{transform:translateX(7px)}
+  100%{transform:translateX(0)}
+}
+@keyframes cavalryRush{
+  0%{transform:translateX(-26px) scale(.97)}
+  65%{transform:translateX(14px) scale(1.02)}
+  100%{transform:translateX(0) scale(1)}
+}
+@keyframes firePulse{
+  from{opacity:.56;transform:scale(.94)}
+  to{opacity:.94;transform:scale(1.06)}
+}
+
+/* Make the illustrated field feel less like separate UI parts */
+.battle-field-art-v2{
+  opacity:.92;
+}
+.battle-field-art-v2 .battle-mountains{opacity:.30}
+.battle-field-art-v2 .battle-attacker-army{left:5%;bottom:5%;width:46%;height:39%}
+.battle-field-art-v2 .battle-city-wall{right:5%;bottom:8%;width:41%;height:47%}
+.battle-field-art-v2 .battle-defenders{right:14%;bottom:40%;width:31%}
+.battle-field-art-v2 .battle-unit-row i{
+  width:11px;height:20px;
+  box-shadow:0 -7px 0 -2px #222722,8px 8px 0 -3px #796747,0 2px 6px rgba(0,0,0,.6);
+}
+.battle-field-art-v2 .battle-city-wall .wall,
+.battle-field-art-v2 .battle-city-wall .tower{
+  background:
+    linear-gradient(180deg,rgba(59,56,43,.98),rgba(35,34,28,.98)),
+    repeating-linear-gradient(90deg,#282821 0 36px,#343127 36px 38px);
+}
+.battle-field-art-v2 .battle-city-wall .wall{
+  border-color:#827152;
+}
+.battle-field-art-v2 .battle-city-wall .tower{
+  border-color:#8c7856;
+}
+
+/* Commander presence */
+.battle-commander-card{
+  box-shadow:0 14px 36px rgba(0,0,0,.42);
+}
+.battle-commander-card:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:linear-gradient(110deg,rgba(255,255,255,.025),transparent 40%);
+}
+.commander-portrait{
+  box-shadow:inset 0 0 22px rgba(0,0,0,.42),0 6px 16px rgba(0,0,0,.32);
+}
+.commander-portrait:after{
+  content:"";
+  position:absolute;
+  inset:auto 5px 5px;
+  height:1px;
+  background:linear-gradient(90deg,transparent,#9c875c,transparent);
+}
+.battle-commander-card.attacker .commander-copy>b{color:#dce7e6}
+.battle-commander-card.defender .commander-copy>b{color:#e2c8be}
+
+/* Battle orders should feel decisive, not like generic form buttons */
+.battle-order-grid-v2 button{
+  min-height:74px;
+}
+.battle-order-grid-v2 button:hover>i{
+  border-color:#b38a4f;
+  color:#f0d391;
+  box-shadow:0 0 16px rgba(181,139,76,.16);
+}
+.battle-order-grid-v2 button:active{
+  transform:translateY(1px) scale(.995);
+}
+.battle-order-grid-v2 button>em{
+  align-self:stretch;
+  display:grid;
+  place-items:center;
+  min-width:38px;
+  background:rgba(255,255,255,.018);
+}
+.battle-force-strip span:first-child{border-left-color:#796b51}
+.battle-force-strip span:nth-child(2){border-left-color:#6f8791}
+.battle-force-strip span:nth-child(3){border-left-color:#845d49}
+
+/* Reduce 'dashboard' feel */
+.battle-feed-v2{
+  background:linear-gradient(180deg,#10120f,#0b0d0b);
+}
+.battle-orders-v2{
+  background:
+    radial-gradient(circle at 78% 0,rgba(159,120,55,.05),transparent 32%),
+    #0e100d;
+}
+.battle-feed-v2 p{
+  line-height:1.6;
+}
+.battle-impact{
+  bottom:52px;
+}
+
+@media(max-width:900px){
+  .battle-banner-strip{display:none}
+  .battle-scene-caption{bottom:8px;min-width:180px}
+  .battle-impact{bottom:42px;width:280px}
+}
