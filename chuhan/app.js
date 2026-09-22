@@ -1072,7 +1072,7 @@ function battleTactic(id){
  a.supply=Math.max(0,a.supply-meta.supply);
  a.morale=clamp(a.morale+(ratio>=1?3:-5),18,100);
  b.defMorale=clamp(b.defMorale+meta.defMorale+(ratio<1?2:-3),15,100);
- b.last={name:meta.name,lossA,lossD,ratio,special:meta.special||null};
+ b.last={name:meta.name,lossA,lossD,ratio,special:meta.special||null,tactic:id,ts:Date.now()};
  b.feed.unshift(meta.note+' 我軍損失 '+fmt(lossA)+'，敵軍損失 '+fmt(lossD)+'。');
  if(meta.special)b.feed.unshift(meta.special+'。');
 
@@ -1152,9 +1152,11 @@ function renderBattleScene(){
     '<div class="battle-round-track">'+[1,2,3].map(n=>'<div class="'+(n<b.round?'done':n===b.round?'active':'')+'"><i>'+n+'</i><span>'+(n===1?'接敵':n===2?'激戰':'決勝')+'</span></div>').join('')+'</div>'+
     '<div class="battle-phase-badge">交戰中</div>'+
    '</header>'+
-   '<section class="battle-stage battle-stage-v2">'+
+   '<section class="battle-stage battle-stage-v2 tactic-'+(b.last?.tactic||'idle')+'">'+
     '<div class="battle-atmosphere"></div>'+
     '<div class="battle-cinematic-overlay"></div>'+
+    '<div class="battle-depth depth-far"></div><div class="battle-depth depth-mid"></div><div class="battle-depth depth-near"></div>'+
+    '<div class="battle-banner-strip"><span>'+FACTIONS[a.f].name+'軍</span><b>攻</b><span>'+FACTIONS[d.f].name+'軍</span></div>'+
     '<div class="battle-side-hud attacker battle-commander-card">'+
       '<div class="commander-portrait abstract ours"><span>'+b.attO.name.slice(0,1)+'</span></div>'+
       '<div class="commander-copy"><small>攻方主將 · '+FACTIONS[a.f].name+'</small><b>'+b.attO.name+'</b><em>'+(deputy?'副將 '+deputy.name:'無副將')+(strategist?' · 軍師 '+strategist.name:'')+'</em></div>'+
@@ -1175,6 +1177,7 @@ function renderBattleScene(){
       '<small>'+(momentum>=62?'我軍正在壓迫城防':momentum<=40?'守軍仍牢牢掌握局勢':'戰線膠著，勝負未定')+'</small>'+
     '</div>'+
     '<div class="battle-field-art battle-field-art-v2">'+
+      '<div class="battle-scene-caption"><small>'+d.region+' · '+d.terrain+'</small><b>'+d.name+'城下</b><span>城防 '+d.def+' · 守軍 '+fmt(def)+'</span></div>'+
       '<div class="battle-mountains"></div>'+
       '<div class="battle-smoke s1"></div><div class="battle-smoke s2"></div>'+
       '<div class="battle-front-label ours"><i></i><b>'+FACTIONS[a.f].name+'</b><span>前軍</span></div>'+
@@ -1190,7 +1193,7 @@ function renderBattleScene(){
    '<section class="battle-lower battle-lower-v2">'+
     '<div class="battle-feed battle-feed-v2"><div class="section-title">戰況紀錄 <span>LIVE</span></div>'+b.feed.slice(0,5).map((x,i)=>'<p class="'+(i===0?'latest':'')+'"><time>'+(14+Math.max(0,4-i))+':'+String(20+i*2).padStart(2,'0')+'</time>'+x+'</p>').join('')+'</div>'+
     '<div class="battle-orders battle-orders-v2">'+
-      '<div class="battle-orders-head"><div><div class="section-title">軍令</div><p>選擇本階段作戰方針</p></div><div class="battle-force-strip"><span>步 '+fmt(a.inf)+'</span><span>弩 '+fmt(a.xbow)+'</span><span>騎 '+fmt(a.cav)+'</span></div></div>'+
+      '<div class="battle-orders-head"><div><div class="section-title">軍令</div><p>選擇本階段作戰方針 · 軍令將立即推進戰況</p></div><div class="battle-force-strip"><span>步 '+fmt(a.inf)+'</span><span>弩 '+fmt(a.xbow)+'</span><span>騎 '+fmt(a.cav)+'</span></div></div>'+
       '<div class="battle-order-grid battle-order-grid-v2">'+
        tacticCards.map(([id,mark,name,sub,note])=>'<button data-battle-tactic="'+id+'"><i>'+mark+'</i><div><b>'+name+'</b><strong>'+sub+'</strong><small>'+note+'</small></div><em>執行</em></button>').join('')+
        '<button class="retreat" id="battleRetreat"><i>退</i><div><b>撤軍</b><strong>保存戰力</strong><small>停止攻城並返回整備</small></div><em>撤退</em></button>'+
