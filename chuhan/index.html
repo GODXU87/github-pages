@@ -3,211 +3,84 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0c0d0d">
-<meta name="description" content="NOIRXU 楚漢爭霸 — 楚漢背景大型網頁歷史戰略遊戲。">
-<title>NOIRXU 楚漢爭霸｜天下</title>
-<link rel="stylesheet" href="./styles.css">
+<meta name="theme-color" content="#090806">
+<title>NOIRXU 楚漢爭霸｜合成戰線</title>
+<style>
+:root{--bg:#090806;--p:#15120d;--line:#3a3223;--gold:#d1ae62;--gold2:#f1d594;--red:#8c3027;--green:#2f5e56;--text:#eee8dc;--muted:#8e877b}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:radial-gradient(circle at 20% 0,#1c1710,#090806 42%,#050504);color:var(--text);font-family:"PingFang TC","Microsoft JhengHei",serif}button{font:inherit;color:inherit}.app{width:min(1380px,100%);margin:auto;padding:18px}.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}.brand{display:flex;align-items:center;gap:12px}.seal{width:46px;height:46px;display:grid;place-items:center;border:1px solid #8c7447;background:#17110c;color:var(--gold2);font-weight:900;box-shadow:inset 0 0 0 3px #090806}.eyebrow{font:9px ui-sans-serif;letter-spacing:.18em;color:#7f776a}.brand h1{font-size:20px;margin:3px 0 0;letter-spacing:.08em}.brand h1 span{font-size:12px;color:var(--gold);font-weight:500}.tools button{width:38px;height:38px;border:1px solid var(--line);border-radius:11px;background:#11100d;cursor:pointer}.layout{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(360px,.65fr);gap:16px}.panel{border:1px solid var(--line);border-radius:22px;background:linear-gradient(180deg,#17140f,#0e0d0a);box-shadow:0 26px 70px #0008;overflow:hidden}.battle{display:grid;grid-template-rows:auto 1fr auto;min-height:710px}.army{padding:12px 16px;display:flex;align-items:center;gap:14px;background:#0c0b09aa}.army.enemy{border-bottom:1px solid var(--line)}.army.player{border-top:1px solid var(--line)}.badge{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-weight:900;border:1px solid}.enemy .badge{background:#421c18;color:#ffc3b7;border-color:#7b3b33}.player .badge{background:#17352f;color:#b9e5db;border-color:#3e655e}.army .meta{min-width:100px}.army .meta small{display:block;color:var(--muted);font:9px ui-sans-serif;margin-bottom:2px}.army .meta b{font-size:13px}.hpwrap{flex:1}.hptext{display:flex;justify-content:space-between;font:10px ui-sans-serif;color:#bdb5a8;margin-bottom:5px}.hp{height:7px;border-radius:9px;background:#060605;overflow:hidden;border:1px solid #ffffff0e}.hp i{display:block;height:100%;width:100%;transition:width .2s}.enemy .hp i{background:linear-gradient(90deg,#6e211c,#d65f4d)}.player .hp i{background:linear-gradient(90deg,#214b44,#7db3aa)}
+.field{position:relative;min-height:548px;overflow:hidden;background:linear-gradient(180deg,#4b211326,transparent 30%,#0a090722 50%,#17352f24),radial-gradient(ellipse at center,#b9994b1f,transparent 52%),linear-gradient(90deg,#0f0d09,#1c1811,#0f0d09)}.field:before{content:"";position:absolute;inset:0;background-image:linear-gradient(#ddc99408 1px,transparent 1px),linear-gradient(90deg,#ddc99408 1px,transparent 1px);background-size:30px 30px}.field:after{content:"";position:absolute;inset:0;box-shadow:inset 0 0 100px #000;pointer-events:none}.base{position:absolute;left:50%;transform:translateX(-50%);z-index:5;display:flex;align-items:center;gap:7px;font:9px ui-sans-serif;color:#a79d8d}.base.topbase{top:12px}.base.botbase{bottom:12px}.flag{width:36px;height:26px;display:grid;place-items:center;font-weight:900;clip-path:polygon(0 0,100% 0,87% 50%,100% 100%,0 100%);background:#572019;color:#ffd8cf;border-left:4px solid #a85c4d}.botbase .flag{background:#163a34;color:#d3f0e9;border-left-color:#6c9a91}.lanes{position:absolute;inset:58px 10%}.lanes i{position:absolute;top:0;bottom:0;border-left:1px dashed #e8d39c18}.lanes i:nth-child(1){left:16.6%}.lanes i:nth-child(2){left:50%}.lanes i:nth-child(3){left:83.3%}.front{position:absolute;left:9%;right:9%;top:50%;height:1px;background:linear-gradient(90deg,transparent,#dfbd6e77,transparent)}.front span{position:absolute;left:50%;top:-8px;transform:translateX(-50%);font:8px ui-sans-serif;letter-spacing:.2em;color:#7e7464;background:#17130e;padding:1px 7px}.units{position:absolute;inset:58px 7%;z-index:4}.unit{position:absolute;width:48px;height:48px;transform:translate(-50%,-50%);transition:top .08s linear,left .15s}.unit .body{position:absolute;inset:4px;border-radius:14px;display:grid;place-items:center;font-size:16px;font-weight:900;border:1px solid #ffffff1d;box-shadow:0 10px 18px #0008}.unit.p .body{background:linear-gradient(145deg,#21473f,#10231f);color:#d7f0e9}.unit.e .body{background:linear-gradient(145deg,#5b2a24,#291411);color:#ffd2ca}.unit.hero .body{border-color:#d6b261aa;color:#ffe39a;box-shadow:0 0 20px #cda95833,0 10px 18px #0008}.unit .tag{position:absolute;right:0;top:0;z-index:2;background:#090806;border:1px solid #75633e;border-radius:7px;padding:1px 4px;font:7px ui-sans-serif;color:#d8c99e}.unit .mini{position:absolute;left:6px;right:6px;bottom:-2px;height:3px;background:#080705;border-radius:8px;overflow:hidden}.unit .mini i{display:block;height:100%;background:#d0b467}.unit.hit .body{animation:hit .14s}@keyframes hit{50%{transform:scale(.8);filter:brightness(1.8)}}.toast{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:9;background:#080705e8;border:1px solid #d3b26777;color:var(--gold2);border-radius:11px;padding:7px 12px;font-size:11px;opacity:0;pointer-events:none}.toast.show{animation:toast 1.25s}@keyframes toast{0%{opacity:0;transform:translate(-50%,-35%)}20%,70%{opacity:1;transform:translate(-50%,-50%)}100%{opacity:0;transform:translate(-50%,-65%)}}
+.cmd{padding:18px;display:flex;flex-direction:column;gap:14px}.cmdhead{display:flex;justify-content:space-between;align-items:center}.cmdhead h2{font-size:22px;margin:3px 0 0}.supply{text-align:right;border-left:1px solid var(--line);padding-left:15px;font:9px ui-sans-serif;color:var(--muted)}.supply strong{display:block;font-size:28px;color:var(--gold2);line-height:1}.supply small{display:block;margin-top:3px}.status{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);border-radius:13px;overflow:hidden}.status div{padding:9px 10px;border-right:1px solid var(--line)}.status div:last-child{border:0}.status span{display:block;font:9px ui-sans-serif;color:var(--muted);margin-bottom:3px}.status b{font-size:12px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;aspect-ratio:1;max-height:420px}.cell{position:relative;border:1px solid #dac58f20;border-radius:14px;background:linear-gradient(145deg,#ffffff08,#0003);display:grid;place-items:center;cursor:pointer;transition:.15s;overflow:hidden}.cell:hover{border-color:#d8b86d66}.cell.sel{border-color:#e1c579;box-shadow:0 0 0 2px #d5b7651c,inset 0 0 24px #caa75c14}.cell.empty{cursor:default}.cell.empty:after{content:"·";color:#ffffff14;font-size:20px}.token{text-align:center;z-index:2}.glyph{width:43px;height:43px;margin:0 auto 4px;border-radius:13px;display:grid;place-items:center;background:linear-gradient(145deg,#262116,#13110d);border:1px solid #ffffff18;font-size:20px;font-weight:900;color:#eddfbb}.token.hero .glyph{color:#ffe39a;border-color:#9b814c}.name{font-size:10px;font-weight:900;white-space:nowrap}.rank{display:block;margin-top:2px;font:8px ui-sans-serif;color:#8d8578}.rank em{font-style:normal;color:#cbaa5d;letter-spacing:-1px}.cell:not(.empty):after{content:"出";position:absolute;right:5px;bottom:5px;width:16px;height:16px;border-radius:5px;display:grid;place-items:center;background:#1b3c36;color:#9dcfc6;font-size:8px}.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.actions button,.full{border:1px solid;border-radius:13px;padding:12px;cursor:pointer;text-align:left}.recruit{background:linear-gradient(145deg,#76572a,#4d371d);border-color:#967443}.deploy{background:linear-gradient(145deg,#1d403a,#112620);border-color:#3b615b}.actions button:disabled{opacity:.35;cursor:not-allowed}.actions span{display:block;font-weight:900;font-size:12px}.actions b{display:block;margin-top:3px;font:9px ui-sans-serif;color:#ffffff88}.tip{font:10px/1.5 ui-sans-serif;color:#847c70}.foot{display:flex;justify-content:space-between;padding:10px 3px 0;color:#5f5a51;font:8px ui-sans-serif;letter-spacing:.12em}
+.modal{position:fixed;inset:0;z-index:50;background:#040403d9;backdrop-filter:blur(14px);display:grid;place-items:center;padding:16px;opacity:0;pointer-events:none;transition:.2s}.modal.show{opacity:1;pointer-events:auto}.modalcard{width:min(610px,100%);background:linear-gradient(145deg,#1c1811,#0e0c09);border:1px solid #dbc58b33;border-radius:25px;padding:28px;box-shadow:0 40px 110px #000}.modalcard h2{font-size:28px;margin:7px 0}.modalcard p{font:12px/1.7 ui-sans-serif;color:#a29b8e}.picks{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:20px 0 10px}.pick{display:flex;gap:12px;align-items:center;text-align:left;border:1px solid var(--line);background:#13110d;border-radius:17px;padding:15px;cursor:pointer}.pick:hover{border-color:#d8b86d77}.big{width:52px;height:52px;flex:0 0 52px;border-radius:50%;display:grid;place-items:center;font-size:22px;font-weight:900}.pick.han .big{background:#15352f;color:#c2e7df;border:1px solid #426a62}.pick.chu .big{background:#49201c;color:#ffc7ba;border:1px solid #7a3b33}.pick strong{display:block;font-size:16px}.pick small{display:block;margin-top:4px;color:#8b8376;font:9px/1.5 ui-sans-serif}.note{font:9px ui-sans-serif;color:#6d675e}.result{text-align:center;max-width:460px}.stamp{width:70px;height:70px;margin:0 auto 14px;display:grid;place-items:center;border:1px solid #9c7f45;box-shadow:inset 0 0 0 4px #111;color:var(--gold2);font-size:34px;font-weight:900;transform:rotate(-3deg)}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:18px 0}.stats div{border:1px solid var(--line);border-radius:12px;padding:10px}.stats span{display:block;color:#8b8376;font:8px ui-sans-serif}.stats b{display:block;margin-top:3px}.full{width:100%;text-align:center;background:linear-gradient(145deg,#76572a,#4d371d);border-color:#967443;font-weight:900}
+@media(max-width:960px){.app{padding:10px}.layout{grid-template-columns:1fr}.battle{min-height:580px}.field{min-height:430px}.grid{max-height:none}.brand h1 span{display:none}}
+@media(max-width:560px){.app{padding:7px}.seal{width:40px;height:40px}.brand h1{font-size:16px}.tools button{width:34px;height:34px}.panel{border-radius:17px}.battle{min-height:490px}.field{min-height:360px}.army{padding:9px}.badge{width:32px;height:32px}.army .meta{min-width:78px}.army .meta b{font-size:11px}.hptext{font-size:8px}.cmd{padding:13px;gap:11px}.cmdhead h2{font-size:19px}.supply strong{font-size:23px}.grid{gap:5px}.cell{border-radius:11px}.glyph{width:36px;height:36px;border-radius:11px;font-size:17px}.name{font-size:8px}.rank{font-size:7px}.picks{grid-template-columns:1fr}.modalcard{padding:22px 16px}.modalcard h2{font-size:24px}.foot{font-size:7px}}
+</style>
 </head>
 <body>
-<div class="game">
-  <header class="chrome topbar">
-  <section class="logo-block">
-    <div class="noirxu-mark">NOIRXU</div>
-    <div class="game-title">楚漢爭霸</div>
-    <div class="game-sub">CHU–HAN · WAR FOR THE EMPIRE</div>
-  </section>
-  <section class="ruler-banner">
-    <div class="ruler-portrait liubang-portrait"></div>
-    <div class="ruler-copy">
-      <div class="micro">PLAYER RULER</div>
-      <div class="ruler-name" id="topFaction">漢 · 劉邦</div>
-      <div class="ruler-quote" id="topRulerQuote">大丈夫當以天下為心。</div>
-    </div>
-  </section>
-  <section class="global-resources">
-    <div class="resource"><span>金錢</span><b id="gold">0</b></div>
-    <div class="resource"><span>糧草</span><b id="food">0</b></div>
-    <div class="resource"><span>兵力</span><b id="troops">0</b></div>
-    <div class="resource"><span>城池</span><b id="cities">0</b></div>
-    <div class="hidden"><b id="hp">0%</b><b id="cp">0%</b><div class="track"><i id="hbar"></i></div><div class="track"><i id="cbar"></i></div></div>
-  </section>
-  <section class="time-block">
-    <div id="era" class="era">漢元年 · 1月上旬</div>
-    <div id="turn" class="year">公元前206年｜第1旬</div>
-    <button class="advance" id="endBtn"><span>進行</span><small>NEXT TURN</small></button>
-  </section>
-</header>
-
-  <main class="workspace">
-  <aside class="chrome command-rail">
-    <div class="rail-faction">
-      <div id="crest" class="crest han">漢</div>
-      <b id="ruler">漢 · 劉邦</b>
-      <small id="capital">都城：南鄭</small>
-    </div>
-    <nav class="main-nav">
-      <button class="active" data-nav="city"><span class="nav-glyph">政</span><b>政務</b></button>
-      <button data-nav="army"><span class="nav-glyph">軍</span><b>軍事</b></button>
-      <button data-nav="officer"><span class="nav-glyph">人</span><b>人才</b></button>
-      <button data-nav="diplo"><span class="nav-glyph">外</span><b>外交</b></button>
-      <button data-nav="log"><span class="nav-glyph">情</span><b>情報</b></button>
-    </nav>
-    <div class="rail-bottom">
-      <button class="rail-mini" id="saveBtn">儲存</button>
-      <button class="rail-mini" id="rankBtn">勢力</button>
-      <button class="rail-mini" id="helpBtn">玩法</button>
-    </div>
-  </aside>
-
-  <section class="chrome map-shell">
-    <div class="map-head">
-      <div>
-        <div class="micro">STRATEGIC MAP</div>
-        <strong>天下圖 · 點選城池即可下令</strong>
-      </div>
-      <div class="map-tools">
-        <button id="expeditionBtn" class="expedition-entry">出征軍議</button>
-        <button id="zoomOut" aria-label="縮小">−</button>
-        <button id="zoomReset" aria-label="重設">◎</button>
-        <button id="zoomIn" aria-label="放大">＋</button>
-      </div>
-    </div>
-    <div class="map-wrap">
-      <div class="map-vignette"></div>
-      <svg id="world" viewBox="0 0 1000 650" aria-label="楚漢天下戰略地圖">
-        <defs>
-          <filter id="softShadow"><feDropShadow dx="0" dy="3" stdDeviation="5" flood-opacity=".55"/></filter>
-<marker id="marchArrow" markerWidth="7" markerHeight="7" refX="5.4" refY="3.5" orient="auto">
-  <path d="M0,0 L7,3.5 L0,7 Z" fill="#d7bd78"/>
-</marker>
-<pattern id="plainHatch" width="18" height="18" patternUnits="userSpaceOnUse" patternTransform="rotate(12)">
-  <path d="M0 18 L18 0" stroke="#b4a77f" stroke-width=".7" opacity=".08"/>
-</pattern>
-          <linearGradient id="landTone" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stop-color="#454232"/>
-            <stop offset=".52" stop-color="#2e342c"/>
-            <stop offset="1" stop-color="#273237"/>
-          </linearGradient>
-        </defs>
-        <g id="viewport">
-    <image class="painted-map" id="paintedMap" href="./assets/chuhan-map-hq.jpg?v=20260921-hq2" x="0" y="0" width="1000" height="650" preserveAspectRatio="xMidYMid slice"/>
-    <rect class="painted-map-shade" x="0" y="0" width="1000" height="650"/>
-          <path class="land" d="M90 188C170 80 335 44 490 74C620 98 704 68 826 114C938 157 975 271 923 359C893 410 905 478 838 541C757 615 655 590 576 554C474 605 354 592 277 542C188 483 111 473 79 393C53 323 45 251 90 188Z"/>
-          <path class="river" d="M140 286C250 261 343 300 451 280C567 258 647 309 756 290C830 278 879 300 925 331"/>
-          <path class="river small" d="M461 126C473 183 505 240 529 300C544 337 558 386 589 451"/>
-<path class="plain-texture" d="M112 195C255 94 422 95 566 125C681 149 804 128 890 196C917 236 908 288 883 318C755 282 662 307 556 294C439 278 344 295 241 276C188 257 146 231 112 195Z"/>
-<g class="forest-clusters">
-  <g transform="translate(190 420)"><path d="M0 13L7 0L14 13Z"/><path d="M11 14L18 1L25 14Z"/><path d="M23 13L30 0L37 13Z"/></g>
-  <g transform="translate(540 458)"><path d="M0 13L7 0L14 13Z"/><path d="M11 14L18 1L25 14Z"/><path d="M23 13L30 0L37 13Z"/></g>
-  <g transform="translate(700 272)"><path d="M0 13L7 0L14 13Z"/><path d="M11 14L18 1L25 14Z"/><path d="M23 13L30 0L37 13Z"/></g>
-</g>
-          <g class="mountains">
-            <path d="M232 386L281 307L315 381Z"/><path d="M295 371L345 291L392 367Z"/><path d="M370 424L421 355L461 425Z"/>
-            <path d="M188 506L224 452L259 509Z"/><path d="M566 470L612 400L656 476Z"/><path d="M610 490L650 430L695 500Z"/>
-          </g>
-          <g class="region-labels">
-            <text x="752" y="82">燕</text><text x="638" y="150">趙</text><text x="816" y="214">齊</text>
-            <text x="488" y="177">河東</text><text x="342" y="255">關中</text><text x="555" y="308">河南</text>
-            <text x="808" y="438">楚</text><text x="222" y="396">漢中</text><text x="119" y="562">巴蜀</text><text x="545" y="575">荊楚</text>
-          </g>
-          <g class="contours">
-  <path d="M132 234C234 190 354 184 459 215C575 248 712 228 861 183"/>
-  <path d="M112 354C222 318 322 325 425 355C547 391 675 372 889 329"/>
-  <path d="M160 455C274 421 382 433 493 469C594 502 720 500 839 462"/>
-  <path d="M283 121C338 151 389 159 452 144"/>
-  <path d="M650 118C708 143 760 149 824 132"/>
-</g>
-<g class="pass-labels">
-  <text x="340" y="365">陳倉道</text>
-  <text x="462" y="392">武關</text>
-  <text x="612" y="324">滎陽道</text>
-</g>
-<g id="roads"></g>
-          <g id="marchLayer"></g>
-          <g id="citiesLayer"></g>
-          <g id="armiesLayer"></g>
-        </g>
-      </svg>
-      <div class="map-legend">
-        <span><i style="background:#365f75"></i>漢</span><span><i style="background:#864238"></i>西楚</span>
-        <span><i style="background:#927638"></i>齊</span><span><i style="background:#695a6f"></i>趙</span>
-      </div>
-      <div id="zoomText" class="zoom-indicator">100%</div>
-      <div id="mapTooltip" class="map-tooltip hidden"></div>
-    </div>
-  </section>
-
-  <aside class="chrome context-panel">
-    <div class="context-head">
-      <div>
-        <div class="micro">COMMAND PANEL</div>
-        <strong>命令與情報</strong>
-      </div>
-      <div class="context-hint">點城池或左側功能</div>
-    </div>
-    <div class="context-scroll" id="inspector"></div>
-    <div class="context-objectives">
-      <div id="obj1" class="objective-item"><i></i><span>奪取三秦</span></div>
-      <div id="obj2" class="objective-item"><i></i><span>控制洛陽</span></div>
-      <div id="obj3" class="objective-item"><i></i><span>攻取彭城</span></div>
-    </div>
-  </aside>
+<div class="app">
+<header class="top"><div class="brand"><span class="seal">楚漢</span><div><div class="eyebrow">NOIRXU PLAY / 006</div><h1>楚漢爭霸 <span>合成戰線</span></h1></div></div><div class="tools"><button id="restart">↻</button></div></header>
+<main class="layout">
+<section class="panel battle">
+<div class="army enemy"><div class="badge" id="eb">楚</div><div class="meta"><small>敵軍</small><b id="en">西楚軍</b></div><div class="hpwrap"><div class="hptext"><span id="ec">項羽</span><b id="eht">1000 / 1000</b></div><div class="hp"><i id="eh"></i></div></div></div>
+<div class="field"><div class="base topbase"><span class="flag" id="ef">楚</span><small>敵軍本陣</small></div><div class="lanes"><i></i><i></i><i></i></div><div class="front"><span>戰線</span></div><div class="units" id="units"></div><div class="base botbase"><span class="flag" id="pf">漢</span><small>我軍本陣</small></div><div class="toast" id="toast"></div></div>
+<div class="army player"><div class="badge" id="pb">漢</div><div class="meta"><small>我軍</small><b id="pn">漢軍</b></div><div class="hpwrap"><div class="hptext"><span id="pc">劉邦</span><b id="pht">1000 / 1000</b></div><div class="hp"><i id="ph"></i></div></div></div>
+</section>
+<section class="panel cmd">
+<div class="cmdhead"><div><div class="eyebrow">FIELD COMMAND</div><h2>軍陣合成</h2></div><div class="supply">軍令<strong id="supply">30</strong><small>+2 / 秒</small></div></div>
+<div class="status"><div><span>波次</span><b id="wave">1</b></div><div><span>戰場壓力</span><b id="pressure">均勢</b></div><div><span>名將</span><b id="heroes">0 / 5</b></div></div>
+<div class="grid" id="grid"></div>
+<div class="actions"><button class="recruit" id="recruit"><span>招募新兵</span><b>10 軍令</b></button><button class="deploy" id="deploy"><span>全軍出擊</span><b id="ready">0 隊待命</b></button></div>
+<div class="tip">點兩個相同兵種、相同階級即可合成；三階再合成會成為名將。合成後再決定何時全軍出擊。</div>
+</section>
 </main>
-
-<footer class="chrome advisor-bar">
-  <div class="advisor-portrait zhang-portrait"></div>
-  <div class="advisor-copy">
-    <div class="advisor-name" id="advisorName">張良 <small>軍師建言</small></div>
-    <div class="advisor-text" id="advisorText">主公，欲取天下，當先定關中，再圖東進。</div>
-  </div>
-  <div class="quick-actions">
-    <div class="quick-row">
-      <button data-quick="nanzheng">南鄭</button>
-      <button data-quick="chenchang">陳倉</button>
-      <button data-quick="luoyang">洛陽</button>
-      <button data-quick="pengcheng">彭城</button>
-    </div>
-  </div>
-  <div class="turn-panel">
-    <div class="micro">本旬軍令</div>
-    <div id="ap" class="ap-row"></div>
-    <div id="ticker" class="ticker">天下未定。</div>
-  </div>
-</footer>
+<footer class="foot"><span>V0.3.0 PLAYABLE CORE</span><span>合成 · 出兵 · 名將 · 自動戰鬥</span></footer>
 </div>
-
-<div class="modal-bg hidden" id="modalBg"><div class="modal" id="modal"></div></div>
-
-<div class="start-screen" id="startScreen">
-  <div class="start-card start-clean">
-    <div class="start-copy">
-      <div class="noirxu-mark">NOIRXU</div>
-      <h1>楚漢爭霸</h1>
-      <div class="start-sub">CHU–HAN · WAR FOR THE EMPIRE</div>
-      <p>公元前206年，秦亡而天下未定。治理城池、整軍東進、任用群才，從漢中開始爭奪天下。</p>
-      <div class="scenario-card">
-        <div><b>鴻門之後</b><small>公元前206年 · 群雄割據</small></div>
-        <span>標準劇本</span>
-      </div>
-      <div class="micro faction-label">選擇勢力</div>
-      <div class="faction-choice">
-        <button class="active" data-fchoice="han"><b>漢</b><small>劉邦｜人才與後勤</small></button>
-        <button data-fchoice="chu"><b>西楚</b><small>項羽｜正面軍力</small></button>
-        <button data-fchoice="qi"><b>齊</b><small>田榮｜經濟優勢</small></button>
-        <button data-fchoice="jiu"><b>九江</b><small>英布｜機動進攻</small></button>
-      </div>
-      <div class="start-actions">
-        <button id="continueBtn" class="btn hidden">繼續遊戲</button>
-        <button id="startGame" data-f="han" class="btn primary">開始爭霸</button>
-      </div>
-    </div>
-    <div class="start-portrait-panel">
-      <div class="start-ruler liubang-portrait"></div>
-      <div class="start-portrait-caption"><span>漢王</span><b>劉邦</b><small>知人善任 · 漢中起兵</small></div>
-    </div>
-  </div>
-</div>
-<button id="newBtn" class="hidden">新遊戲</button>
-<script src="./app.js"></script>
+<div class="modal show" id="fmodal"><div class="modalcard"><div class="eyebrow">CHOOSE YOUR SIDE</div><h2>天下未定，擇主而事</h2><p>選擇陣營，合成兵陣、召出名將，攻破敵軍本陣。</p><div class="picks"><button class="pick han" data-f="han"><span class="big">漢</span><div><strong>漢軍</strong><small>劉邦 · 韓信 · 張良 · 樊噲 · 彭越</small></div></button><button class="pick chu" data-f="chu"><span class="big">楚</span><div><strong>西楚軍</strong><small>項羽 · 范增 · 龍且 · 鍾離眛 · 季布</small></div></button></div><small class="note">核心玩法版：兩陣營基礎數值對稱，名將技能後續會擴充。</small></div></div>
+<div class="modal" id="rmodal"><div class="modalcard result"><div class="stamp" id="stamp">勝</div><div class="eyebrow">BATTLE COMPLETE</div><h2 id="rtitle">大破敵軍</h2><p id="rdesc"></p><div class="stats"><div><span>最高波次</span><b id="rw">1</b></div><div><span>召出名將</span><b id="rh">0</b></div><div><span>殲敵</span><b id="rk">0</b></div></div><button class="full" id="again">再戰一局</button></div></div>
+<script>
+(function(){
+'use strict';
+var T={
+ infantry:{g:'步',n:'步卒',hp:115,a:18,s:4.0,r:7,c:730},
+ archer:{g:'弓',n:'弓手',hp:78,a:22,s:3.5,r:14,c:900},
+ cavalry:{g:'騎',n:'騎兵',hp:100,a:25,s:5.8,r:7,c:760},
+ guard:{g:'盾',n:'盾衛',hp:155,a:13,s:3.0,r:7,c:820},
+ tactician:{g:'策',n:'謀士',hp:70,a:30,s:3.2,r:17,c:1050}
+};
+var K=Object.keys(T);
+var F={
+ han:{s:'漢',n:'漢軍',c:'劉邦',h:{infantry:'樊噲',archer:'彭越',cavalry:'韓信',guard:'英布',tactician:'張良'}},
+ chu:{s:'楚',n:'西楚軍',c:'項羽',h:{infantry:'季布',archer:'鍾離眛',cavalry:'龍且',guard:'項莊',tactician:'范增'}}
+};
+var R=['新兵','精兵','銳士','名將'],MAX=1000,$=function(i){return document.getElementById(i)};
+var S={run:false,f:'han',ef:'chu',sp:30,g:new Array(16).fill(null),sel:null,u:[],ph:MAX,eh:MAX,w:1,t:0,st:0,spt:0,hc:0,k:0,id:1,last:0,diff:1};
+function ch(a){return a[Math.floor(Math.random()*a.length)]}
+function cl(v,a,b){return Math.max(a,Math.min(b,v))}
+function fa(side){return F[side==='p'?S.f:S.ef]}
+function tname(x){return x.r===4?fa('p').h[x.t]:T[x.t].n}
+function toast(m){var x=$('toast');x.textContent=m;x.classList.remove('show');void x.offsetWidth;x.classList.add('show')}
+function choose(k){S.f=k;S.ef=k==='han'?'chu':'han';var p=F[S.f],e=F[S.ef];$('pb').textContent=p.s;$('pf').textContent=p.s;$('pn').textContent=p.n;$('pc').textContent=p.c;$('eb').textContent=e.s;$('ef').textContent=e.s;$('en').textContent=e.n;$('ec').textContent=e.c;$('fmodal').classList.remove('show');reset(false);toast(p.n+'列陣，迎戰'+e.n)}
+function reset(show){S.run=!show;S.sp=30;S.g=new Array(16).fill(null);S.sel=null;S.u=[];S.ph=MAX;S.eh=MAX;S.w=1;S.t=0;S.st=0;S.spt=0;S.hc=0;S.k=0;S.id=1;S.diff=1;$('units').innerHTML='';$('rmodal').classList.remove('show');if(show){$('fmodal').classList.add('show');S.run=false}for(var i=0;i<5;i++)add(false);render()}
+function empties(){return S.g.map(function(v,i){return v?null:i}).filter(function(v){return v!==null})}
+function add(cost){var e=empties();if(!e.length){toast('軍陣已滿，先合成或出擊');return false}if(cost&&S.sp<10){toast('軍令不足');return false}if(cost)S.sp-=10;S.g[ch(e)]={t:ch(K),r:1};render();return true}
+function cell(i){var x=S.g[i];if(!x){S.sel=null;grid();return}if(S.sel===null){S.sel=i;grid();return}if(S.sel===i){S.sel=null;grid();return}var a=S.g[S.sel];if(a&&a.t===x.t&&a.r===x.r&&a.r<4){var nr=a.r+1;S.g[i]={t:x.t,r:nr};S.g[S.sel]=null;S.sel=null;if(nr===4){S.hc++;toast(fa('p').h[x.t]+' 來援！')}else toast(T[x.t].n+' 升為 '+R[nr-1]);render()}else{S.sel=i;grid()}}
+function deploy(){var a=[];S.g.forEach(function(x,i){if(x)a.push({x:{t:x.t,r:x.r},i:i})});if(!a.length){toast('軍陣中沒有部隊');return}a.forEach(function(v){spawn('p',v.x.t,v.x.r);S.g[v.i]=null});S.sel=null;toast('全軍出擊 · '+a.length+' 隊');render()}
+function stats(t,r,side){var b=T[t],m=1+(r-1)*.72,h=r===4;return{mh:Math.round(b.hp*m*(side==='e'?S.diff:1)),a:Math.round(b.a*m*(h?1.18:1)),s:b.s*(h?1.06:1),r:b.r+(h?2:0),c:b.c*(h?.82:1)}}
+function spawn(side,t,r){var q=stats(t,r,side),lane=Math.floor(Math.random()*3),u={id:S.id++,side:side,t:t,r:r,x:[18,50,82][lane]+Math.random()*5-2.5,y:side==='p'?96:4,h:q.mh,mh:q.mh,a:q.a,s:q.s,rg:q.r,c:q.c,la:0,dead:false};S.u.push(u);var d=document.createElement('div'),n=r===4?F[side==='p'?S.f:S.ef].h[t]:T[t].g;d.className='unit '+side+(r===4?' hero':'');d.id='u'+u.id;d.innerHTML='<span class="tag">'+(r===4?'將':'T'+r)+'</span><div class="body">'+n+'</div><div class="mini"><i></i></div>';$('units').appendChild(d);updateEl(u)}
+function updateEl(u){var d=$('u'+u.id);if(!d)return;d.style.left=u.x+'%';d.style.top=u.y+'%';d.querySelector('.mini i').style.width=cl(u.h/u.mh*100,0,100)+'%'}
+function near(u){var best=null,dist=999;S.u.forEach(function(v){if(v.dead||v.side===u.side)return;var dy=Math.abs(v.y-u.y),dx=Math.abs(v.x-u.x)*.35,d=dy+dx;if(d<dist){dist=d;best=v}});return{v:best,d:dist}}
+function attack(u,v,now){if(now-u.la<u.c)return;u.la=now;var d=u.a*(.88+Math.random()*.24);if(u.t==='cavalry'&&v.t==='archer')d*=1.28;if(u.t==='archer'&&v.t==='guard')d*=.78;if(u.t==='tactician'&&v.t==='guard')d*=1.35;v.h-=d;var ve=$('u'+v.id);if(ve){ve.classList.remove('hit');void ve.offsetWidth;ve.classList.add('hit')}if(u.r===4&&u.t==='tactician'&&Math.random()<.22){S.u.forEach(function(z){if(!z.dead&&z.side!==u.side&&Math.abs(z.y-v.y)<12)z.h-=d*.55});toast(F[u.side==='p'?S.f:S.ef].h[u.t]+' 發動奇策')}}
+function basehit(u,dt){var d=u.a*dt/780;if(u.side==='p')S.eh-=d;else S.ph-=d}
+function battle(dt,now){S.u.forEach(function(u){if(u.dead)return;var n=near(u);if(n.v&&n.d<=u.rg)attack(u,n.v,now);else{u.y+=(u.side==='p'?-1:1)*u.s*dt/1000;if(u.y<=1||u.y>=99){basehit(u,dt);u.y=cl(u.y,1,99)}}if(u.h<=0){u.dead=true;if(u.side==='e')S.k++;var d=$('u'+u.id);if(d){d.style.opacity=0;d.style.transform='translate(-50%,-50%) scale(.3)';setTimeout(function(){d.remove()},160)}}else updateEl(u)});S.u=S.u.filter(function(u){return !u.dead})}
+function ai(dt){S.st+=dt;var iv=Math.max(950,2800-S.w*115);if(S.st>=iv){S.st=0;var q=Math.random(),r=1;if(S.w>=3&&q>.62)r=2;if(S.w>=6&&q>.82)r=3;if(S.w>=10&&q>.95)r=4;spawn('e',ch(K),r)}}
+function finish(win){if(!S.run)return;S.run=false;$('stamp').textContent=win?'勝':'敗';$('rtitle').textContent=win?'大破敵軍':'本陣失守';$('rdesc').textContent=win?fa('p').n+'攻破'+fa('e').n+'本陣。':fa('e').n+'突破防線，重新整軍再戰。';$('rw').textContent=S.w;$('rh').textContent=S.hc;$('rk').textContent=S.k;$('rmodal').classList.add('show')}
+function grid(){var g=$('grid');g.innerHTML='';S.g.forEach(function(x,i){var b=document.createElement('button');b.className='cell '+(x?'':'empty')+(S.sel===i?' sel':'');if(x){var n=tname(x);b.innerHTML='<div class="token '+(x.r===4?'hero':'')+'"><div class="glyph">'+(x.r===4?n.substring(0,1):T[x.t].g)+'</div><div class="name">'+n+'</div><span class="rank">'+R[x.r-1]+' <em>'+'★'.repeat(x.r)+'</em></span></div>';b.onclick=function(){cell(i)}}g.appendChild(b)})}
+function hud(){var p=cl(S.ph,0,MAX),e=cl(S.eh,0,MAX);$('ph').style.width=p/MAX*100+'%';$('eh').style.width=e/MAX*100+'%';$('pht').textContent=Math.ceil(p)+' / '+MAX;$('eht').textContent=Math.ceil(e)+' / '+MAX;$('supply').textContent=Math.floor(S.sp);$('wave').textContent=S.w;$('heroes').textContent=S.hc+' / 5';var r=S.g.filter(Boolean).length;$('ready').textContent=r+' 隊待命';$('recruit').disabled=S.sp<10||!empties().length;$('deploy').disabled=!r;var pp=S.u.filter(function(u){return u.side==='p'}).reduce(function(a,u){return a+u.r},0),ep=S.u.filter(function(u){return u.side==='e'}).reduce(function(a,u){return a+u.r},0);$('pressure').textContent=pp>ep+2?'我軍優勢':ep>pp+2?'敵軍壓境':'均勢'}
+function render(){grid();hud()}
+function tick(ts){if(!S.last)S.last=ts;var dt=Math.min(50,ts-S.last);S.last=ts;if(S.run){S.t+=dt;S.spt+=dt;if(S.spt>=1000){var n=Math.floor(S.spt/1000);S.sp=Math.min(99,S.sp+n*2);S.spt-=n*1000}var nw=Math.floor(S.t/20000)+1;if(nw!==S.w){S.w=nw;S.diff=1+(S.w-1)*.055;toast('第 '+S.w+' 波 · 敵軍增援')}ai(dt);battle(dt,ts);if(S.eh<=0){S.eh=0;finish(true)}else if(S.ph<=0){S.ph=0;finish(false)}hud()}requestAnimationFrame(tick)}
+document.querySelectorAll('.pick').forEach(function(b){b.onclick=function(){choose(b.dataset.f)}});
+$('recruit').onclick=function(){add(true)};$('deploy').onclick=deploy;$('restart').onclick=function(){reset(true)};$('again').onclick=function(){reset(true)};
+reset(true);requestAnimationFrame(tick);
+})();
+</script>
 </body>
 </html>
