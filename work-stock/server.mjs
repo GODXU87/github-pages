@@ -154,4 +154,4 @@ const server=http.createServer(async(req,res)=>{
     }catch{res.writeHead(404);res.end('Not found')}
   }
 });
-server.listen(PORT,'0.0.0.0',()=>console.log(`NOIRXU work-stock listening on ${PORT}`));
+server.listen(PORT,'0.0.0.0',()=>{console.log(`NOIRXU work-stock listening on ${PORT}`);fetchStockUniverse(true).then(stocks=>{const l=stocks.filter(x=>x.market==='上市').length,o=stocks.length-l;console.log(`TW stock universe ready: total=${stocks.length} listed=${l} otc=${o} complete=${stockUniverseCache.complete}`)}).catch(e=>console.error('TW stock universe preload failed:',e?.message||e))});
