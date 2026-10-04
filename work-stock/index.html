@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 <meta name="theme-color" content="#ffffff" />
 <link rel="manifest" href="./manifest.webmanifest" />
-<title>新北市校務 - Google 搜尋</title>
+<title>天氣 - Google 搜尋</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23fff'/%3E%3Ctext x='13' y='47' font-family='Arial,sans-serif' font-size='46' font-weight='700' fill='%234285f4'%3EG%3C/text%3E%3C/svg%3E">
 <style>
 :root{--bg:#fff;--text:#202124;--muted:#5f6368;--line:#dadce0;--soft:#f8f9fa;--blue:#1a0dab;--google-blue:#1a73e8;--green:#188038;--red:#d93025;--shadow:0 1px 2px rgba(60,64,67,.08),0 1px 3px 1px rgba(60,64,67,.08)}
@@ -33,7 +33,7 @@
 <header class="top">
   <div class="google-logo" aria-label="Google"><span class="g1">G</span><span class="g2">o</span><span class="g3">o</span><span class="g4">g</span><span class="g5">l</span><span class="g6">e</span></div>
   <div class="searchbar">
-    <input id="q" value="新北市校務" aria-label="搜尋" />
+    <input id="q" value="天氣" aria-label="搜尋" />
     <button class="clear" id="clear" aria-label="清除">×</button><span class="search-sep"></span>
     <button class="search-tool mic" aria-label="語音搜尋" title="語音搜尋"><svg viewBox="0 0 24 24"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21H8v2h8v-2h-3v-3.08A7 7 0 0 0 19 11h-2Z"/></svg></button>
     <button class="search-tool lens" aria-label="圖片搜尋" title="圖片搜尋"><svg viewBox="0 0 24 24"><path d="M9 3 7.5 5H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h5.1a6.5 6.5 0 1 1 2.9 0H19a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2.5L15 3H9Zm6.5 7a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9Z"/></svg></button>
@@ -51,7 +51,7 @@
   <div id="results"></div>
 </section>
 <aside class="side">
-  <div class="panel topic-panel"><div class="panel-head"><h2>主題摘要</h2><span>近期整理</span></div><div class="topic-body"><h3 id="topicTitle">新北市校務</h3><p id="topicDesc">整理新北市教育服務入口、校務行政與相關資訊。</p><div class="topic-list" id="topicList"></div></div></div>
+  <div class="panel topic-panel"><div class="panel-head"><h2>主題摘要</h2><span>近期整理</span></div><div class="topic-body"><h3 id="topicTitle">天氣</h3><p id="topicDesc">整理天氣預報、縣市氣象與相關資訊。</p><div class="topic-list" id="topicList"></div></div></div>
   <div class="panel market-panel" id="marketPanel"><div class="panel-head"><h2>資訊摘要</h2><span id="marketStamp">同步中</span></div><div id="quotes"></div><div class="panel-foot"><span id="peekHint">放開 Option / Alt 即隱藏</span><span id="feedState">—</span></div></div>
 </aside>
 </main>
@@ -83,8 +83,8 @@
 <div class="modal" id="about"><div class="modal-card" style="max-width:440px"><div class="modal-head"><div><h2>資料搜尋</h2><div class="sub">個人研究與資料整理頁面</div></div><button class="close" id="closeAbout">×</button></div><div class="hintbox" style="margin-top:18px">搜尋結果、摘要與偏好皆為本機個人化介面。未連線時仍可使用搜尋頁；行情資料會使用最近一次成功同步的快取。</div></div></div>
 <script>
 (()=>{
-const STORAGE='dataSearchPersonal.v1.6', LEGACY_STORAGE='dataSearchPersonal.v1.5';
-const defaults={query:'新北市校務',peekDuration:10000,refreshInterval:30000,watch:[
+const STORAGE='dataSearchPersonal.v1.7', LEGACY_STORAGE='dataSearchPersonal.v1.6';
+const defaults={query:'天氣',peekDuration:10000,refreshInterval:30000,watch:[
   {symbol:'2330.TW',alias:'台積電'},{symbol:'2317.TW',alias:'鴻海'},{symbol:'2454.TW',alias:'聯發科'},{symbol:'6488.TWO',alias:'環球晶'}
 ]};
 const demo={
@@ -106,13 +106,13 @@ function stateLabel(s){const x=String(s||'').toUpperCase();if(x==='REGULAR')retu
 function linePoints(arr,w=280,h=27,p=2){const nums=(arr||[]).filter(Number.isFinite);if(nums.length<2)return `0,${h/2} ${w},${h/2}`;const min=Math.min(...nums),max=Math.max(...nums),span=max-min||1;return nums.map((v,i)=>`${(i/(nums.length-1))*w},${h-p-((v-min)/span)*(h-p*2)}`).join(' ')}
 function detailPoints(arr){return linePoints(arr,500,130,10)}
 function renderResearch(){
- const query=q.value.trim()||'資料'; const safe=esc(query); const isNtpc=query.includes('新北市校務')||query.includes('校務行政');
- meta.textContent=isNtpc?'約 8,920 項結果（0.24 秒）':`約 12,400 項結果（0.28 秒）`;
+ const query=q.value.trim()||'資料'; const safe=esc(query); const isNtpc=query.includes('天氣')||query.includes('氣象')||query.includes('預報');
+ meta.textContent=isNtpc?'約 12,700 項結果（0.23 秒）':`約 12,400 項結果（0.28 秒）`;
  const items=isNtpc?[
- ['N','新北市教育局','esa.ntpc.edu.tw / central / theme','新北市政府教育局－校務行政系統','校務行政系統、登入(Login)、帳號使用說明與新北市教育服務入口。點選可進入常用項目。',['校務行政','教育服務'],'picker'],
- ['N','新北市教育局','esa.ntpc.edu.tw / central / management','校務行政系統－管理清單','整理目前常用項目與個人清單，可查看並管理已加入的服務項目。',['清單管理','常用項目'],'manager'],
- ['S','新北市政府教育局單一簽入','sso.ntpc.edu.tw','新北市政府教育局單一簽入系統','Single Sign-On。提供新北市教育體系常用資訊服務與帳號入口。',['SSO','教育服務'],''],
- ['G','Google Play','play.google.com / store / apps / details','新北校園通－Google Play 應用程式','新北校園通 APP 提供新北市教師、學生、家長及市民相關校務資訊與服務。',['校園通','APP'],'']
+ ['C','交通部中央氣象署','www.cwa.gov.tw / County','縣市預報','提供各縣市今日與未來天氣預報、溫度、降雨機率與氣象資訊。',['縣市預報','氣象資訊'],'picker'],
+ ['C','交通部中央氣象署','www.cwa.gov.tw / County / NewTaipei','縣市預報－新北市','查看新北市各區天氣、降雨機率與近期預報資訊。',['新北市','天氣預報'],'manager'],
+ ['M','MSN','www.msn.com / zh-tw / weather / forecast','台北、臺北市天氣預測','查看今日、今晚與未來數日天氣預報、降雨與氣象資訊。',['天氣','預測'],''],
+ ['W','新北災訊 E 點通','e.tpc.gov.tw / news-info / weather','新北市即時氣象','提供新北市即時氣象、降雨、警特報與相關天氣資訊。',['新北市','即時氣象'],'']
  ]:[
  ['R','產業研究中心','research.local / overview',`${safe}：近期趨勢與研究整理`,`彙整與「${safe}」相關的產業資料、近期變化與主要觀察指標，方便後續研究與會議使用。`,['研究整理','近期更新'],''],
  ['T','科技觀點','techview.local / analysis',`${safe} 的結構性變化與後續觀察`,`從需求、供應、技術與資本支出角度，整理可能影響後續發展的重點與可持續追蹤的線索。`,['產業分析','趨勢'],''],
@@ -122,8 +122,8 @@ function renderResearch(){
  results.innerHTML=items.map(([f,src,u,t,d,chips,action])=>`<article class="result${action?' stock-entry':''}" ${action?`data-action="${action}" tabindex="0" role="link"`:''}><div class="result-source"><div class="favicon">${f}</div><div class="source-text">${src}<small>https://${u.replace(' / ',' › ')}</small></div><div class="result-menu">⋮</div></div><h3>${t}</h3><p>${d}</p></article>`).join('');
  results.querySelectorAll('[data-action]').forEach(entry=>{const run=()=>entry.dataset.action==='picker'?openStockPicker():openWatchManager();entry.onclick=run;entry.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();run()}}});
  if(isNtpc){
-   qs('topicTitle').textContent='新北市校務';qs('topicDesc').textContent='整理校務行政、教育服務入口與常用系統資訊。';
-   qs('topicList').innerHTML=[['校務行政','校務行政服務入口'],['教育服務','教育局相關資訊'],['常用系統','單一簽入與數位服務'],['近期更新','系統公告與操作資源']].map(([a,b])=>`<div class="topic-row"><b>${a}</b><span>${b}</span></div>`).join('');
+   qs('topicTitle').textContent='天氣';qs('topicDesc').textContent='整理天氣預報、縣市氣象與相關資訊。';
+   qs('topicList').innerHTML=[['縣市預報','各地天氣預報'],['即時氣象','近期氣象資訊'],['降雨資訊','降雨與機率'],['近期更新','天氣與警特報']].map(([a,b])=>`<div class="topic-row"><b>${a}</b><span>${b}</span></div>`).join('');
  }else{
    qs('topicTitle').textContent=query; qs('topicDesc').textContent=`目前整理「${query}」的近期資料、相關技術與待追蹤項目。`;
    qs('topicList').innerHTML=['近期資料','重要名詞','相關報告','待整理'].map((x,i)=>`<div class="topic-row"><b>${x}</b><span>${['本週更新與重要變化','關鍵概念與背景資料','研究報告與產業觀點','下一輪需要補充的內容'][i]}</span></div>`).join('');
@@ -176,7 +176,7 @@ function hidePeek(){clearTimeout(peekTimer);timedPeek=false;body.classList.remov
 function renderWatchRows(){const box=qs('watchRows');box.innerHTML=prefs.watch.map((w,i)=>`<div class="watch-row" data-i="${i}"><input class="symbol" value="${esc(w.symbol)}" placeholder="2330.TW"><input class="alias" value="${esc(w.alias||'')}" placeholder="顯示名稱"><button class="mini-btn remove">刪除</button></div>`).join('');box.querySelectorAll('.remove').forEach(b=>b.onclick=()=>{const i=Number(b.closest('.watch-row').dataset.i);prefs.watch.splice(i,1);renderWatchRows()})}
 function readWatchRows(){return [...qs('watchRows').querySelectorAll('.watch-row')].map(r=>({symbol:r.querySelector('.symbol').value.trim().toUpperCase(),alias:r.querySelector('.alias').value.trim()})).filter(x=>x.symbol).slice(0,12)}
 function openAdvanced(){qs('peekDuration').value=String(prefs.peekDuration);qs('refreshInterval').value=String(prefs.refreshInterval);renderWatchRows();adv.classList.add('open')}
-function exportPrefs(){const blob=new Blob([JSON.stringify({version:'1.6.0',prefs},null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='data-search-personal-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
+function exportPrefs(){const blob=new Blob([JSON.stringify({version:'1.7.0',prefs},null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='data-search-personal-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
 function importPrefs(file){const fr=new FileReader();fr.onload=()=>{try{const data=JSON.parse(fr.result);prefs={...defaults,...(data.prefs||data)};prefs.watch=(prefs.watch||defaults.watch).slice(0,12);savePrefs();q.value=prefs.query||defaults.query;renderResearch();renderQuotes();scheduleRefresh();adv.classList.remove('open')}catch{alert('備份檔格式無法讀取')}};fr.readAsText(file)}
 
 qs('clear').onclick=()=>{q.value='';q.focus()};q.addEventListener('keydown',e=>{if(e.key==='Enter'){prefs.query=q.value.trim()||'資料';savePrefs();renderResearch()}});q.addEventListener('blur',()=>{if(q.value.trim()){prefs.query=q.value.trim();savePrefs()}});
