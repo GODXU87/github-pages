@@ -39,28 +39,52 @@ radial-gradient(ellipse at 94% 100%,#586649 0 24%,transparent 25%);opacity:.75;f
 .enemy-gate,.home-gate{position:absolute;z-index:5;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:5px;color:#2c2012;font-size:9px;font-weight:900}.enemy-gate{top:7px}.home-gate{bottom:8px}.gate{width:58px;height:25px;background:linear-gradient(#5d482d,#3e2e1c);border:2px solid #2b2117;box-shadow:0 3px 0 #2b2117;display:grid;place-items:center;color:#e1c585}.enemy-gate .gate{background:linear-gradient(#6d3529,#452016);color:#ffd0a6}.home-gate .gate{background:linear-gradient(#315649,#1e3831);color:#d8ecd9}
 .wave-chip{position:absolute;z-index:12;top:42px;left:50%;transform:translateX(-50%);background:#20160ed9;color:#ecd9ad;border:1px solid #7b6438;border-radius:12px;padding:5px 9px;font:9px ui-sans-serif;letter-spacing:.08em;box-shadow:0 5px 16px #0005}
 .grid-layer,.enemy-layer,.fx-layer{position:absolute;inset:0;z-index:6}.enemy-layer{z-index:8;pointer-events:none}.fx-layer{z-index:15;pointer-events:none}
-.slot{position:absolute;width:58px;height:58px;transform:translate(-50%,-50%);border:1px dashed rgba(79,65,38,.38);border-radius:10px;background:rgba(243,226,177,.07);cursor:pointer;transition:.16s}
+.slot{position:absolute;width:78px;height:70px;transform:translate(-50%,-50%);border:1px dashed rgba(79,65,38,.38);border-radius:10px;background:rgba(243,226,177,.07);cursor:pointer;transition:.16s}
 .slot:after{content:"";position:absolute;left:50%;top:50%;width:6px;height:6px;border-radius:50%;background:#6f6a4c44;transform:translate(-50%,-50%)}
 .slot.active{border-color:#f5d47e;background:#f3d58333;box-shadow:0 0 0 3px #efd07a16,0 0 22px #ffe08b4f;animation:pulse 1s infinite alternate}
 @keyframes pulse{to{box-shadow:0 0 0 5px #efd07a0d,0 0 34px #ffe08b66}}
-.troop{position:absolute;left:50%;top:50%;width:64px;height:58px;transform:translate(-50%,-50%);pointer-events:none}
-.troop .banner{position:absolute;right:-3px;top:-9px;z-index:4;padding:2px 5px;background:#1e2e26;color:#e4d9b3;border:1px solid #8d7543;border-radius:4px;font-size:8px;font-weight:900;box-shadow:0 2px 4px #0005}
+.troop{position:absolute;left:50%;top:50%;width:92px;height:72px;transform:translate(-50%,-50%);pointer-events:none;filter:drop-shadow(0 4px 3px #0005)}
+.troop .banner{position:absolute;right:-4px;top:-10px;z-index:6;padding:2px 6px;background:#1d2e26;color:#f0dfb6;border:1px solid #967a45;border-radius:4px;font-size:8px;font-weight:900;box-shadow:0 2px 4px #0007}
 .troop.hero .banner{background:#7d291f;color:#ffe29c;border-color:#d4a25a}
-.soldier{position:absolute;width:18px;height:23px}
-.soldier:before{content:"";position:absolute;left:4px;top:0;width:10px;height:10px;border-radius:50%;background:#c49b69;border:1px solid #4d3928;box-shadow:0 9px 0 3px #30453c}
-.soldier:after{content:"";position:absolute;left:8px;top:-6px;width:2px;height:8px;background:#3f2c20}
-.s1{left:5px;top:18px;transform:scale(.82)}.s2{left:21px;top:7px;z-index:2}.s3{left:40px;top:19px;transform:scale(.82)}
-.troop.archer .soldier:after{width:11px;height:11px;border:1px solid #5b3f23;border-left-color:transparent;border-radius:50%;background:none;left:10px;top:8px}
-.troop.cavalry .soldier:before{box-shadow:0 9px 0 3px #573b29,8px 15px 0 2px #795b36}
-.troop.guard .soldier:after{width:9px;height:13px;background:#6c774c;border:1px solid #3f492f;left:-2px;top:10px}
-.troop.tactician .soldier:before{background:#d4bd93;box-shadow:0 9px 0 3px #5b4a61}
-.troop.hit{animation:troophit .15s}.troop.skill{filter:drop-shadow(0 0 8px #ffe18a);animation:skill .32s}
+.formation{position:absolute;inset:10px 2px 0}
+.soldier{position:absolute;width:14px;height:23px;transform-origin:50% 90%}
+.soldier:before{content:"";position:absolute;left:3px;top:0;width:9px;height:9px;border-radius:50%;background:#c69a67;border:1px solid #4d3928;box-shadow:0 8px 0 3px #32463d}
+.soldier:after{content:"";position:absolute;left:7px;top:-7px;width:2px;height:11px;background:#493321;box-shadow:0 14px 0 -0.5px #493321}
+.soldier:nth-child(1){left:5px;top:20px;transform:scale(.78)}
+.soldier:nth-child(2){left:21px;top:12px;transform:scale(.9)}
+.soldier:nth-child(3){left:39px;top:8px}
+.soldier:nth-child(4){left:58px;top:12px;transform:scale(.9)}
+.soldier:nth-child(5){left:73px;top:20px;transform:scale(.78)}
+.soldier:nth-child(6){left:16px;top:35px;transform:scale(.72)}
+.soldier:nth-child(7){left:34px;top:31px;transform:scale(.8)}
+.soldier:nth-child(8){left:53px;top:31px;transform:scale(.8)}
+.soldier:nth-child(9){left:68px;top:35px;transform:scale(.72)}
+.troop.blade .soldier:after{width:2px;height:13px;transform:rotate(18deg);background:#c2c4bc;box-shadow:0 0 0 1px #4e4e46}
+.troop.spear .soldier:after{height:22px;top:-11px;background:#5f4126;box-shadow:0 -3px 0 -1px #d7d9c4}
+.troop.bow .soldier:after{left:9px;top:5px;width:12px;height:13px;background:none;border:1.5px solid #5d4024;border-left-color:transparent;border-radius:50%;box-shadow:none}
+.troop.cavalry .soldier:before{box-shadow:0 8px 0 3px #5c3c28,8px 13px 0 3px #7a5a35}
+.troop.cavalry .soldier{transform:scale(.9)}
+.troop.guard .soldier:after{left:-2px;top:8px;width:10px;height:14px;background:#69794f;border:1px solid #38472d;border-radius:5px;box-shadow:none}
+.troop.tactician .soldier:before{background:#d7c29a;box-shadow:0 8px 0 3px #574766}
+.troop.hit .formation{animation:formationHit .18s}
+.troop.skill{filter:drop-shadow(0 0 10px #ffe18a) drop-shadow(0 4px 3px #0005);animation:skill .32s}
+@keyframes formationHit{50%{transform:translateY(3px) scale(.96)}}
 @keyframes troophit{50%{transform:translate(-50%,-50%) scale(.9)}}@keyframes skill{50%{transform:translate(-50%,-50%) scale(1.14)}}
-.enemy-unit{position:absolute;width:34px;height:40px;transform:translate(-50%,-50%);transition:none}
-.enemy-unit .ehead{position:absolute;left:10px;top:0;width:14px;height:13px;border-radius:50%;background:#bf8f61;border:1px solid #4a2c1c}
-.enemy-unit .ebody{position:absolute;left:6px;top:11px;width:22px;height:22px;border-radius:8px 8px 5px 5px;background:#6f2c24;border:1px solid #412018;box-shadow:-9px 5px 0 -4px #7d3329,9px 5px 0 -4px #7d3329}
-.enemy-unit.elite .ebody{background:#542c58;border-color:#35203a}.enemy-unit.boss{transform:translate(-50%,-50%) scale(1.25);filter:drop-shadow(0 0 7px #c98e45)}
-.enemy-unit .ehp{position:absolute;left:1px;right:1px;top:-6px;height:3px;background:#3e1c17;border-radius:5px;overflow:hidden}.enemy-unit .ehp i{display:block;height:100%;background:#e0664c}
+.enemy-unit{position:absolute;width:76px;height:54px;transform:translate(-50%,-50%);transition:none;animation:marchBob .55s ease-in-out infinite alternate;filter:drop-shadow(0 4px 3px #0005)}
+@keyframes marchBob{to{margin-top:2px}}
+.enemy-unit .enemy-squad{position:absolute;inset:8px 0 0}
+.enemy-unit .eman{position:absolute;width:14px;height:22px}
+.enemy-unit .eman:before{content:"";position:absolute;left:3px;top:0;width:9px;height:9px;border-radius:50%;background:#bc895c;border:1px solid #472a1b;box-shadow:0 8px 0 3px #743128}
+.enemy-unit .eman:after{content:"";position:absolute;left:7px;top:-7px;width:2px;height:12px;background:#4c3120}
+.enemy-unit .eman:nth-child(1){left:5px;top:18px;transform:scale(.78)}
+.enemy-unit .eman:nth-child(2){left:18px;top:8px;transform:scale(.9)}
+.enemy-unit .eman:nth-child(3){left:31px;top:3px}
+.enemy-unit .eman:nth-child(4){left:45px;top:8px;transform:scale(.9)}
+.enemy-unit .eman:nth-child(5){left:58px;top:18px;transform:scale(.78)}
+.enemy-unit.elite .eman:before{box-shadow:0 8px 0 3px #55305d}
+.enemy-unit.boss{transform:translate(-50%,-50%) scale(1.18);filter:drop-shadow(0 0 8px #d29a4d) drop-shadow(0 4px 3px #0005)}
+.enemy-unit .ehp{position:absolute;left:8px;right:8px;top:-4px;height:4px;background:#3e1c17;border-radius:5px;overflow:hidden;border:1px solid #2a1712}
+.enemy-unit .ehp i{display:block;height:100%;background:#e0664c}
 .damage{position:absolute;transform:translate(-50%,-50%);font:900 12px ui-sans-serif;color:#fff2c9;text-shadow:0 2px 4px #000;animation:float .65s ease-out forwards}.damage.crit{font-size:16px;color:#ffcf4e}@keyframes float{to{opacity:0;transform:translate(-50%,-120%)}}
 .projectile{position:absolute;width:17px;height:2px;background:#e7d09c;box-shadow:0 0 4px #fff2c7;transform-origin:left center;animation:shoot .18s linear forwards}@keyframes shoot{to{opacity:.1}}
 .flash{position:absolute;width:42px;height:42px;border-radius:50%;border:2px solid #f9db79;transform:translate(-50%,-50%) scale(.2);animation:flash .35s ease-out forwards}@keyframes flash{to{opacity:0;transform:translate(-50%,-50%) scale(1.6)}}
@@ -105,7 +129,7 @@ radial-gradient(ellipse at 94% 100%,#586649 0 24%,transparent 25%);opacity:.75;f
 </section>
 
 <section class="bottom">
-<div class="bottom-top"><div class="resource"><span class="coin">令</span><b id="coin">12</b><span>軍令</span></div><div class="hint" id="hint">先合成，再點戰場空格佈陣</div></div>
+<div class="bottom-top"><div class="resource"><span class="coin">令</span><b id="coin">12</b><span>軍令</span></div><div class="hint" id="hint">下方選兵牌 → 點戰場空格佈陣；場上已配置守軍</div></div>
 <div class="hand" id="hand"></div>
 <div class="actions">
 <button class="draw" id="draw">補充兵牌<span>3 軍令</span></button>
@@ -156,7 +180,7 @@ function setFaction(k){
  $("factionModal").classList.remove("show");start();
 }
 function start(){
- S.hand=new Array(7).fill(null);S.selected=null;S.units=new Array(12).fill(null);S.enemies=[];S.coin=12;S.wave=1;S.base=100;S.enemyBase=100;S.run=true;S.last=0;S.id=1;S.speed=1;S.kills=0;
+ S.hand=new Array(7).fill(null);S.selected=null;S.units=new Array(12).fill(null);S.units[10]={type:"guard",rank:1,last:0};S.units[11]={type:"bow",rank:1,last:0};S.enemies=[];S.coin=12;S.wave=1;S.base=100;S.enemyBase=100;S.run=true;S.last=0;S.id=1;S.speed=1;S.kills=0;
  $("enemyLayer").innerHTML="";$("gridLayer").innerHTML="";$("resultModal").classList.remove("show");$("speed").firstChild.nodeValue="戰速 ×1";
  makeSlots();for(var i=0;i<5;i++)drawCard(false);beginWave();renderAll()
 }
@@ -216,7 +240,8 @@ function findMate(i){var a=S.hand[i];if(!a||a.rank>=4)return false;for(var j=0;j
 function flashCard(i){setTimeout(function(){var c=$("hand").children[i];if(c){c.classList.remove("sel");void c.offsetWidth;c.classList.add("sel");setTimeout(function(){c.classList.remove("sel")},240)}},0)}
 function troopHTML(u){
  var name=u.rank===4?heroName(u.type,"p"):TYPES[u.type].ch;
- return '<div class="troop '+u.type+(u.rank===4?' hero':'')+'"><span class="banner">'+name+'</span><i class="soldier s1"></i><i class="soldier s2"></i><i class="soldier s3"></i></div>'
+ var men="";for(var n=0;n<9;n++)men+='<i class="soldier"></i>';
+ return '<div class="troop '+u.type+(u.rank===4?' hero':'')+'"><span class="banner">'+name+'</span><div class="formation">'+men+'</div></div>'
 }
 function renderUnits(){
  var slots=$("gridLayer").children;
@@ -227,14 +252,14 @@ function renderUnits(){
  })
 }
 function beginWave(){
- S.toSpawn=5+S.wave*2;S.spawned=0;S.left=S.toSpawn+S.enemies.length;S.nextSpawn=300;
+ S.toSpawn=5+S.wave*2;S.spawned=0;S.left=S.toSpawn+S.enemies.length;S.nextSpawn=80;
  say("第 "+S.wave+" 波 · "+FACTIONS[S.ef].name+"來襲")
 }
 function spawnEnemy(){
  var elite=S.wave>=3&&Math.random()<Math.min(.32,S.wave*.035),boss=S.wave%5===0&&S.spawned===S.toSpawn-1;
  var hp=(56+S.wave*11)*(elite?1.55:1)*(boss?2.25:1),speed=(.017+S.wave*.00045)*(elite?1.08:1)*(boss?.8:1);
  var e={id:S.id++,t:0,hp:hp,max:hp,speed:speed,elite:elite,boss:boss,dead:false};S.enemies.push(e);
- var d=document.createElement("div");d.id="e"+e.id;d.className="enemy-unit"+(elite?" elite":"")+(boss?" boss":"");d.innerHTML='<div class="ehp"><i></i></div><i class="ehead"></i><i class="ebody"></i>';$("enemyLayer").appendChild(d);updateEnemyEl(e)
+ var d=document.createElement("div");d.id="e"+e.id;d.className="enemy-unit"+(elite?" elite":"")+(boss?" boss":"");d.innerHTML='<div class="ehp"><i></i></div><div class="enemy-squad"><i class="eman"></i><i class="eman"></i><i class="eman"></i><i class="eman"></i><i class="eman"></i></div>';$("enemyLayer").appendChild(d);updateEnemyEl(e)
 }
 function updateEnemyEl(e){
  var p=point(e.t),d=$("e"+e.id);if(!d)return;d.style.left=p[0]+"%";d.style.top=p[1]+"%";d.querySelector(".ehp i").style.width=Math.max(0,e.hp/e.max*100)+"%"
