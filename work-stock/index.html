@@ -15,6 +15,7 @@
 
 .stock-entry{cursor:pointer;border-radius:12px;padding:10px 12px;margin-left:-12px;transition:.12s}.stock-entry:hover{background:#f8f9fa}.stock-entry:focus{outline:2px solid #d2e3fc;outline-offset:2px}
 .stock-picker-card{width:min(760px,100%);padding:0;overflow:hidden}.picker-head{padding:22px 24px 16px;border-bottom:1px solid #edf0f2}.picker-head-row{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.picker-head h2{margin:0 0 4px;font-size:20px}.picker-toolbar{display:grid;grid-template-columns:1fr 130px;gap:10px;margin-top:16px}.picker-toolbar input,.picker-toolbar select{height:42px;border:1px solid #dadce0;border-radius:10px;padding:0 12px;background:#fff}.picker-meta{display:flex;justify-content:space-between;gap:12px;padding:10px 24px;color:#70757a;font-size:12px;border-bottom:1px solid #edf0f2}.stock-list{max-height:min(56vh,560px);overflow:auto}.stock-item{display:grid;grid-template-columns:28px 76px 1fr 58px;gap:10px;align-items:center;padding:11px 24px;border-bottom:1px solid #f1f3f4;cursor:pointer}.stock-item:hover{background:#fafafa}.stock-item input{width:17px;height:17px}.stock-code{font-variant-numeric:tabular-nums;font-weight:600;font-size:13px}.stock-name{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.stock-market{font-size:11px;color:#70757a;text-align:right}.picker-empty{padding:42px 24px;text-align:center;color:#70757a;font-size:13px}.picker-actions{padding:16px 24px;display:flex;justify-content:flex-end;gap:8px;border-top:1px solid #edf0f2;background:#fff}.sync-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#188038;margin-right:6px}.sync-dot.loading{background:#f9ab00}.sync-dot.error{background:#d93025}
+.manage-list{display:grid;gap:10px;margin-top:18px}.manage-row{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:13px 14px;border:1px solid #edf0f2;border-radius:12px}.manage-main strong{display:block;font-size:14px}.manage-main span{display:block;margin-top:3px;color:#70757a;font-size:12px}.danger{border:1px solid #f3c7c4;background:#fff;color:#b3261e;border-radius:9px;height:36px;padding:0 12px}.danger:hover{background:#fce8e6}.manage-empty{padding:34px 12px;text-align:center;color:#70757a;font-size:13px}
 @media(max-width:900px){.logo{min-width:auto;margin-right:10px}.logo span:last-child{display:none}.nav{margin-left:20px}.page{grid-template-columns:1fr;gap:24px}.side{position:static}.searchbar{margin-right:8px}.actions .icon.settings{display:none}}
 @media(max-width:620px){.top{padding:0 12px;height:64px}.page{padding:20px 16px 72px}.nav{margin-left:12px;gap:18px;overflow-x:auto}.nav button{white-space:nowrap}.result h3{font-size:18px}.stats{grid-template-columns:1fr 1fr}.logo{display:none}.avatar{display:none}.actions{margin-left:0}.side{display:block}.searchbar{height:46px}.menu{right:12px;top:58px}.watch-row{grid-template-columns:1fr auto}.watch-row .alias{grid-column:1/3}}
 </style>
@@ -55,6 +56,12 @@
   <div class="stock-list" id="stockList"><div class="picker-empty">正在取得上市、上櫃股票名單…</div></div>
   <div class="picker-actions"><button class="secondary" id="cancelStockPicker">取消</button><button class="primary" id="saveStockPicker">儲存觀察清單</button></div>
 </div></div>
+<div class="modal" id="watchManager"><div class="modal-card" style="max-width:620px">
+  <div class="modal-head"><div><h2>管理觀察清單</h2><div class="sub">目前已選股票｜刪除後立即儲存</div></div><button class="close" id="closeWatchManager">×</button></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px"><span class="sub" id="manageCount">0 / 12</span><button class="secondary" id="manageAdd">＋ 新增股票</button></div>
+  <div class="manage-list" id="manageWatchList"></div>
+  <div class="modal-actions"><button class="primary" id="doneWatchManager">完成</button></div>
+</div></div>
 <div class="modal" id="about"><div class="modal-card" style="max-width:440px"><div class="modal-head"><div><h2>資料搜尋</h2><div class="sub">個人研究與資料整理頁面</div></div><button class="close" id="closeAbout">×</button></div><div class="hintbox" style="margin-top:18px">搜尋結果、摘要與偏好皆為本機個人化介面。未連線時仍可使用搜尋頁；行情資料會使用最近一次成功同步的快取。</div></div></div>
 <script>
 (()=>{
@@ -84,18 +91,18 @@ function renderResearch(){
  const query=q.value.trim()||'資料'; const safe=esc(query); const isNtpc=query.includes('新北市校務行政系統')||query.includes('新北市校務行政');
  meta.textContent=isNtpc?'約 8,920 項結果（0.24 秒）':`約 12,400 項結果（0.28 秒）`;
  const items=isNtpc?[
- ['N','新北市政府教育局','esa.ntpc.edu.tw / 校務行政系統','新北市校務行政系統','提供新北市學校校務行政服務入口與相關系統資訊。點選進入常用項目。',['校務行政','教育服務'],true],
- ['E','新北市政府教育局','mis.ntpc.edu.tw / 校務行政','校務行政與校園通 APP','校務行政系統、校園通 APP 與教育資訊服務相關說明及操作資源。',['教育局','系統服務'],false],
- ['S','教育服務入口','ntpc.edu.tw / sso','新北市教育體系單一簽入服務','提供教育體系常用資訊服務與帳號入口的相關說明。',['SSO','教育服務'],false],
- ['P','親師生服務','ntpc.edu.tw / service','新北市親師生相關服務','彙整親師生常用線上服務與數位學習資源。',['親師生','線上服務'],false]
+ ['N','新北市政府教育局','esa.ntpc.edu.tw / 校務行政系統','新北市校務行政系統','提供新北市學校校務行政服務入口與相關系統資訊。點選進入常用項目。',['校務行政','教育服務'],'picker'],
+ ['L','新北市政府教育局','mis.ntpc.edu.tw / 清單管理','管理清單','查看目前觀察中的項目，可直接刪除不再追蹤的股票。',['清單管理','常用項目'],'manager'],
+ ['S','教育服務入口','ntpc.edu.tw / sso','新北市教育體系單一簽入服務','提供教育體系常用資訊服務與帳號入口的相關說明。',['SSO','教育服務'],''],
+ ['P','親師生服務','ntpc.edu.tw / service','新北市親師生相關服務','彙整親師生常用線上服務與數位學習資源。',['親師生','線上服務'],'']
  ]:[
- ['R','產業研究中心','research.local / overview',`${safe}：近期趨勢與研究整理`,`彙整與「${safe}」相關的產業資料、近期變化與主要觀察指標，方便後續研究與會議使用。`,['研究整理','近期更新'],false],
- ['T','科技觀點','techview.local / analysis',`${safe} 的結構性變化與後續觀察`,`從需求、供應、技術與資本支出角度，整理可能影響後續發展的重點與可持續追蹤的線索。`,['產業分析','趨勢'],false],
- ['G','Global Research','globalresearch.local / report',`全球市場與 ${safe} 相關指標整理`,`整理主要市場、供應鏈與總體環境的近期變化，作為資料比較與研究背景。`,['市場報告'],false],
- ['N','個人筆記','notes.local / workspace',`${safe}：重點清單與待整理事項`,`將已閱讀資料、關鍵名詞與後續需要確認的內容集中整理，方便快速查找與補充。`,['筆記','待整理'],false]
+ ['R','產業研究中心','research.local / overview',`${safe}：近期趨勢與研究整理`,`彙整與「${safe}」相關的產業資料、近期變化與主要觀察指標，方便後續研究與會議使用。`,['研究整理','近期更新'],''],
+ ['T','科技觀點','techview.local / analysis',`${safe} 的結構性變化與後續觀察`,`從需求、供應、技術與資本支出角度，整理可能影響後續發展的重點與可持續追蹤的線索。`,['產業分析','趨勢'],''],
+ ['G','Global Research','globalresearch.local / report',`全球市場與 ${safe} 相關指標整理`,`整理主要市場、供應鏈與總體環境的近期變化，作為資料比較與研究背景。`,['市場報告'],''],
+ ['N','個人筆記','notes.local / workspace',`${safe}：重點清單與待整理事項`,`將已閱讀資料、關鍵名詞與後續需要確認的內容集中整理，方便快速查找與補充。`,['筆記','待整理'],'']
  ];
- results.innerHTML=items.map(([f,src,u,t,d,chips,entry])=>`<article class="result${entry?' stock-entry':''}" ${entry?'data-stock-entry="1" tabindex="0" role="link" aria-label="開啟觀察清單"':''}><div class="result-source"><div class="favicon">${f}</div><div class="source-text">${src}<small>${u}</small></div></div><h3>${t}</h3><p>${d}</p><div class="chips">${chips.map(c=>`<span class="chip">${c}</span>`).join('')}</div></article>`).join('');
- const entry=results.querySelector('[data-stock-entry]');if(entry){entry.onclick=openStockPicker;entry.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openStockPicker()}}}
+ results.innerHTML=items.map(([f,src,u,t,d,chips,action])=>`<article class="result${action?' stock-entry':''}" ${action?`data-action="${action}" tabindex="0" role="link"`:''}><div class="result-source"><div class="favicon">${f}</div><div class="source-text">${src}<small>${u}</small></div></div><h3>${t}</h3><p>${d}</p><div class="chips">${chips.map(c=>`<span class="chip">${c}</span>`).join('')}</div></article>`).join('');
+ results.querySelectorAll('[data-action]').forEach(entry=>{const run=()=>entry.dataset.action==='picker'?openStockPicker():openWatchManager();entry.onclick=run;entry.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();run()}}});
  if(isNtpc){
    qs('topicTitle').textContent='新北市校務行政系統';qs('topicDesc').textContent='整理校務行政、教育服務入口與常用系統資訊。';
    qs('topicList').innerHTML=[['校務行政','校務行政服務入口'],['教育服務','教育局相關資訊'],['常用系統','單一簽入與數位服務'],['近期更新','系統公告與操作資源']].map(([a,b])=>`<div class="topic-row"><b>${a}</b><span>${b}</span></div>`).join('');
@@ -115,6 +122,14 @@ async function loadStockUniverse(force=false){
 }
 function openStockPicker(){hidePeek();pendingStocks=new Set(prefs.watch.filter(w=>isTaiwanSymbol(w.symbol)).map(w=>w.symbol));qs('stockSearch').value='';qs('stockMarket').value='all';qs('stockPicker').classList.add('open');updateSelectedCount();renderStockUniverse();loadStockUniverse();setTimeout(()=>qs('stockSearch').focus(),80)}
 function closeStockPicker(){qs('stockPicker').classList.remove('open')}
+function openWatchManager(){hidePeek();renderWatchManager();qs('watchManager').classList.add('open')}
+function closeWatchManager(){qs('watchManager').classList.remove('open')}
+function renderWatchManager(){
+ const box=qs('manageWatchList');qs('manageCount').textContent=`${prefs.watch.length} / 12`;
+ if(!prefs.watch.length){box.innerHTML='<div class="manage-empty">目前沒有觀察中的股票</div>';return}
+ box.innerHTML=prefs.watch.map((w,i)=>{const market=/\.TWO$/i.test(w.symbol)?'上櫃':/\.TW$/i.test(w.symbol)?'上市':'其他';return `<div class="manage-row" data-i="${i}"><div class="manage-main"><strong>${esc(w.alias||symbolLabel(w.symbol))}</strong><span>${esc(symbolLabel(w.symbol))} · ${market}</span></div><button class="danger" data-remove>刪除</button></div>`}).join('');
+ box.querySelectorAll('[data-remove]').forEach(btn=>btn.onclick=()=>{const i=Number(btn.closest('.manage-row').dataset.i);prefs.watch.splice(i,1);savePrefs();renderWatchManager();renderQuotes();fetchQuotes()})
+}
 function updateSelectedCount(){qs('selectedCount').textContent=`已選 ${pendingStocks.size} / 12`}
 function renderStockUniverse(){
  const box=qs('stockList');if(!stockUniverse.length){if(!stockLoading)box.innerHTML='<div class="picker-empty">尚未取得股票名單</div>';return}
@@ -154,8 +169,9 @@ const more=qs('moreBtn');more.addEventListener('pointerdown',()=>{clearTimeout(l
 const settings=qs('settingsBtn');settings.onclick=()=>{qs('about').classList.add('open')};settings.addEventListener('pointerdown',()=>{clearTimeout(settingsHold);settingsHold=setTimeout(()=>openAdvanced(),700)});['pointerup','pointercancel','pointerleave'].forEach(ev=>settings.addEventListener(ev,()=>clearTimeout(settingsHold)));
 qs('closeAdvanced').onclick=()=>adv.classList.remove('open');qs('addWatch').onclick=()=>{if(prefs.watch.length>=12)return; prefs.watch.push({symbol:'',alias:''});renderWatchRows()};qs('saveAdvanced').onclick=()=>{prefs.watch=readWatchRows();prefs.peekDuration=Number(qs('peekDuration').value)||10000;prefs.refreshInterval=Number(qs('refreshInterval').value)||30000;savePrefs();adv.classList.remove('open');fetchQuotes();scheduleRefresh()};qs('exportBtn').onclick=exportPrefs;qs('importBtn').onclick=()=>qs('importFile').click();qs('importFile').onchange=e=>{if(e.target.files?.[0])importPrefs(e.target.files[0])};
 qs('closeStockPicker').onclick=closeStockPicker;qs('cancelStockPicker').onclick=closeStockPicker;qs('saveStockPicker').onclick=saveStockPicker;qs('stockSearch').addEventListener('input',renderStockUniverse);qs('stockMarket').addEventListener('change',renderStockUniverse);qs('stockPicker').onclick=e=>{if(e.target===qs('stockPicker'))closeStockPicker()};
+qs('closeWatchManager').onclick=closeWatchManager;qs('doneWatchManager').onclick=closeWatchManager;qs('manageAdd').onclick=()=>{closeWatchManager();openStockPicker()};qs('watchManager').onclick=e=>{if(e.target===qs('watchManager'))closeWatchManager()};
 qs('closeDetail').onclick=()=>detail.classList.remove('open');detail.onclick=e=>{if(e.target===detail)detail.classList.remove('open')};adv.onclick=e=>{if(e.target===adv)adv.classList.remove('open')};qs('about').onclick=e=>{if(e.target===qs('about'))qs('about').classList.remove('open')};
-document.addEventListener('keydown',e=>{if(e.key==='Alt'&&!altHeld){altHeld=true;showPeek()}if((e.metaKey||e.ctrlKey)&&e.shiftKey&&e.code==='Space'){e.preventDefault();showPeek(Number(prefs.peekDuration)||10000)}if((e.metaKey||e.ctrlKey)&&e.shiftKey&&e.code==='Comma'){e.preventDefault();openAdvanced()}if(e.key==='Escape'){menu.classList.remove('open');qs('about').classList.remove('open');adv.classList.remove('open');qs('stockPicker').classList.remove('open');hidePeek()}});document.addEventListener('keyup',e=>{if(e.key==='Alt'){altHeld=false;if(!timedPeek)hidePeek()}});window.addEventListener('blur',()=>{altHeld=false;hidePeek()});document.addEventListener('visibilitychange',()=>{if(document.hidden)hidePeek()});document.addEventListener('click',e=>{if(!menu.contains(e.target)&&e.target!==more)menu.classList.remove('open')});
+document.addEventListener('keydown',e=>{if(e.key==='Alt'&&!altHeld){altHeld=true;showPeek()}if((e.metaKey||e.ctrlKey)&&e.shiftKey&&e.code==='Space'){e.preventDefault();showPeek(Number(prefs.peekDuration)||10000)}if((e.metaKey||e.ctrlKey)&&e.shiftKey&&e.code==='Comma'){e.preventDefault();openAdvanced()}if(e.key==='Escape'){menu.classList.remove('open');qs('about').classList.remove('open');adv.classList.remove('open');qs('stockPicker').classList.remove('open');qs('watchManager').classList.remove('open');hidePeek()}});document.addEventListener('keyup',e=>{if(e.key==='Alt'){altHeld=false;if(!timedPeek)hidePeek()}});window.addEventListener('blur',()=>{altHeld=false;hidePeek()});document.addEventListener('visibilitychange',()=>{if(document.hidden)hidePeek()});document.addEventListener('click',e=>{if(!menu.contains(e.target)&&e.target!==more)menu.classList.remove('open')});
 renderResearch();renderQuotes();fetchQuotes();scheduleRefresh();if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('/sw.js').catch(()=>{});
 })();
 </script>
