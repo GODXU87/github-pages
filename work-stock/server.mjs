@@ -37,7 +37,8 @@ async function yahooQuote(symbol){
   const price=Number(meta.regularMarketPrice??closes[closes.length-1]),previousClose=Number(meta.chartPreviousClose??meta.previousClose??closes[0]);
   if(!Number.isFinite(price))throw new Error('invalid price');
   const change=Number.isFinite(previousClose)?price-previousClose:0;
-  return {symbol,price,previousClose:Number.isFinite(previousClose)?previousClose:null,change,changePercent:previousClose?(change/previousClose)*100:0,currency:meta.currency||'',marketState:meta.marketState||'',spark:closes.slice(-30),updatedAt:Number(meta.regularMarketTime)?Number(meta.regularMarketTime)*1000:Date.now(),feed:'chart'};
+  const spark=closes.slice(-29);if(!spark.length||Math.abs(Number(spark[spark.length-1])-price)>0.000001)spark.push(price);else spark[spark.length-1]=price;
+  return {symbol,price,previousClose:Number.isFinite(previousClose)?previousClose:null,change,changePercent:previousClose?(change/previousClose)*100:0,currency:meta.currency||'',marketState:meta.marketState||'',spark,updatedAt:Number(meta.regularMarketTime)?Number(meta.regularMarketTime)*1000:Date.now(),feed:'chart'};
 }
 async function twseQuote(symbol){
   const info=taiwanInfo(symbol);if(!info)throw new Error('not taiwan');
@@ -48,6 +49,7 @@ async function twseQuote(symbol){
   const price=Number(candidate);if(!Number.isFinite(price)||price<=0)throw new Error('invalid twse price');
   const change=Number.isFinite(previousClose)?price-previousClose:0;
   let spark=[];try{spark=(await yahooQuote(symbol)).spark||[]}catch{}
+  spark=spark.slice(-29);if(!spark.length||Math.abs(Number(spark[spark.length-1])-price)>0.000001)spark.push(price);else spark[spark.length-1]=price;
   return {symbol,price,previousClose:Number.isFinite(previousClose)?previousClose:null,change,changePercent:previousClose?(change/previousClose)*100:0,currency:'TWD',marketState:'REGULAR',spark,updatedAt:parseTwseTime(row.d,row.t),feed:'twse-mis'};
 }
 async function getQuote(symbol){
