@@ -1,0 +1,10 @@
+{
+  "name": "資料搜尋",
+  "short_name": "資料搜尋",
+  "description": "個人資料搜尋與研究工具",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff"
+}
